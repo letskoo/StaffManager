@@ -33,18 +33,18 @@ body {
 
     overflow: visible;
 
-    transform: scale(0.88);
+    transform: scale(0.83);
     transform-origin: center;
 }
 
 .time {
     margin-top: 0;
-    font-size: 68px;
+    font-size: 80px;
     font-weight: 700;
 }
 
 .date {
-    margin-top: -20px;
+    margin-top: -10px;
     font-size: 30px;
     color: #8d8d8d;
 }
@@ -60,7 +60,7 @@ body {
 }
 
 .title p {
-    margin-top: -5px;
+    margin-top: -1px;
     font-size: 20px;
     color: #888;
 }
@@ -75,13 +75,20 @@ body {
     width: 75px;
     height: 85px;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     border: 1px solid #e5e5e5;
     border-radius: 14px;
 
     background: white;
+
+    font-size: 30px;
+    font-weight: 500;
 }
 
-.number-box div:first-child {
+.number-box div.active {
     border: 2px solid #4a7dff;
 }
 
