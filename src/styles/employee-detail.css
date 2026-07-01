@@ -1,0 +1,261 @@
+.employee-detail {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.summary-row {
+
+    display: grid;
+
+    grid-template-columns: 1fr 2fr;
+
+    gap: 24px;
+
+    align-items: stretch;
+
+}
+
+.right-column {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: stretch;
+
+}
+
+.top-summary {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 16px;
+
+    height: 100%;
+
+}
+
+.top-summary>.detail-card {
+
+    min-height: 0;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+.top-summary .detail-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    min-height: 0;
+
+    height: 100%;
+
+}
+
+.top-row {
+
+    display: grid;
+
+    grid-template-columns: 1fr 2fr;
+
+    gap: 16px;
+
+}
+
+.summary-row {
+
+    display: grid;
+
+    grid-template-columns: 1fr 2fr;
+
+    gap: 16px;
+
+}
+
+.summary-row .detail-card {
+
+    margin: 0;
+
+}
+
+.detail-card {
+
+    background: #fff;
+
+    border: 1px solid #ececec;
+
+    border-radius: 14px;
+
+    padding: 28px;
+}
+
+.detail-card h2 {
+
+    margin-bottom: 24px;
+
+    font-size: 22px;
+}
+
+.detail-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 120px;
+
+    height: 52px;
+
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.detail-row:last-child {
+
+    border: none;
+}
+
+.detail-row span {
+
+    width: 80px;
+
+    flex-shrink: 0;
+
+    color: #777;
+
+    font-size: 15px;
+}
+
+.detail-row strong {
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color: #222;
+
+    text-align: left;
+}
+
+.detail-card-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 24px;
+
+}
+
+.detail-card-header h2 {
+
+    margin: 0;
+
+}
+
+.detail-actions {
+
+    display: flex;
+
+    gap: 18px;
+
+}
+
+.detail-actions button {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    color: #555;
+
+    transition: .2s;
+
+}
+
+.detail-actions button:hover {
+
+    color: #1f73b9;
+
+    transform: scale(1.1);
+
+}
+
+.detail-actions button:last-child:hover {
+
+    color: #e53935;
+
+}
+
+.salary-total {
+
+    flex: 1;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    color: #1f73b9;
+
+    min-height: 140px;
+
+}
+
+.salary-chart {
+
+    height: 320px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    border: 1px dashed #ddd;
+
+    border-radius: 12px;
+
+    color: #999;
+
+}
+
+.memo-box {
+
+    min-height: 220px;
+
+    line-height: 1.8;
+
+    color: #555;
+
+    white-space: pre-wrap;
+
+}

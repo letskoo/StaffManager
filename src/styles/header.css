@@ -1,0 +1,61 @@
+.header {
+
+    height: 90px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 36px;
+}
+
+.header-left {
+
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.header-left h1 {
+
+    font-size: 35px;
+    font-weight: 700;
+
+    color: #202020;
+
+    line-height: 1;
+}
+
+.header-divider {
+    width: 5px;
+    height: 35px;
+    background: #202020;
+}
+
+.header-left p {
+
+    font-size: 25px;
+    color: #666;
+
+    line-height: 1;
+
+    transform: translateY(1px);
+}
+
+.register-btn {
+
+    width: 150px;
+    height: 45px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #1f73b9;
+
+    color: white;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    cursor: pointer;
+}

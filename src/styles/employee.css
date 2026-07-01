@@ -1,0 +1,102 @@
+.employee-page{
+
+    background:#fff;
+
+    border-radius:14px;
+
+    padding:28px;
+
+    border:1px solid #ececec;
+}
+
+.employee-search{
+
+    width:320px;
+    height:44px;
+
+    padding:0 16px;
+
+    border:1px solid #ddd;
+    border-radius:10px;
+
+    font-size:15px;
+
+    margin-bottom:24px;
+}
+
+.employee-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+}
+
+.employee-table th{
+
+    height:56px;
+
+    background:#f8f8f8;
+
+    font-size:15px;
+    font-weight:600;
+
+    border-bottom:1px solid #ececec;
+}
+
+.employee-table td{
+
+    height:60px;
+
+    text-align:center;
+
+    border-bottom:1px solid #f0f0f0;
+
+    font-size:15px;
+}
+
+.edit-btn,
+.delete-btn{
+
+    width:60px;
+    height:34px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:13px;
+}
+
+.edit-btn{
+
+    background:#1f73b9;
+
+    color:white;
+
+    margin-right:8px;
+}
+
+.delete-btn{
+
+    background:#efefef;
+}
+
+.employee-name{
+
+    color:#1f73b9;
+
+    font-weight:600;
+
+    text-decoration:none;
+
+    cursor:pointer;
+
+}
+
+.employee-name:hover{
+
+    text-decoration:underline;
+
+}

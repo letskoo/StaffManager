@@ -1,0 +1,46 @@
+.toast{
+
+    position:fixed;
+
+    top:24px;
+    right:24px;
+
+    min-width:280px;
+
+    padding:16px 22px;
+
+    background:#202020;
+
+    color:white;
+
+    border-radius:12px;
+
+    font-size:15px;
+    font-weight:500;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+
+    z-index:9999;
+
+    animation:toastShow .25s ease;
+}
+
+@keyframes toastShow{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(-12px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}

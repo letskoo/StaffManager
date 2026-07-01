@@ -1,0 +1,151 @@
+.modal-backdrop{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.35);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:999;
+}
+
+.modal{
+
+    width:720px;
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:32px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.15);
+}
+
+.modal-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:30px;
+}
+
+.modal-header h2{
+
+    font-size:28px;
+    font-weight:700;
+}
+
+.close-btn{
+
+    width:40px;
+    height:40px;
+
+    border:none;
+
+    background:transparent;
+
+    font-size:28px;
+
+    cursor:pointer;
+}
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:140px 1fr;
+
+    row-gap:18px;
+
+    column-gap:20px;
+
+    align-items:center;
+}
+
+.form-grid label{
+
+    font-size:16px;
+    font-weight:600;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea{
+
+    width:100%;
+
+    height:46px;
+
+    border:1px solid #dcdcdc;
+
+    border-radius:10px;
+
+    padding:0 14px;
+
+    font-size:15px;
+}
+
+.form-grid textarea{
+
+    height:120px;
+
+    padding-top:12px;
+
+    resize:none;
+}
+
+.employee-no{
+
+    font-size:18px;
+    font-weight:700;
+
+    color:#1f73b9;
+}
+
+.radio-group{
+
+    display:flex;
+    gap:24px;
+}
+
+.modal-footer{
+
+    margin-top:32px;
+
+    display:flex;
+    justify-content:flex-end;
+
+    gap:12px;
+}
+
+.cancel-btn,
+.save-btn{
+
+    width:110px;
+    height:46px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:16px;
+
+    cursor:pointer;
+}
+
+.cancel-btn{
+
+    background:#efefef;
+}
+
+.save-btn{
+
+    background:#1f73b9;
+
+    color:white;
+}
