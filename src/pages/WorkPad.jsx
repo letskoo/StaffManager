@@ -1,12 +1,17 @@
 import "../styles/global.css";
 
 import { useEffect, useState } from "react";
+
+import useEmployees from "../hooks/useEmployees";
+
 import "../styles/global.css";
 
 function WorkPad() {
 
     const [employeeNo, setEmployeeNo] = useState([]);
     const [now, setNow] = useState(new Date());
+
+    const { employees } = useEmployees();
 
     const handleNumber = (num) => {
         if (employeeNo.length >= 4) return;
@@ -21,6 +26,48 @@ function WorkPad() {
 
     const handleClear = () => {
         setEmployeeNo([]);
+    };
+
+    const handleConfirm = () => {
+
+        const inputNo = employeeNo.join("");
+
+        console.log("employees length :", employees.length);
+        console.log("입력번호 :", inputNo);
+        console.log("employees :", employees);
+
+        if (inputNo.length !== 4) {
+
+            alert("직원번호 4자리를 입력하세요.");
+
+            return;
+
+        }
+
+        const matchedEmployees = employees.filter(
+
+            (item) => item.no === inputNo
+
+        );
+
+        if (matchedEmployees.length === 0) {
+
+            alert("직원을 찾을 수 없습니다.");
+
+            setEmployeeNo([]);
+
+            return;
+
+        }
+
+        console.log("검색 결과 :", matchedEmployees);
+
+        if (matchedEmployees.length === 1) {
+
+            setEmployeeNo([]);
+
+        }
+
     };
 
     useEffect(() => {
@@ -112,8 +159,16 @@ function WorkPad() {
 
             </div>
 
-            <button className="confirm">
+            <button
+
+                className="confirm"
+
+                onClick={handleConfirm}
+
+            >
+
                 확 인
+
             </button>
 
             <div className="logo">

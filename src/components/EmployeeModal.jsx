@@ -12,6 +12,36 @@ const initialForm = {
     payAmount: "",
     position: "",
     memo: "",
+
+    workDays: [],
+
+    workTimeType: "same",
+
+    startTime: "09:00",
+
+    endTime: "18:00",
+
+    weekSchedule: {
+        mon: { start: "09:00", end: "18:00" },
+        tue: { start: "09:00", end: "18:00" },
+        wed: { start: "09:00", end: "18:00" },
+        thu: { start: "09:00", end: "18:00" },
+        fri: { start: "09:00", end: "18:00" },
+        sat: { start: "09:00", end: "18:00" },
+        sun: { start: "09:00", end: "18:00" },
+    },
+
+    allowOvertime: true,
+
+    allowNight: true,
+
+    allowWeeklyHoliday: true,
+
+    breakEnabled: false,
+
+    breakStart: "12:00",
+
+    breakEnd: "13:00",
 };
 
 function EmployeeModal({
@@ -31,7 +61,13 @@ function EmployeeModal({
 
         if (employee) {
 
-            setForm(employee);
+            setForm({
+
+                ...initialForm,
+
+                ...employee,
+
+            });
 
         } else {
 
@@ -98,6 +134,31 @@ function EmployeeModal({
 
             }
 
+        }
+
+        if (e.target.type === "checkbox") {
+
+            const checked = e.target.checked;
+
+            if (name === "workDays") {
+
+                const next = checked
+
+                    ? [...form.workDays, value]
+
+                    : form.workDays.filter(
+                        (day) => day !== value
+                    );
+
+                setForm({
+                    ...form,
+                    workDays: next
+                });
+
+                return;
+            }
+
+            value = checked;
         }
 
         setForm({
@@ -210,7 +271,7 @@ function EmployeeModal({
 
                     <div className="radio-group">
 
-                        <label>
+                        <label className="radio-inline">
 
                             <input
                                 type="radio"
@@ -224,7 +285,7 @@ function EmployeeModal({
 
                         </label>
 
-                        <label>
+                        <label className="radio-inline">
 
                             <input
                                 type="radio"
@@ -288,6 +349,496 @@ function EmployeeModal({
                         value={form.memo}
                         onChange={handleChange}
                     />
+
+                    <label>근무요일</label>
+
+                    <div className="workday-box">
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="mon"
+
+                                checked={form.workDays.includes("mon")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            월
+
+                        </label>
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="tue"
+                                checked={form.workDays.includes("tue")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            화
+
+                        </label>
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="wed"
+                                checked={form.workDays.includes("wed")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            수
+
+                        </label>
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="thu"
+                                checked={form.workDays.includes("thu")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            목
+
+                        </label>
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="fri"
+                                checked={form.workDays.includes("fri")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            금
+
+                        </label>
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="sat"
+                                checked={form.workDays.includes("sat")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            토
+
+                        </label>
+
+                        <label>
+
+                            <input
+
+                                type="checkbox"
+
+                                name="workDays"
+
+                                value="sun"
+                                checked={form.workDays.includes("sun")}
+
+                                onChange={handleChange}
+
+                            />
+
+                            일
+
+                        </label>
+
+                    </div>
+
+                    <label>근무시간</label>
+
+                    <div className="radio-group">
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="workTimeType"
+                                value="same"
+                                checked={form.workTimeType === "same"}
+                                onChange={handleChange}
+                            />
+
+                            매일 동일
+
+                        </label>
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="workTimeType"
+                                value="week"
+                                checked={form.workTimeType === "week"}
+                                onChange={handleChange}
+                            />
+
+                            요일별 입력
+
+                        </label>
+
+                    </div>
+
+                    {form.workTimeType === "same" && (
+
+                        <>
+
+                            <label>출근시간</label>
+
+                            <input
+                                type="time"
+                                name="startTime"
+                                value={form.startTime}
+                                onChange={handleChange}
+                            />
+
+                            <label>퇴근시간</label>
+
+                            <input
+                                type="time"
+                                name="endTime"
+                                value={form.endTime}
+                                onChange={handleChange}
+                            />
+
+                        </>
+
+                    )}
+
+                    {form.workTimeType === "week" && (
+
+                        <>
+
+                            {[
+                                ["mon", "월"],
+                                ["tue", "화"],
+                                ["wed", "수"],
+                                ["thu", "목"],
+                                ["fri", "금"],
+                                ["sat", "토"],
+                                ["sun", "일"],
+                            ].map(([key, label]) => (
+
+                                <>
+
+                                    <label>{label}</label>
+
+                                    <div className="week-time-row">
+
+                                        <input
+                                            type="time"
+                                            value={form.weekSchedule[key].start}
+                                            disabled={!form.workDays.includes(key)}
+                                            onChange={(e) => {
+
+                                                setForm({
+
+                                                    ...form,
+
+                                                    weekSchedule: {
+
+                                                        ...form.weekSchedule,
+
+                                                        [key]: {
+
+                                                            ...form.weekSchedule[key],
+
+                                                            start: e.target.value
+
+                                                        }
+
+                                                    }
+
+                                                });
+
+                                            }}
+                                        />
+
+                                        <span>~</span>
+
+                                        <input
+                                            type="time"
+                                            value={form.weekSchedule[key].end}
+                                            disabled={!form.workDays.includes(key)}
+                                            onChange={(e) => {
+
+                                                setForm({
+
+                                                    ...form,
+
+                                                    weekSchedule: {
+
+                                                        ...form.weekSchedule,
+
+                                                        [key]: {
+
+                                                            ...form.weekSchedule[key],
+
+                                                            end: e.target.value
+
+                                                        }
+
+                                                    }
+
+                                                });
+
+                                            }}
+                                        />
+
+                                    </div>
+
+                                </>
+
+                            ))}
+
+                        </>
+
+                    )}
+
+                    <label>연장근무</label>
+
+                    <div className="radio-group">
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="allowOvertime"
+                                checked={form.allowOvertime === true}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowOvertime: true
+                                    })
+                                }
+                            />
+
+                            지급
+
+                        </label>
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="allowOvertime"
+                                checked={form.allowOvertime === false}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowOvertime: false
+                                    })
+                                }
+                            />
+
+                            미지급
+
+                        </label>
+
+                    </div>
+
+                    <label>야간수당</label>
+
+                    <div className="radio-group">
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="allowNight"
+                                checked={form.allowNight === true}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowNight: true
+                                    })
+                                }
+                            />
+
+                            지급
+
+                        </label>
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="allowNight"
+                                checked={form.allowNight === false}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowNight: false
+                                    })
+                                }
+                            />
+
+                            미지급
+
+                        </label>
+
+                    </div>
+
+                    <label>주휴수당</label>
+
+                    <div className="radio-group">
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="allowWeeklyHoliday"
+                                checked={form.allowWeeklyHoliday === true}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowWeeklyHoliday: true
+                                    })
+                                }
+                            />
+
+                            지급
+
+                        </label>
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                name="allowWeeklyHoliday"
+                                checked={form.allowWeeklyHoliday === false}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowWeeklyHoliday: false
+                                    })
+                                }
+                            />
+
+                            미지급
+
+                        </label>
+
+                    </div>
+
+                    <label>휴게시간</label>
+
+                    <div className="radio-group">
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                checked={!form.breakEnabled}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        breakEnabled: false
+                                    })
+                                }
+                            />
+
+                            없음
+
+                        </label>
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                checked={form.breakEnabled}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        breakEnabled: true
+                                    })
+                                }
+                            />
+
+                            있음
+
+                        </label>
+
+                    </div>
+
+                    {form.breakEnabled && (
+
+                        <>
+
+                            <label>휴게 시작</label>
+
+                            <input
+                                type="time"
+                                value={form.breakStart}
+                                onChange={(e) =>
+                                    setForm({
+                                        ...form,
+                                        breakStart: e.target.value
+                                    })
+                                }
+                            />
+
+                            <label>휴게 종료</label>
+
+                            <input
+                                type="time"
+                                value={form.breakEnd}
+                                onChange={(e) =>
+                                    setForm({
+                                        ...form,
+                                        breakEnd: e.target.value
+                                    })
+                                }
+                            />
+
+                        </>
+
+                    )}
 
                 </div>
 

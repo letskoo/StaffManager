@@ -1,0 +1,139 @@
+.policy-page {
+
+    width: 100%;
+
+    padding-bottom: 40px;
+
+}
+
+.policy-card {
+
+    width: 100%;
+
+    background: #fff;
+
+    border: 1px solid #ececec;
+
+    border-radius: 14px;
+
+    padding: 32px;
+
+    box-sizing: border-box;
+
+}
+
+.policy-card h2 {
+
+    margin-bottom: 28px;
+
+    font-size: 24px;
+
+}
+
+.policy-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 40px;
+
+    padding: 18px 0;
+
+    border-bottom: 1px solid #f2f2f2;
+
+}
+
+.policy-row:last-of-type {
+
+    border-bottom: none;
+
+}
+
+.policy-row>span {
+
+    width: 180px;
+
+    flex-shrink: 0;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color: #333;
+
+}
+
+.policy-input {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+.policy-input input {
+
+    width: 90px;
+
+    height: 44px;
+
+    border: 1px solid #dcdcdc;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    font-size: 16px;
+
+}
+
+.policy-input span {
+
+    color: #666;
+
+    font-size: 15px;
+
+}
+
+.policy-save-wrap {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 32px;
+
+}
+
+.policy-save {
+
+    width: 140px;
+
+    height: 46px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #1f73b9;
+
+    color: #fff;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.policy-save:hover {
+
+    background: #185d96;
+
+}
