@@ -2,7 +2,8 @@ import "../styles/header.css";
 
 function Header({
     title,
-    onRegister
+    onRegister,
+    registerText = "+ 직원등록"
 }) {
     return (
         <header className="header">
@@ -21,7 +22,7 @@ function Header({
                 className="register-btn"
                 onClick={onRegister}
             >
-                + 직원등록
+                {registerText}
             </button>
 
         </header>

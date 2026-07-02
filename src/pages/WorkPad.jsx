@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { useEffect, useState } from "react";
 
 import useEmployees from "../hooks/useEmployees";
+import AttendanceModal from "../components/AttendanceModal";
 
 import "../styles/global.css";
 
@@ -12,6 +13,12 @@ function WorkPad() {
     const [now, setNow] = useState(new Date());
 
     const { employees } = useEmployees();
+
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const [modalType, setModalType] = useState("");
+
+    const [selectedEmployees, setSelectedEmployees] = useState([]);
 
     const handleNumber = (num) => {
         if (employeeNo.length >= 4) return;
@@ -64,9 +71,31 @@ function WorkPad() {
 
         if (matchedEmployees.length === 1) {
 
+            setSelectedEmployees(matchedEmployees);
+
+            setModalType("checkin");
+
+            setModalOpen(true);
+
             setEmployeeNo([]);
 
+            return;
+
         }
+
+        if (matchedEmployees.length > 1) {
+
+            setSelectedEmployees(matchedEmployees);
+
+            setModalType("employeeSelect");
+
+            setModalOpen(true);
+
+            return;
+
+        }
+
+
 
     };
 
@@ -175,6 +204,30 @@ function WorkPad() {
                 <span className="logo-icon">&gt;_</span>
                 <span>Developer Project</span>
             </div>
+
+            {modalOpen && (
+
+                <AttendanceModal
+
+                    type={modalType}
+
+                    employees={selectedEmployees}
+
+                    onClose={() => setModalOpen(false)}
+
+                    onConfirm={(employee) => {
+
+                        console.log(employee);
+
+                        setEmployeeNo([]);
+
+                        setModalOpen(false);
+
+                    }}
+
+                />
+
+            )}
 
         </div>
     );

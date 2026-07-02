@@ -1,0 +1,305 @@
+import { useEffect, useState } from "react";
+
+import "../styles/modal.css";
+
+const initialForm = {
+
+    category: "notice",
+
+    title: "",
+
+    content: "",
+
+    enabled: true,
+
+};
+
+function NoticeModal({
+
+    open,
+
+    notice,
+
+    onClose,
+
+    onSave,
+
+    onUpdate,
+
+}) {
+
+    const [form, setForm] = useState(initialForm);
+
+    useEffect(() => {
+
+        if (notice) {
+
+            setForm(notice);
+
+        } else {
+
+            setForm(initialForm);
+
+        }
+
+    }, [notice]);
+
+    useEffect(() => {
+
+        if (!open) return;
+
+        const handleKeyDown = (e) => {
+
+            if (e.key === "Escape") {
+
+                setForm(initialForm);
+
+                onClose();
+
+            }
+
+        };
+
+        window.addEventListener(
+
+            "keydown",
+
+            handleKeyDown
+
+        );
+
+        return () =>
+
+            window.removeEventListener(
+
+                "keydown",
+
+                handleKeyDown
+
+            );
+
+    }, [open, onClose]);
+
+    if (!open) return null;
+
+    const handleChange = (e) => {
+
+        const {
+
+            name,
+
+            value,
+
+        } = e.target;
+
+        setForm({
+
+            ...form,
+
+            [name]: value,
+
+        });
+
+    };
+
+    const handleSubmit = () => {
+
+        if (!form.title.trim()) {
+
+            alert("제목을 입력하세요.");
+
+            return;
+
+        }
+
+        if (!form.content.trim()) {
+
+            alert("내용을 입력하세요.");
+
+            return;
+
+        }
+
+        if (notice) {
+
+            onUpdate(form);
+
+        } else {
+
+            onSave(form);
+
+        }
+
+    };
+
+    return (
+
+        <div
+
+            className="modal-backdrop"
+
+            onClick={onClose}
+
+        >
+
+            <div
+
+                className="modal"
+
+                onClick={(e) =>
+
+                    e.stopPropagation()
+
+                }
+
+            >
+
+                <div className="modal-header">
+
+                    <h2>
+
+                        {
+
+                            notice
+
+                                ? "공지 수정"
+
+                                : "공지 등록"
+
+                        }
+
+                    </h2>
+
+                    <button
+
+                        className="close-btn"
+
+                        onClick={onClose}
+
+                    >
+
+                        ×
+
+                    </button>
+
+                </div>
+
+                <div className="form-grid">
+
+                    <label>
+
+                        구분
+
+                    </label>
+
+                    <select
+
+                        name="category"
+
+                        value={form.category}
+
+                        onChange={handleChange}
+
+                    >
+
+                        <option value="notice">
+
+                            공지사항
+
+                        </option>
+
+                        <option value="bonus">
+
+                            보너스
+
+                        </option>
+
+                        <option value="praise">
+
+                            칭찬
+
+                        </option>
+
+                    </select>
+
+                    <label>
+
+                        제목
+
+                    </label>
+
+                    <input
+
+                        name="title"
+
+                        value={form.title}
+
+                        onChange={handleChange}
+
+                    />
+
+                    <label>
+
+                        내용
+
+                    </label>
+
+                    <textarea
+
+                        name="content"
+
+                        rows={8}
+
+                        value={form.content}
+
+                        onChange={handleChange}
+
+                    />
+
+                </div>
+
+                <div className="modal-footer">
+
+                    <button
+
+                        className="cancel-btn"
+
+                        onClick={onClose}
+
+                    >
+
+                        취소
+
+                    </button>
+
+                    <button
+
+                        className="save-btn"
+
+                        onClick={handleSubmit}
+
+                    >
+
+                        {
+
+                            notice
+
+                                ? "수정"
+
+                                : "저장"
+
+                        }
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    );
+
+}
+
+export default NoticeModal;

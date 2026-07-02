@@ -1,0 +1,181 @@
+.attendance-modal-backdrop {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.35);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+
+}
+
+.attendance-modal {
+
+    width: 470px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: #fff;
+
+    border-radius: 24px;
+
+    padding: 28px;
+
+    box-shadow: 0 20px 60px rgba(0,0,0,.18);
+
+    position: relative;
+
+}
+
+.attendance-close {
+
+    position: absolute;
+
+    top: 20px;
+
+    right: 20px;
+
+    border: none;
+
+    background: none;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+}
+
+.attendance-title {
+
+    text-align: center;
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    margin-top: 40px;
+
+}
+
+.attendance-message {
+
+    margin-top: 5px;
+
+    margin-bottom: 28px;
+
+    text-align: center;
+
+    color: #555;
+
+    font-size: 20px;
+
+    font-weight: 400;
+
+    line-height: 1.4;
+
+}
+
+.attendance-name {
+
+    margin-top: 40px;
+
+    text-align: center;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    color: #222;
+
+    line-height: 1.2;
+
+}
+
+.employee-select {
+
+    width: 100%;
+
+    height: 54px;
+
+    margin-bottom: 12px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    background: white;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    transition: .15s;
+
+}
+
+.employee-select:hover {
+
+    background: #f7f7f7;
+
+}
+
+.employee-select.selected {
+
+    border: 2px solid #1f73b9;
+
+    background: #eef6ff;
+
+}
+
+.attendance-footer {
+
+    margin-top: 28px;
+
+}
+
+.attendance-confirm {
+
+    width: 100%;
+
+    height: 56px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #1f73b9;
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .15s;
+
+}
+
+.attendance-confirm:disabled {
+
+    background: #d8d8d8;
+
+    cursor: not-allowed;
+
+}
+
+.attendance-confirm:not(:disabled):hover {
+
+    background: #185d96;
+
+}
