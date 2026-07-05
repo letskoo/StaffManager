@@ -1,9 +1,17 @@
 import "../styles/global.css";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import useEmployees from "../hooks/useEmployees";
+
+import {
+
+    processAttendance,
+
+} from "../services/attendanceService";
 import AttendanceModal from "../components/AttendanceModal";
+
+import AttendanceCompleteModal from "../components/AttendanceCompleteModal";
 
 import "../styles/global.css";
 
@@ -16,9 +24,21 @@ function WorkPad() {
 
     const [modalOpen, setModalOpen] = useState(false);
 
+    const [completeOpen, setCompleteOpen] = useState(false);
+
+    const [completedEmployee, setCompletedEmployee] = useState(null);
+
+    const [completedType, setCompletedType] = useState("");
+
     const [modalType, setModalType] = useState("");
 
     const [selectedEmployees, setSelectedEmployees] = useState([]);
+
+    const handleCloseComplete = useCallback(() => {
+
+        setCompleteOpen(false);
+
+    }, []);
 
     const handleNumber = (num) => {
         if (employeeNo.length >= 4) return;
@@ -71,9 +91,33 @@ function WorkPad() {
 
         if (matchedEmployees.length === 1) {
 
+            const result = processAttendance(
+
+                matchedEmployees[0]
+
+            );
+
+            if (result.type === "done") {
+
+                setCompletedEmployee(
+
+                    matchedEmployees[0]
+
+                );
+
+                setCompletedType("done");
+
+                setCompleteOpen(true);
+
+                setEmployeeNo([]);
+
+                return;
+
+            }
+
             setSelectedEmployees(matchedEmployees);
 
-            setModalType("checkin");
+            setModalType(result.type);
 
             setModalOpen(true);
 
@@ -217,13 +261,45 @@ function WorkPad() {
 
                     onConfirm={(employee) => {
 
-                        console.log(employee);
+                        const result = processAttendance(employee);
+
+                        if (result.type === "done") {
+
+                            alert("오늘은 이미 퇴근 처리되었습니다.");
+
+                            setModalOpen(false);
+
+                            setEmployeeNo([]);
+
+                            return;
+
+                        }
 
                         setEmployeeNo([]);
 
                         setModalOpen(false);
 
+                        setCompletedEmployee(employee);
+
+                        setCompletedType(result.type);
+
+                        setCompleteOpen(true);
+
                     }}
+
+                />
+
+            )}
+
+            {completeOpen && (
+
+                <AttendanceCompleteModal
+
+                    type={completedType}
+
+                    employee={completedEmployee}
+
+                    onClose={handleCloseComplete}
 
                 />
 

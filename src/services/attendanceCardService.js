@@ -40,6 +40,8 @@ export function addAttendanceCard(card) {
 
         ...card,
 
+        amount: Number(card.amount || 0),
+
         enabled: true,
 
         createdAt: new Date().toISOString()

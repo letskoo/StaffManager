@@ -22,10 +22,6 @@ function NoticeTable({
 
             card.title.toLowerCase().includes(keyword)
 
-            ||
-
-            card.content.toLowerCase().includes(keyword)
-
         );
 
     });
@@ -38,7 +34,7 @@ function NoticeTable({
 
                 className="employee-search"
 
-                placeholder="제목, 내용 검색"
+                placeholder="제목 검색"
 
                 value={search}
 
@@ -56,15 +52,10 @@ function NoticeTable({
 
                     <tr>
 
-                        <th>구분</th>
-
-                        <th>제목</th>
-
-                        <th>내용</th>
-
-                        <th>등록일</th>
-
-                        <th>관리</th>
+                        <th style={{ width: "15%" }}>구분</th>
+                        <th style={{ width: "50%" }}>제목</th>
+                        <th style={{ width: "15%" }}>등록일</th>
+                        <th style={{ width: "20%" }}>관리</th>
 
                     </tr>
 
@@ -77,8 +68,7 @@ function NoticeTable({
                         <tr>
 
                             <td
-
-                                colSpan="5"
+                                colSpan="4"
 
                                 style={{
 
@@ -108,17 +98,7 @@ function NoticeTable({
 
                                 <td>
 
-                                    {card.content.length > 50
-
-                                        ? `${card.content.slice(0,50)}...`
-
-                                        : card.content}
-
-                                </td>
-
-                                <td>
-
-                                    {card.createdAt?.slice(0,10)}
+                                    {card.createdAt?.slice(0, 10)}
 
                                 </td>
 

@@ -100,3 +100,19 @@
     text-decoration:underline;
 
 }
+
+.employee-page .employee-table{
+
+    table-layout: fixed;
+
+}
+
+.employee-table td{
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}

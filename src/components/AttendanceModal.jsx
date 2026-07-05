@@ -26,7 +26,51 @@ function AttendanceModal({
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-    const cards = getAttendanceCards();
+    const cards = getAttendanceCards().sort(
+
+        (a, b) =>
+
+            new Date(b.createdAt) -
+
+            new Date(a.createdAt)
+
+    );
+
+    const noticeCards = cards.filter(
+
+        (card) => card.category === "notice"
+
+    );
+
+    const currentEmployee =
+
+        type === "employeeSelect"
+
+            ? selectedEmployee
+
+            : employees[0];
+
+    const bonusCards = cards.filter(
+
+        (card) =>
+
+            card.category === "bonus"
+
+            &&
+
+            currentEmployee
+
+            &&
+
+            card.employeeNo === currentEmployee.no
+
+    );
+
+    const praiseCards = cards.filter(
+
+        (card) => card.category === "praise"
+
+    );
 
     return createPortal(
 
@@ -63,7 +107,11 @@ function AttendanceModal({
 
                         ? "본인을 선택하세요"
 
-                        : "출근 처리하시겠습니까?"}
+                        : type === "checkout"
+
+                            ? "퇴근 처리하시겠습니까?"
+
+                            : "출근 처리하시겠습니까?"}
 
                 </p>
 
@@ -94,27 +142,140 @@ function AttendanceModal({
 
                 )}
 
-                {cards.length > 0 &&
+                {noticeCards.length > 0 && (
 
-                    cards.map((card) => (
+                    <InfoCard
 
-                        <InfoCard
+                        type="notice"
 
-                            key={card.icon + card.title}
+                        icon="📢"
 
-                            icon={card.icon}
+                        title="공지사항"
 
-                            title={card.title}
+                    >
+                        {noticeCards.map((card) => (
 
-                        >
+                            <div
+                                key={card.id}
+                                className="notice-item"
+                            >
 
-                            {card.content}
+                                <div className="notice-item-title">
 
-                        </InfoCard>
+                                    {card.title}
 
-                    ))
+                                </div>
 
-                }
+                            </div>
+
+                        ))}
+
+                    </InfoCard>
+
+                )}
+
+                {bonusCards.length > 0 && (
+
+                    <InfoCard
+
+                        type="bonus"
+
+                        icon="🎁"
+
+                        title="보너스"
+
+                    >
+
+                        {bonusCards.map((card) => (
+
+                            <div
+                                key={card.id}
+                                className="notice-item"
+                            >
+
+                                <div className="bonus-header">
+
+                                    <div className="notice-item-title">
+
+                                        {card.title}
+
+                                    </div>
+
+                                    <div className="bonus-amount">
+
+                                        {Number(card.amount).toLocaleString()}원
+
+                                    </div>
+
+                                </div>
+
+                                {card.content && (
+
+                                    <div className="notice-item-content">
+
+                                        {card.content}
+
+                                    </div>
+
+                                )}
+
+                                <div className="bonus-date">
+
+                                    📅 지급 예정일 :
+                                    {" "}
+                                    {new Date(
+                                        new Date().getFullYear(),
+                                        new Date().getMonth() + 1,
+                                        0
+                                    ).toLocaleDateString("ko-KR")}
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </InfoCard>
+
+                )}
+
+                {praiseCards.length > 0 && (
+
+                    <InfoCard
+
+                        type="praise"
+
+                        icon="👍"
+
+                        title="칭찬"
+
+                    >
+
+                        {praiseCards.map((card) => (
+
+                            <div
+                                key={card.id}
+                                className="notice-item"
+                            >
+
+                                <div className="notice-item-title">
+
+                                    {card.title}
+
+                                </div>
+
+                                <div className="notice-item-content">
+
+                                    {card.content}
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </InfoCard>
+
+                )}
 
                 <div className="attendance-footer">
 

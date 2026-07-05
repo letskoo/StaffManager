@@ -2,15 +2,19 @@ import { useEffect, useState } from "react";
 
 import "../styles/modal.css";
 
+import useEmployees from "../hooks/useEmployees";
+
 const initialForm = {
 
     category: "notice",
 
+    employeeNo: "",
+
+    amount: "",
+
     title: "",
 
     content: "",
-
-    enabled: true,
 
 };
 
@@ -29,6 +33,8 @@ function NoticeModal({
 }) {
 
     const [form, setForm] = useState(initialForm);
+
+    const { employees } = useEmployees();
 
     useEffect(() => {
 
@@ -112,9 +118,33 @@ function NoticeModal({
 
         }
 
-        if (!form.content.trim()) {
+        if (
 
-            alert("내용을 입력하세요.");
+            form.category === "bonus"
+
+            &&
+
+            !form.employeeNo
+
+        ) {
+
+            alert("직원을 선택하세요.");
+
+            return;
+
+        }
+
+        if (
+
+            form.category === "bonus"
+
+            &&
+
+            !form.amount
+
+        ) {
+
+            alert("보너스 금액을 입력하세요.");
 
             return;
 
@@ -222,6 +252,74 @@ function NoticeModal({
 
                     </select>
 
+                    {form.category === "bonus" && (
+
+                        <>
+
+                            <label>
+
+                                대상 직원
+
+                            </label>
+
+                            <select
+
+                                name="employeeNo"
+
+                                value={form.employeeNo}
+
+                                onChange={handleChange}
+
+                            >
+
+                                <option value="">
+
+                                    선택
+
+                                </option>
+
+                                {employees.map((employee) => (
+
+                                    <option
+
+                                        key={employee.no}
+
+                                        value={employee.no}
+
+                                    >
+
+                                        {employee.name}
+
+                                        ({employee.no})
+
+                                    </option>
+
+                                ))}
+
+                            </select>
+
+                            <label>
+
+                                보너스 금액
+
+                            </label>
+
+                            <input
+
+                                type="number"
+
+                                name="amount"
+
+                                value={form.amount}
+
+                                onChange={handleChange}
+
+                            />
+
+                        </>
+
+                    )}
+
                     <label>
 
                         제목
@@ -233,24 +331,6 @@ function NoticeModal({
                         name="title"
 
                         value={form.title}
-
-                        onChange={handleChange}
-
-                    />
-
-                    <label>
-
-                        내용
-
-                    </label>
-
-                    <textarea
-
-                        name="content"
-
-                        rows={8}
-
-                        value={form.content}
 
                         onChange={handleChange}
 

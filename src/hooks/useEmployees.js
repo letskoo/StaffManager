@@ -43,6 +43,50 @@ export default function useEmployees() {
 
             status: "재직",
 
+            workPolicy: {
+
+                payType: employee.payType || "monthly",
+
+                monthlySalary:
+
+                    employee.payType === "monthly"
+
+                        ? Number(employee.payAmount)
+
+                        : 0,
+
+                hourlyWage:
+
+                    employee.payType === "hourly"
+
+                        ? Number(employee.payAmount)
+
+                        : 0,
+
+                startTime:
+
+                    employee.startTime || "09:00",
+
+                endTime:
+
+                    employee.endTime || "18:00",
+
+                breakMinutes:
+
+                    Number(employee.breakMinutes || 60),
+
+                allowLate: false,
+
+                allowEarlyLeave: false,
+
+                allowOvertime: true,
+
+                allowNight: false,
+
+                allowHoliday: false,
+
+            },
+
         };
 
         saveEmployees([
@@ -58,9 +102,23 @@ export default function useEmployees() {
 
             item.no === employee.no
                 ? {
+
+                    ...item,
+
                     ...employee,
-                    payAmount: Number(employee.payAmount)
+
+                    payAmount: Number(employee.payAmount),
+
+                    workPolicy: {
+
+                        ...item.workPolicy,
+
+                        ...employee.workPolicy,
+
+                    },
+
                 }
+
                 : item
 
         );

@@ -137,3 +137,129 @@
     background: #185d96;
 
 }
+
+.policy-input-column {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 6px;
+
+}
+
+.policy-description {
+
+    font-size: 13px;
+
+    color: #777;
+
+    line-height: 1.5;
+
+}
+
+.approve-btn,
+.reject-btn {
+
+    width: 64px;
+    height: 36px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+}
+
+.approve-btn {
+
+    background: #1f73b9;
+
+    color: white;
+
+    margin-right: 8px;
+
+}
+
+.reject-btn {
+
+    background: #efefef;
+
+}
+
+.policy-tabs {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 28px;
+
+}
+
+.policy-tabs button {
+
+    width: 120px;
+
+    height: 40px;
+
+}
+
+.policy-action {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+}
+
+.policy-card .employee-table {
+
+    margin-top: 18px;
+
+}
+
+.policy-card .employee-table th {
+
+    height: 52px;
+
+}
+
+.policy-card .employee-table td {
+
+    height: 72px;
+
+}
+
+.policy-card .employee-table tbody tr {
+
+    border-bottom: 1px solid #f2f2f2;
+
+}
+
+.policy-card .employee-table{
+
+    table-layout: fixed;
+
+}
+
+.policy-action{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    min-width:140px;
+
+}

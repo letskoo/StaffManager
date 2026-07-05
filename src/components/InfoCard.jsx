@@ -6,13 +6,15 @@ function InfoCard({
 
     title,
 
+    type,
+
     children,
 
 }) {
 
     return (
 
-        <div className="info-card">
+        <div className={`info-card ${type}`}>
 
             <div className="info-card-header">
 
