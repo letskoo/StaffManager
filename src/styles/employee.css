@@ -116,3 +116,49 @@
     white-space: nowrap;
 
 }
+
+.salary-copy-cell{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+}
+
+.salary-copy-btn{
+
+    width:28px;
+
+    height:28px;
+
+    border:none;
+
+    border-radius:7px;
+
+    background:#f1f5f9;
+
+    color:#555;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+}
+
+.salary-copy-btn:hover{
+
+    background:#e8f1ff;
+
+    color:#1f73b9;
+
+}

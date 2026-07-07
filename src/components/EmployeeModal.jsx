@@ -11,6 +11,12 @@ const initialForm = {
     payType: "hourly",
     payAmount: "",
     position: "",
+    bank: "",
+
+    accountNumber: "",
+
+    accountHolder: "",
+
     memo: "",
 
     workDays: [],
@@ -361,6 +367,30 @@ function EmployeeModal({
                         type="number"
                         name="payAmount"
                         value={form.payAmount}
+                        onChange={handleChange}
+                    />
+
+                    <label>은행</label>
+
+                    <input
+                        name="bank"
+                        value={form.bank}
+                        onChange={handleChange}
+                    />
+
+                    <label>계좌번호</label>
+
+                    <input
+                        name="accountNumber"
+                        value={form.accountNumber}
+                        onChange={handleChange}
+                    />
+
+                    <label>예금주</label>
+
+                    <input
+                        name="accountHolder"
+                        value={form.accountHolder}
                         onChange={handleChange}
                     />
 

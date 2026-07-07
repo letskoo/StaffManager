@@ -8,12 +8,15 @@ import {
 
 import { Link } from "react-router-dom";
 
+import { Copy } from "lucide-react";
+
 import "../styles/employee.css";
 
 function EmployeeTable({
     employees,
     search,
     setSearch,
+    onCopy,
     onEdit,
     onDelete
 }) {
@@ -31,6 +34,25 @@ function EmployeeTable({
         );
 
     });
+
+    const handleCopySalary = async (
+        employee,
+        monthlySalary
+    ) => {
+
+        const text = `${employee.bank || ""}
+${employee.accountNumber || ""}
+${monthlySalary}`;
+
+        await navigator.clipboard.writeText(text);
+
+        if (onCopy) {
+
+            onCopy();
+
+        }
+
+    };
 
     return (
         <div className="employee-page">
@@ -111,7 +133,26 @@ function EmployeeTable({
                                     <td>{employee.join}</td>
 
                                     <td>
-                                        {monthlySalary.toLocaleString()}원
+                                        <div className="salary-copy-cell">
+
+                                            <span>
+                                                {monthlySalary.toLocaleString()}원
+                                            </span>
+
+                                            <button
+                                                className="salary-copy-btn"
+                                                onClick={() =>
+                                                    handleCopySalary(
+                                                        employee,
+                                                        monthlySalary
+                                                    )
+                                                }
+                                                title="계좌번호와 급여 복사"
+                                            >
+                                                <Copy size={15} />
+                                            </button>
+
+                                        </div>
                                     </td>
 
                                     <td>

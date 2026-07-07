@@ -148,6 +148,21 @@ function Employee() {
                 employees={employees}
                 search={search}
                 setSearch={setSearch}
+                onCopy={() => {
+
+                    setToastMessage("계좌번호와 급여가 복사되었습니다.");
+
+                    setShowToast(true);
+
+                    setTimeout(() => {
+
+                        setShowToast(false);
+
+                        setToastMessage("");
+
+                    }, 3000);
+
+                }}
                 onEdit={(employee) => {
 
                     setSelectedEmployee(employee);
