@@ -16,9 +16,18 @@ import AttendanceCompleteModal from "../components/AttendanceCompleteModal";
 
 import "../styles/global.css";
 
+import { Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import AdminPasswordModal from "../components/AdminPasswordModal";
+
 function WorkPad() {
 
+    const navigate = useNavigate();
+
+    const [adminModalOpen, setAdminModalOpen] = useState(false);
+
     const [employeeNo, setEmployeeNo] = useState([]);
+
     const [now, setNow] = useState(new Date());
 
     const { employees } = useEmployees();
@@ -169,134 +178,163 @@ function WorkPad() {
     return (
         <div className="workpad">
 
-            <h1 className="time">
-                {timeText}
-            </h1>
-
-            <p className="date">
-                {dateText}
-            </p>
-
-            <div className="title">
-                <h2>직원번호 입력</h2>
-                <p>전화번호 뒤 4자리를 입력해 주세요</p>
-            </div>
-
-            <div className="number-box">
-                {[0, 1, 2, 3].map((index) => (
-                    <div
-                        key={index}
-                        className={
-                            employeeNo.length === index
-                                ? "active"
-                                : ""
-                        }
-                    >
-                        {employeeNo[index] ?? ""}
-                    </div>
-                ))}
-            </div>
-
-            <div className="keypad">
-
-                <button onClick={() => handleNumber("1")}>1</button>
-                <button onClick={() => handleNumber("2")}>2</button>
-                <button onClick={() => handleNumber("3")}>3</button>
-
-                <button onClick={() => handleNumber("4")}>4</button>
-                <button onClick={() => handleNumber("5")}>5</button>
-                <button onClick={() => handleNumber("6")}>6</button>
-
-                <button onClick={() => handleNumber("7")}>7</button>
-                <button onClick={() => handleNumber("8")}>8</button>
-                <button onClick={() => handleNumber("9")}>9</button>
-
-                <button onClick={handleBackspace}>
-                    ⌫
-                </button>
-
-                <button onClick={() => handleNumber("0")}>
-                    0
-                </button>
-
-                <button onClick={handleClear}>
-                    지우기
-                </button>
-
-            </div>
-
             <button
-
-                className="confirm"
-
-                onClick={handleConfirm}
-
+                className="setting-button"
+                onClick={() => setAdminModalOpen(true)}
             >
-
-                확 인
-
+                <Settings size={28} />
             </button>
 
-            <div className="logo">
-                <span className="logo-icon">&gt;_</span>
-                <span>Developer Project</span>
-            </div>
+            <div className="workpad-scale">
 
-            {modalOpen && (
+                <h1 className="time">
+                    {timeText}
+                </h1>
 
-                <AttendanceModal
+                <p className="date">
+                    {dateText}
+                </p>
 
-                    type={modalType}
+                <div className="title">
+                    <h2>직원번호 입력</h2>
+                    <p>전화번호 뒤 4자리를 입력해 주세요</p>
+                </div>
 
-                    employees={selectedEmployees}
+                <div className="number-box">
+                    {[0, 1, 2, 3].map((index) => (
+                        <div
+                            key={index}
+                            className={
+                                employeeNo.length === index
+                                    ? "active"
+                                    : ""
+                            }
+                        >
+                            {employeeNo[index] ?? ""}
+                        </div>
+                    ))}
+                </div>
 
-                    onClose={() => setModalOpen(false)}
+                <div className="keypad">
 
-                    onConfirm={(employee) => {
+                    <button onClick={() => handleNumber("1")}>1</button>
+                    <button onClick={() => handleNumber("2")}>2</button>
+                    <button onClick={() => handleNumber("3")}>3</button>
 
-                        const result = processAttendance(employee);
+                    <button onClick={() => handleNumber("4")}>4</button>
+                    <button onClick={() => handleNumber("5")}>5</button>
+                    <button onClick={() => handleNumber("6")}>6</button>
 
-                        if (result.type === "done") {
+                    <button onClick={() => handleNumber("7")}>7</button>
+                    <button onClick={() => handleNumber("8")}>8</button>
+                    <button onClick={() => handleNumber("9")}>9</button>
 
-                            alert("오늘은 이미 퇴근 처리되었습니다.");
+                    <button onClick={handleBackspace}>
+                        ⌫
+                    </button>
 
-                            setModalOpen(false);
+                    <button onClick={() => handleNumber("0")}>
+                        0
+                    </button>
+
+                    <button onClick={handleClear}>
+                        지우기
+                    </button>
+
+                </div>
+
+                <button
+
+                    className="confirm"
+
+                    onClick={handleConfirm}
+
+                >
+
+                    확 인
+
+                </button>
+
+                <div className="logo">
+                    <span className="logo-icon">&gt;_</span>
+                    <span>Developer Project</span>
+                </div>
+
+                {modalOpen && (
+
+                    <AttendanceModal
+
+                        type={modalType}
+
+                        employees={selectedEmployees}
+
+                        onClose={() => setModalOpen(false)}
+
+                        onConfirm={(employee) => {
+
+                            const result = processAttendance(employee);
+
+                            if (result.type === "done") {
+
+                                alert("오늘은 이미 퇴근 처리되었습니다.");
+
+                                setModalOpen(false);
+
+                                setEmployeeNo([]);
+
+                                return;
+
+                            }
 
                             setEmployeeNo([]);
 
-                            return;
+                            setModalOpen(false);
 
-                        }
+                            setCompletedEmployee(employee);
 
-                        setEmployeeNo([]);
+                            setCompletedType(result.type);
 
-                        setModalOpen(false);
+                            setCompleteOpen(true);
 
-                        setCompletedEmployee(employee);
+                        }}
 
-                        setCompletedType(result.type);
+                    />
 
-                        setCompleteOpen(true);
+                )}
 
-                    }}
+                {completeOpen && (
 
-                />
+                    <AttendanceCompleteModal
 
-            )}
+                        type={completedType}
 
-            {completeOpen && (
+                        employee={completedEmployee}
 
-                <AttendanceCompleteModal
+                        onClose={handleCloseComplete}
 
-                    type={completedType}
+                    />
 
-                    employee={completedEmployee}
+                )}
 
-                    onClose={handleCloseComplete}
+            </div>
 
-                />
+            <AdminPasswordModal
 
-            )}
+                open={adminModalOpen}
+
+                onClose={() => setAdminModalOpen(false)}
+
+                onSuccess={() => {
+
+                    sessionStorage.setItem("adminAuth", "true");
+
+                    setAdminModalOpen(false);
+
+                    navigate("/admin");
+
+                }}
+
+            />
 
         </div>
     );

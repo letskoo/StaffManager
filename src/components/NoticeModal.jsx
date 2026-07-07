@@ -110,22 +110,13 @@ function NoticeModal({
 
     const handleSubmit = () => {
 
-        if (!form.title.trim()) {
-
-            alert("제목을 입력하세요.");
-
-            return;
-
-        }
-
         if (
-
-            form.category === "bonus"
-
+            (
+                form.category === "bonus" ||
+                form.category === "memo"
+            )
             &&
-
             !form.employeeNo
-
         ) {
 
             alert("직원을 선택하세요.");
@@ -150,13 +141,21 @@ function NoticeModal({
 
         }
 
+        const submitForm = {
+
+            ...form,
+
+            title: form.content || "개인메모",
+
+        };
+
         if (notice) {
 
-            onUpdate(form);
+            onUpdate(submitForm);
 
         } else {
 
-            onSave(form);
+            onSave(submitForm);
 
         }
 
@@ -239,101 +238,97 @@ function NoticeModal({
                         </option>
 
                         <option value="bonus">
-
                             보너스
+                        </option>
 
+                        <option value="memo">
+                            개인메모
                         </option>
 
                         <option value="praise">
-
                             칭찬
-
                         </option>
 
                     </select>
 
-                    {form.category === "bonus" && (
+                    {(
+                        form.category === "bonus" ||
+                        form.category === "memo"
+                    ) && (
 
-                        <>
+                            <>
 
-                            <label>
+                                <label>
 
-                                대상 직원
+                                    대상 직원
 
-                            </label>
+                                </label>
 
-                            <select
+                                <select
 
-                                name="employeeNo"
+                                    name="employeeNo"
 
-                                value={form.employeeNo}
+                                    value={form.employeeNo}
 
-                                onChange={handleChange}
+                                    onChange={handleChange}
 
-                            >
+                                >
 
-                                <option value="">
+                                    <option value="">
 
-                                    선택
-
-                                </option>
-
-                                {employees.map((employee) => (
-
-                                    <option
-
-                                        key={employee.no}
-
-                                        value={employee.no}
-
-                                    >
-
-                                        {employee.name}
-
-                                        ({employee.no})
+                                        선택
 
                                     </option>
 
-                                ))}
+                                    {employees.map((employee) => (
 
-                            </select>
+                                        <option
 
-                            <label>
+                                            key={employee.no}
 
-                                보너스 금액
+                                            value={employee.no}
 
-                            </label>
+                                        >
 
-                            <input
+                                            {employee.name}
 
-                                type="number"
+                                            ({employee.no})
 
-                                name="amount"
+                                        </option>
 
-                                value={form.amount}
+                                    ))}
 
-                                onChange={handleChange}
+                                </select>
 
-                            />
+                                {form.category === "bonus" && (
+                                    <>
 
-                        </>
+                                        <label>
+                                            보너스 금액
+                                        </label>
 
-                    )}
+                                        <input
+                                            type="number"
+                                            name="amount"
+                                            value={form.amount}
+                                            onChange={handleChange}
+                                        />
+
+                                    </>
+                                )}
+
+                            </>
+
+                        )}
 
                     <label>
-
-                        제목
-
+                        내용
                     </label>
 
-                    <input
-
-                        name="title"
-
-                        value={form.title}
-
+                    <textarea
+                        name="content"
+                        value={form.content}
                         onChange={handleChange}
-
                     />
 
                 </div>

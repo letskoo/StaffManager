@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 
-import { Routes, Route } from "react-router-dom";
+import {
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 
 import { syncNationalHolidays } from "./services/HolidayService";
 
@@ -27,6 +31,9 @@ function App() {
 
     }, []);
 
+    const isAdmin =
+        sessionStorage.getItem("adminAuth") === "true";
+
     return (
         <Routes>
 
@@ -37,7 +44,14 @@ function App() {
 
             <Route
                 path="/admin"
-                element={<Admin />}
+                element={
+                    isAdmin
+                        ? <Admin />
+                        : <Navigate
+                            to="/"
+                            replace
+                        />
+                }
             >
 
                 <Route

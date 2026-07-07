@@ -80,7 +80,7 @@
 
 .info-card-body {
 
-    padding: 18px;
+    padding: 10px 18px 16px;
 
     font-size: 17px;
 
@@ -141,5 +141,41 @@
     background: #f2fff5;
 
     border-color: #b7e7c5;
+
+}
+
+.info-card.memo {
+
+    background: #f7f3ff;
+
+    border: 1px solid #d7c5ff;
+
+}
+
+.info-card.memo .info-card-header {
+
+    color: #6d4bc4;
+
+}
+
+.info-card.memo .info-card-body {
+
+    color: #4a3a16;
+
+}
+
+.notice-item {
+
+    padding: 6px 0;
+
+}
+
+.info-card.memo .notice-item-content {
+
+    font-size: 15px;
+
+    line-height: 1.8;
+
+    color: #4d3d7d;
 
 }

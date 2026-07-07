@@ -22,18 +22,29 @@ import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
 
 import {
-
     getMonthlySalary,
-
     getRetirement,
-
+    getYearlySalaryChartData,
+    getMonthlyPayrollStatement,
 } from "../services/salaryService";
+
+import {
+    ResponsiveContainer,
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+} from "recharts";
 
 import {
 
     getMonthlyAttendanceSummary,
 
 } from "../services/attendanceService";
+
+import PayrollStatementModal from "../components/PayrollStatementModal";
 
 function EmployeeDetail() {
 
@@ -50,6 +61,8 @@ function EmployeeDetail() {
     const [showToast, setShowToast] = useState(false);
 
     const [toastMessage, setToastMessage] = useState("");
+
+    const [statementOpen, setStatementOpen] = useState(false);
 
     const {
 
@@ -149,6 +162,14 @@ function EmployeeDetail() {
 
     };
 
+    const salaryChartData = employee
+        ? getYearlySalaryChartData(employee)
+        : [];
+
+    const statement = employee
+        ? getMonthlyPayrollStatement(employee)
+        : null;
+
     const handleDelete = () => {
 
         deleteEmployee(employee.no);
@@ -187,10 +208,8 @@ function EmployeeDetail() {
 
             <Header
                 title="직원 상세보기"
-                onRegister={() => {
-                    setEditEmployee(null);
-                    setOpenModal(true);
-                }}
+                registerText="급여명세서"
+                onRegister={() => setStatementOpen(true)}
             />
 
             <div className="employee-detail">
@@ -292,7 +311,70 @@ function EmployeeDetail() {
 
                         <div className="salary-chart">
 
-                            그래프 영역
+                            <ResponsiveContainer
+                                width="100%"
+                                height={320}
+                            >
+
+                                <LineChart
+                                    data={salaryChartData}
+                                    margin={{
+                                        top: 20,
+                                        right: 20,
+                                        left: 20,
+                                        bottom: 20,
+                                    }}
+                                >
+
+                                    <CartesianGrid
+                                        stroke="#f0f0f0"
+                                        strokeDasharray="4 4"
+                                    />
+
+                                    <XAxis
+                                        dataKey="month"
+                                        tick={{
+                                            fontSize: 13,
+                                        }}
+                                        axisLine={false}
+                                        tickLine={false}
+                                    />
+
+                                    <YAxis
+                                        tickFormatter={(value) =>
+                                            value.toLocaleString()
+                                        }
+                                        tick={{
+                                            fontSize: 13,
+                                        }}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        width={70}
+                                    />
+
+                                    <Tooltip
+                                        formatter={(value) =>
+                                            `${Number(value).toLocaleString()}원`
+                                        }
+                                    />
+
+                                    <Line
+                                        type="monotone"
+                                        dataKey="salary"
+                                        stroke="#2563eb"
+                                        strokeWidth={4}
+                                        dot={{
+                                            r: 5,
+                                            strokeWidth: 2,
+                                        }}
+                                        activeDot={{
+                                            r: 8,
+                                        }}
+                                    />
+
+                                </LineChart>
+
+                            </ResponsiveContainer>
 
                         </div>
 
@@ -416,6 +498,12 @@ function EmployeeDetail() {
 
                 message={toastMessage}
 
+            />
+
+            <PayrollStatementModal
+                open={statementOpen}
+                onClose={() => setStatementOpen(false)}
+                statement={statement}
             />
 
         </>

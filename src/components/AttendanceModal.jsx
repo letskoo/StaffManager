@@ -12,6 +12,11 @@ import {
 
 } from "../services/attendanceCardService";
 
+import {
+    getMonthlySalary,
+    getRetirement,
+} from "../services/salaryService";
+
 function AttendanceModal({
 
     type,
@@ -50,11 +55,37 @@ function AttendanceModal({
 
             : employees[0];
 
+    const monthlySalary =
+        currentEmployee
+            ? getMonthlySalary(currentEmployee)
+            : 0;
+
+    const retirement =
+        currentEmployee
+            ? getRetirement(currentEmployee)
+            : null;
+
     const bonusCards = cards.filter(
 
         (card) =>
 
             card.category === "bonus"
+
+            &&
+
+            currentEmployee
+
+            &&
+
+            card.employeeNo === currentEmployee.no
+
+    );
+
+    const memoCards = cards.filter(
+
+        (card) =>
+
+            card.category === "memo"
 
             &&
 
@@ -114,6 +145,44 @@ function AttendanceModal({
                             : "출근 처리하시겠습니까?"}
 
                 </p>
+
+                {type !== "employeeSelect" && (
+
+                    <div className="attendance-summary">
+
+                        <div className="summary-card">
+
+                            <span>
+                                이번 달 예상 급여
+                            </span>
+
+                            <strong>
+                                {monthlySalary.toLocaleString()}원
+                            </strong>
+
+                        </div>
+
+                        <div className="summary-card">
+
+                            <span>
+                                예상 퇴직금
+                            </span>
+
+                            <strong>
+
+                                {
+                                    retirement === null
+                                        ? "대상 아님"
+                                        : `${retirement.toLocaleString()}원`
+                                }
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                )}
 
                 {type === "employeeSelect" && (
 
@@ -238,6 +307,39 @@ function AttendanceModal({
 
                 )}
 
+                {memoCards.length > 0 && (
+
+                    <InfoCard
+
+                        type="memo"
+
+                        icon="📝"
+
+                        title="개인메모"
+
+                    >
+
+                        {memoCards.map((card) => (
+
+                            <div
+                                key={card.id}
+                                className="notice-item"
+                            >
+
+                                <div className="notice-item-content">
+
+                                    {card.content}
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </InfoCard>
+
+                )}
+
                 {praiseCards.length > 0 && (
 
                     <InfoCard
@@ -257,15 +359,9 @@ function AttendanceModal({
                                 className="notice-item"
                             >
 
-                                <div className="notice-item-title">
-
-                                    {card.title}
-
-                                </div>
-
                                 <div className="notice-item-content">
 
-                                    {card.content}
+                                    {card.content || card.title}
 
                                 </div>
 

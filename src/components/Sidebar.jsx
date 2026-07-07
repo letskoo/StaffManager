@@ -1,8 +1,23 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import "../styles/sidebar.css";
 
 function Sidebar() {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+
+        if (!window.confirm("로그아웃 하시겠습니까?")) {
+            return;
+        }
+
+        sessionStorage.removeItem("adminAuth");
+
+        navigate("/");
+
+    };
+
     return (
         <aside className="sidebar">
 
@@ -61,6 +76,13 @@ function Sidebar() {
                     </NavLink>
 
                 </nav>
+
+                <button
+                    className="sidebar-logout"
+                    onClick={handleLogout}
+                >
+                    로그아웃
+                </button>
 
             </div>
 

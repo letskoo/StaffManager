@@ -1,4 +1,7 @@
-import { calculateDailyPay } from "./attendanceService";
+import {
+    calculateDailyPay,
+    calculatePayDetail,
+} from "./attendanceService";
 
 const HISTORY_KEY = "attendanceHistory";
 
@@ -697,5 +700,183 @@ export function getMonthlyAbsentCount(employee, month = new Date().toISOString()
     }
 
     return absent;
+
+}
+
+export function getMonthlySalaryByMonth(employee, month) {
+
+    const history = JSON.parse(
+        localStorage.getItem(HISTORY_KEY)
+    ) || [];
+
+    const dailyPay = history
+
+        .filter(
+            (record) =>
+                record.employeeNo === employee.no &&
+                record.date.startsWith(month) &&
+                record.checkOut
+        )
+
+        .reduce(
+            (total, record) =>
+                total + calculateDailyPay(record, employee),
+            0
+        );
+
+    const weeklyHolidayPay =
+        getMonthlyWeeklyHolidayPay(employee, month);
+
+    const bonus =
+        getMonthlyBonus(employee, month);
+
+    const absentCount =
+        getMonthlyAbsentCount(employee, month);
+
+    const absentDeduction =
+        employee.workPolicy?.payType === "monthly"
+            ? Math.floor(
+                Number(employee.workPolicy.monthlySalary || 0) /
+                30 *
+                absentCount
+            )
+            : 0;
+
+    return Math.max(
+        dailyPay + weeklyHolidayPay + bonus - absentDeduction,
+        0
+    );
+
+}
+
+export function getYearlySalaryChartData(employee) {
+
+    const year = new Date().getFullYear();
+
+    return Array.from({ length: 12 }, (_, index) => {
+
+        const monthNumber = index + 1;
+
+        const month = `${year}-${String(monthNumber).padStart(2, "0")}`;
+
+        return {
+            month: `${monthNumber}월`,
+            salary: getMonthlySalaryByMonth(employee, month),
+        };
+
+    });
+
+}
+
+export function getMonthlyPayrollStatement(employee) {
+
+    const history = JSON.parse(
+        localStorage.getItem(HISTORY_KEY)
+    ) || [];
+
+    const month = new Date()
+        .toISOString()
+        .slice(0, 7);
+
+    const records = history.filter(
+        record =>
+            record.employeeNo === employee.no &&
+            record.date.startsWith(month) &&
+            record.checkOut
+    );
+
+    let basePay = 0;
+    let overtimePay = 0;
+    let nightPay = 0;
+    let holidayPay = 0;
+
+    records.forEach(record => {
+
+        const detail =
+            calculatePayDetail(
+                record,
+                employee
+            );
+
+        basePay += detail.basePay;
+        overtimePay += detail.overtimePay;
+        nightPay += detail.nightPay;
+        holidayPay += detail.holidayPay;
+
+    });
+
+    const weeklyHolidayPay =
+        getMonthlyWeeklyHolidayPay(
+            employee,
+            month
+        );
+
+    const bonus =
+        getMonthlyBonus(
+            employee,
+            month
+        );
+
+    const absentCount =
+        getMonthlyAbsentCount(
+            employee,
+            month
+        );
+
+    const absentDeduction =
+        employee.workPolicy?.payType === "monthly"
+            ? Math.floor(
+                Number(
+                    employee.workPolicy.monthlySalary || 0
+                ) /
+                30 *
+                absentCount
+            )
+            : 0;
+
+    return {
+
+        employeeName: employee.name,
+
+        employeeNo: employee.no,
+
+        position: employee.position,
+
+        payType:
+            employee.workPolicy?.payType === "hourly"
+                ? "시급"
+                : "월급",
+
+        basePay: Math.floor(basePay),
+
+        overtimePay: Math.floor(overtimePay),
+
+        nightPay: Math.floor(nightPay),
+
+        holidayPay: Math.floor(holidayPay),
+
+        weeklyHolidayPay,
+
+        bonus,
+
+        absentDeduction,
+
+        totalPay:
+
+            basePay +
+
+            overtimePay +
+
+            nightPay +
+
+            holidayPay +
+
+            weeklyHolidayPay +
+
+            bonus -
+
+            absentDeduction,
+
+    };
 
 }

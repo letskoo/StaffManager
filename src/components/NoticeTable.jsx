@@ -20,7 +20,7 @@ function NoticeTable({
 
         return (
 
-            card.title.toLowerCase().includes(keyword)
+            (card.content || card.title || "").toLowerCase().includes(keyword)
 
         );
 
@@ -53,7 +53,7 @@ function NoticeTable({
                     <tr>
 
                         <th style={{ width: "15%" }}>구분</th>
-                        <th style={{ width: "50%" }}>제목</th>
+                        <th style={{ width: "50%" }}>내용</th>
                         <th style={{ width: "15%" }}>등록일</th>
                         <th style={{ width: "20%" }}>관리</th>
 
@@ -92,9 +92,19 @@ function NoticeTable({
 
                             <tr key={card.id}>
 
-                                <td>{card.category}</td>
+                                <td>
 
-                                <td>{card.title}</td>
+                                    {card.category === "notice" && "공지"}
+
+                                    {card.category === "bonus" && "보너스"}
+
+                                    {card.category === "memo" && "개인메모"}
+
+                                    {card.category === "praise" && "칭찬"}
+
+                                </td>
+
+                                <td>{card.content || card.title}</td>
 
                                 <td>
 
