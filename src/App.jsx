@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
     Routes,
@@ -31,8 +31,29 @@ function App() {
 
     }, []);
 
-    const isAdmin =
-        sessionStorage.getItem("adminAuth") === "true";
+    const [isAdmin, setIsAdmin] = useState(
+        sessionStorage.getItem("adminAuth") === "true"
+    );
+
+    useEffect(() => {
+
+        const handleAdminLogin = () => {
+
+            setIsAdmin(
+                sessionStorage.getItem("adminAuth") === "true"
+            );
+
+        };
+
+        window.addEventListener("adminAuthChange", handleAdminLogin);
+
+        return () => {
+
+            window.removeEventListener("adminAuthChange", handleAdminLogin);
+
+        };
+
+    }, []);
 
     return (
         <Routes>

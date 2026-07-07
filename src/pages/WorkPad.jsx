@@ -328,6 +328,8 @@ function WorkPad() {
 
                     sessionStorage.setItem("adminAuth", "true");
 
+                    window.dispatchEvent(new Event("adminAuthChange"));
+
                     setAdminModalOpen(false);
 
                     navigate("/admin");

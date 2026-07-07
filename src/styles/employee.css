@@ -131,17 +131,15 @@
 
 .salary-copy-btn{
 
-    width:28px;
-
-    height:28px;
-
     border:none;
 
-    border-radius:7px;
+    background:transparent;
 
-    background:#f1f5f9;
+    padding:0;
 
-    color:#555;
+    margin:0;
+
+    color:#777;
 
     display:flex;
 
@@ -157,8 +155,14 @@
 
 .salary-copy-btn:hover{
 
-    background:#e8f1ff;
-
     color:#1f73b9;
+
+    transform:scale(1.1);
+
+}
+
+.salary-copy-btn:active{
+
+    transform:scale(.95);
 
 }
