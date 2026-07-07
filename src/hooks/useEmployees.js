@@ -6,10 +6,52 @@ export default function useEmployees() {
 
     useEffect(() => {
 
-        const saved =
-            JSON.parse(localStorage.getItem("employees")) || [];
+        const loadEmployees = () => {
 
-        setEmployees(saved);
+            const saved =
+                JSON.parse(
+                    localStorage.getItem("employees")
+                ) || [];
+
+            setEmployees(saved);
+
+        };
+
+        loadEmployees();
+
+        window.addEventListener(
+            "storage",
+            loadEmployees
+        );
+
+        window.addEventListener(
+            "focus",
+            loadEmployees
+        );
+
+        window.addEventListener(
+            "employeesUpdated",
+            loadEmployees
+        );
+
+        return () => {
+
+            window.removeEventListener(
+                "storage",
+                loadEmployees
+            );
+
+            window.removeEventListener(
+                "focus",
+                loadEmployees
+            );
+
+            window.removeEventListener(
+                "employeesUpdated",
+                loadEmployees
+            );
+
+        };
 
     }, []);
 
@@ -20,6 +62,10 @@ export default function useEmployees() {
         localStorage.setItem(
             "employees",
             JSON.stringify(list)
+        );
+
+        window.dispatchEvent(
+            new Event("employeesUpdated")
         );
 
     };
@@ -79,11 +125,37 @@ export default function useEmployees() {
 
                 allowEarlyLeave: false,
 
-                allowOvertime: true,
+                allowOvertime:
 
-                allowNight: false,
+                    employee.workPolicy?.allowOvertime ??
 
-                allowHoliday: false,
+                    employee.allowOvertime ??
+
+                    true,
+
+                allowNight:
+
+                    employee.workPolicy?.allowNight ??
+
+                    employee.allowNight ??
+
+                    false,
+
+                allowHoliday:
+
+                    employee.workPolicy?.allowHoliday ??
+
+                    employee.allowHoliday ??
+
+                    true,
+
+                allowWeeklyHoliday:
+
+                    employee.workPolicy?.allowWeeklyHoliday ??
+
+                    employee.allowWeeklyHoliday ??
+
+                    true,
 
             },
 

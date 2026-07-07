@@ -7,6 +7,7 @@ import useEmployees from "../hooks/useEmployees";
 import {
 
     processAttendance,
+    getAttendanceType,
 
 } from "../services/attendanceService";
 import AttendanceModal from "../components/AttendanceModal";
@@ -59,10 +60,6 @@ function WorkPad() {
 
         const inputNo = employeeNo.join("");
 
-        console.log("employees length :", employees.length);
-        console.log("입력번호 :", inputNo);
-        console.log("employees :", employees);
-
         if (inputNo.length !== 4) {
 
             alert("직원번호 4자리를 입력하세요.");
@@ -87,17 +84,13 @@ function WorkPad() {
 
         }
 
-        console.log("검색 결과 :", matchedEmployees);
-
         if (matchedEmployees.length === 1) {
 
-            const result = processAttendance(
-
-                matchedEmployees[0]
-
+            const nextType = getAttendanceType(
+                matchedEmployees[0].no
             );
 
-            if (result.type === "done") {
+            if (nextType === "done") {
 
                 setCompletedEmployee(
 
@@ -117,7 +110,7 @@ function WorkPad() {
 
             setSelectedEmployees(matchedEmployees);
 
-            setModalType(result.type);
+            setModalType(nextType);
 
             setModalOpen(true);
 

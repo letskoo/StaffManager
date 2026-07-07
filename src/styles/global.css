@@ -13,6 +13,10 @@ body,
     height: 100%;
 }
 
+html {
+    overflow-y: scroll;
+}
+
 body {
     font-family: Pretendard, sans-serif;
     background: #fafafa;

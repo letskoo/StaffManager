@@ -204,9 +204,35 @@
 
 .policy-tabs button {
 
-    width: 120px;
+    width: 140px;
 
-    height: 40px;
+    height: 46px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.policy-tab-active {
+
+    background: #1f73b9;
+
+    color: white;
+
+}
+
+.policy-tab {
+
+    background: #efefef;
+
+    color: #222;
 
 }
 
@@ -244,22 +270,89 @@
 
 }
 
-.policy-card .employee-table{
+.policy-card .employee-table {
 
     table-layout: fixed;
 
 }
 
-.policy-action{
+.policy-action {
 
-    display:flex;
+    display: flex;
 
-    justify-content:center;
+    justify-content: center;
 
-    align-items:center;
+    align-items: center;
 
-    gap:8px;
+    gap: 8px;
 
-    min-width:140px;
+    min-width: 140px;
+
+}
+
+.history-wrap {
+
+    position: relative;
+
+    width: 150px;
+
+    flex-shrink: 0;
+
+}
+
+.history-menu {
+
+    position: absolute;
+
+    top: 54px;
+
+    right: 0;
+
+    width: 180px;
+
+    background: white;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+
+    overflow: hidden;
+
+    z-index: 50;
+
+}
+
+.history-menu button {
+
+    width: 100%;
+
+    height: 44px;
+
+    border: none;
+
+    background: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    text-align: left;
+
+    padding: 0 16px;
+
+}
+
+.history-menu button:hover {
+
+    background: #f6f6f6;
+
+}
+
+.history-wrap .register-btn {
+
+    width: 150px;
+    height: 45px;
 
 }

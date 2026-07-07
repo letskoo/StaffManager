@@ -3,7 +3,8 @@ import "../styles/header.css";
 function Header({
     title,
     onRegister,
-    registerText = "+ 직원등록"
+    registerText = "+ 직원등록",
+    rightContent
 }) {
     return (
         <header className="header">
@@ -18,12 +19,20 @@ function Header({
 
             </div>
 
-            <button
-                className="register-btn"
-                onClick={onRegister}
-            >
-                {registerText}
-            </button>
+            {rightContent ? (
+
+                rightContent
+
+            ) : (
+
+                <button
+                    className="register-btn"
+                    onClick={onRegister}
+                >
+                    {registerText}
+                </button>
+
+            )}
 
         </header>
     );

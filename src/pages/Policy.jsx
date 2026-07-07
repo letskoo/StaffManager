@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Header from "../components/Header";
 import EmployeeModal from "../components/EmployeeModal";
@@ -9,11 +9,24 @@ import "../styles/policy.css";
 
 import {
 
-    getApprovalList
+    getApprovalList,
+    getResolvedApprovalList,
+    updateApprovalStatus,
+    restoreApprovalStatus
 
 }
 
     from "../services/attendanceService";
+
+import {
+
+    exportHistory,
+
+    getHistoryMonths,
+
+}
+
+    from "../services/historyExport";
 
 function Policy() {
 
@@ -34,6 +47,16 @@ function Policy() {
     });
 
     const [approvalList, setApprovalList] = useState([]);
+
+    const [activeTab, setActiveTab] = useState("pending");
+
+    const [resolvedList, setResolvedList] = useState([]);
+
+    const [historyOpen, setHistoryOpen] = useState(false);
+
+    const [historyMonths, setHistoryMonths] = useState([]);
+
+    const historyWrapRef = useRef(null);
 
     useEffect(() => {
 
@@ -68,6 +91,47 @@ function Policy() {
 
         );
 
+        setResolvedList(
+
+            getResolvedApprovalList()
+
+        );
+
+        setHistoryMonths(
+
+            getHistoryMonths()
+
+        );
+
+    }, []);
+
+    useEffect(() => {
+
+        const handleClickOutside = (e) => {
+
+            if (
+                historyWrapRef.current &&
+                !historyWrapRef.current.contains(e.target)
+            ) {
+                setHistoryOpen(false);
+            }
+
+        };
+
+        document.addEventListener(
+            "mousedown",
+            handleClickOutside
+        );
+
+        return () => {
+
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+
+        };
+
     }, []);
 
     const handleChange = (e) => {
@@ -96,6 +160,86 @@ function Policy() {
 
     };
 
+    const refreshApprovalList = () => {
+
+        setApprovalList(
+
+            getApprovalList()
+
+        );
+
+        setResolvedList(
+
+            getResolvedApprovalList()
+
+        );
+
+    };
+
+    const handleApprove = (
+
+        id,
+
+        type,
+
+        status
+
+    ) => {
+
+        updateApprovalStatus(
+
+            id,
+
+            type,
+
+            status
+
+        );
+
+        refreshApprovalList();
+
+        setHistoryMonths(
+
+            getHistoryMonths()
+
+        );
+
+    };
+
+    const handleRestore = (
+
+        id,
+
+        type
+
+    ) => {
+
+        restoreApprovalStatus(
+
+            id,
+
+            type
+
+        );
+
+        refreshApprovalList();
+
+        setHistoryMonths(
+
+            getHistoryMonths()
+
+        );
+
+    };
+
+    const list =
+
+        activeTab === "pending"
+
+            ? approvalList
+
+            : resolvedList;
+
     return (
 
         <>
@@ -104,7 +248,88 @@ function Policy() {
 
                 title="정책"
 
-                onRegister={() => setOpenModal(true)}
+                rightContent={
+
+                    <div
+                        className="history-wrap"
+                        ref={historyWrapRef}
+                    >
+
+                        <button
+
+                            className="register-btn"
+
+                            onClick={() => {
+
+                                setHistoryMonths(
+
+                                    getHistoryMonths()
+
+                                );
+
+                                setHistoryOpen(
+
+                                    !historyOpen
+
+                                );
+
+                            }}
+
+                        >
+
+                            ▼ 히스토리
+
+                        </button>
+
+                        {historyOpen && (
+
+                            <div className="history-menu">
+
+                                <button
+
+                                    onClick={() => {
+
+                                        exportHistory();
+
+                                        setHistoryOpen(false);
+
+                                    }}
+
+                                >
+
+                                    전체 다운로드
+
+                                </button>
+
+                                {historyMonths.map((month) => (
+
+                                    <button
+
+                                        key={month}
+
+                                        onClick={() => {
+
+                                            exportHistory(month);
+
+                                            setHistoryOpen(false);
+
+                                        }}
+
+                                    >
+
+                                        {month} 다운로드
+
+                                    </button>
+
+                                ))}
+
+                            </div>
+
+                        )}
+
+                    </div>
+
+                }
 
             />
 
@@ -129,7 +354,7 @@ function Policy() {
                                     onChange={handleChange}
                                 />
 
-                                <span>분  (일찍 출근한 직원에 대한 급여를 인정할 것인가에 대한 설정입니다. 설정된 시간 이내의 조기출근은 급여에 포함되지 않습니다)</span>
+                                <span>분  ㅣ  설정된 시간 이내의 조기출근은 급여가 추가되지 않습니다</span>
 
                             </div>
 
@@ -150,7 +375,7 @@ function Policy() {
                                 onChange={handleChange}
                             />
 
-                            <span>분  (직원의 지각에 대한 급여 차감 설정입니다. 설정된 시간까지의 출근은 지각이 아니며 급여에서 차감되지 않습니다)</span>
+                            <span>분  ㅣ  설정된 시간 이후의 지각부터 급여가 차감됩니다</span>
 
                         </div>
 
@@ -169,7 +394,7 @@ function Policy() {
                                 onChange={handleChange}
                             />
 
-                            <span>분  (먼저 퇴근한 직원의 급여를 차감할 것인가에 대한 설정입니다. 설정된 시간 이전의 퇴근은 조기퇴근이 아니며 급여에 차감되지 않습니다)</span>
+                            <span>분  ㅣ  설정된 시간 이내의 조기퇴근은 급여가 차감되지 않습니다</span>
 
                         </div>
 
@@ -188,7 +413,7 @@ function Policy() {
                                 onChange={handleChange}
                             />
 
-                            <span>분  (퇴근 시간 이후의 연장근무를 설정합니다. 설정된 시간까지는 연장근무로 인정되지 않으며, 이후의 근무는 연장근무로 인정됩니다)</span>
+                            <span>분  ㅣ  설정된 시간 이후부터 연장근무 급여가 추가됩니다</span>
 
                         </div>
 
@@ -218,21 +443,40 @@ function Policy() {
 
                     <div className="policy-tabs">
 
-                        <button className="policy-save">
+                        <button
+
+                            className={
+                                activeTab === "pending"
+                                    ? "policy-tab-active"
+                                    : "policy-tab"
+                            }
+
+                            onClick={() =>
+
+                                setActiveTab("pending")
+
+                            }
+
+                        >
 
                             승인대기
 
                         </button>
 
                         <button
-                            style={{
-                                width: 140,
-                                height: 46,
-                                border: "1px solid #ddd",
-                                borderRadius: 10,
-                                background: "#fff",
-                                cursor: "pointer"
-                            }}
+
+                            className={
+                                activeTab === "resolved"
+                                    ? "policy-tab-active"
+                                    : "policy-tab"
+                            }
+
+                            onClick={() =>
+
+                                setActiveTab("resolved")
+
+                            }
+
                         >
 
                             휴지통
@@ -259,7 +503,7 @@ function Policy() {
 
                         <tbody>
 
-                            {approvalList.length === 0 ? (
+                            {list.length === 0 ? (
 
                                 <tr>
 
@@ -271,7 +515,12 @@ function Policy() {
                                         }}
                                     >
 
-                                        승인 대기 내역이 없습니다.
+                                        {activeTab === "pending"
+
+                                            ? "승인 대기 내역이 없습니다."
+
+                                            : "처리된 내역이 없습니다."
+                                        }
 
                                     </td>
 
@@ -279,56 +528,58 @@ function Policy() {
 
                             ) : (
 
-                                approvalList.map((item) => {
+                                list.map((item) => {
 
                                     let reason = "";
                                     let time = "";
 
-                                    if (item.earlyCheckInApprovalRequired) {
+                                    switch (item.approvalType) {
 
-                                        reason = "조기출근";
-                                        time = new Date(item.checkIn)
-                                            .toLocaleTimeString("ko-KR", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false
-                                            });
+                                        case "earlyCheckIn":
+                                            reason = "조기출근";
+                                            time = new Date(item.checkIn)
+                                                .toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false
+                                                });
+                                            break;
 
-                                    } else if (item.late) {
+                                        case "late":
+                                            reason = "지각";
+                                            time = new Date(item.checkIn)
+                                                .toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false
+                                                });
+                                            break;
 
-                                        reason = "지각";
-                                        time = new Date(item.checkIn)
-                                            .toLocaleTimeString("ko-KR", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false
-                                            });
+                                        case "earlyLeave":
+                                            reason = "조기퇴근";
+                                            time = new Date(item.checkOut)
+                                                .toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false
+                                                });
+                                            break;
 
-                                    } else if (item.earlyLeave) {
-
-                                        reason = "조기퇴근";
-                                        time = new Date(item.checkOut)
-                                            .toLocaleTimeString("ko-KR", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false
-                                            });
-
-                                    } else if (item.overtime) {
-
-                                        reason = "연장근무";
-                                        time = new Date(item.checkOut)
-                                            .toLocaleTimeString("ko-KR", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false
-                                            });
+                                        case "overtime":
+                                            reason = "연장근무";
+                                            time = new Date(item.checkOut)
+                                                .toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false
+                                                });
+                                            break;
 
                                     }
 
                                     return (
 
-                                        <tr key={item.id}>
+                                        <tr key={item.approvalId}>
 
                                             <td>{item.date}</td>
 
@@ -340,21 +591,99 @@ function Policy() {
 
                                             <td>
 
-                                                <div className="policy-action">
+                                                {activeTab === "pending" ? (
 
-                                                    <button className="approve-btn">
+                                                    <div className="policy-action">
 
-                                                        승인
+                                                        <button
 
-                                                    </button>
+                                                            className="approve-btn"
 
-                                                    <button className="reject-btn">
+                                                            onClick={() =>
 
-                                                        거절
+                                                                handleApprove(
 
-                                                    </button>
+                                                                    item.recordId,
 
-                                                </div>
+                                                                    item.approvalType,
+
+                                                                    "approved"
+
+                                                                )
+
+                                                            }
+
+                                                        >
+
+                                                            승인
+
+                                                        </button>
+
+                                                        <button
+
+                                                            className="reject-btn"
+
+                                                            onClick={() =>
+
+                                                                handleApprove(
+
+                                                                    item.recordId,
+
+                                                                    item.approvalType,
+
+                                                                    "rejected"
+
+                                                                )
+
+                                                            }
+
+                                                        >
+
+                                                            거절
+
+                                                        </button>
+
+                                                    </div>
+
+                                                ) : (
+
+                                                    <div className="policy-action">
+
+                                                        <strong>
+
+                                                            {item.approvalStatus === "approved"
+
+                                                                ? "승인됨"
+
+                                                                : "거절됨"}
+
+                                                        </strong>
+
+                                                        <button
+
+                                                            className="reject-btn"
+
+                                                            onClick={() =>
+
+                                                                handleRestore(
+
+                                                                    item.recordId,
+
+                                                                    item.approvalType
+
+                                                                )
+
+                                                            }
+
+                                                        >
+
+                                                            복원
+
+                                                        </button>
+
+                                                    </div>
+
+                                                )}
 
                                             </td>
 

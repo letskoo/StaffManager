@@ -1,3 +1,11 @@
+import {
+
+    getMonthlySalary,
+
+    getRetirement,
+
+} from "../services/salaryService";
+
 import { Link } from "react-router-dom";
 
 import "../styles/employee.css";
@@ -75,54 +83,72 @@ function EmployeeTable({
 
                     ) : (
 
-                        filteredEmployees.map((employee) => (
+                        filteredEmployees.map((employee) => {
 
-                            <tr key={employee.no}>
+                            const monthlySalary = getMonthlySalary(employee);
 
-                                <td>{employee.no}</td>
+                            const retirement = getRetirement(employee);
 
-                                <td>
+                            return (
 
-                                    <Link
-                                        className="employee-name"
-                                        to={`/admin/employee/${employee.no}`}
-                                    >
-                                        {employee.name}
-                                    </Link>
+                                <tr key={employee.no}>
 
-                                </td>
+                                    <td>{employee.no}</td>
 
-                                <td>{employee.phone}</td>
+                                    <td>
 
-                                <td>{employee.join}</td>
+                                        <Link
+                                            className="employee-name"
+                                            to={`/admin/employee/${employee.no}`}
+                                        >
+                                            {employee.name}
+                                        </Link>
 
-                                <td>{employee.salary}</td>
+                                    </td>
 
-                                <td>{employee.retirement}</td>
+                                    <td>{employee.phone}</td>
 
-                                <td>{employee.status}</td>
+                                    <td>{employee.join}</td>
 
-                                <td>
+                                    <td>
+                                        {monthlySalary.toLocaleString()}원
+                                    </td>
 
-                                    <button
-                                        className="edit-btn"
-                                        onClick={() => onEdit(employee)}
-                                    >
-                                        수정
-                                    </button>
+                                    <td>
 
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => onDelete(employee)}
-                                    >
-                                        삭제
-                                    </button>
+                                        {retirement === null
 
-                                </td>
+                                            ? "대상 아님"
 
-                            </tr>
+                                            : `${retirement.toLocaleString()}원`}
 
-                        ))
+                                    </td>
+
+                                    <td>{employee.status}</td>
+
+                                    <td>
+
+                                        <button
+                                            className="edit-btn"
+                                            onClick={() => onEdit(employee)}
+                                        >
+                                            수정
+                                        </button>
+
+                                        <button
+                                            className="delete-btn"
+                                            onClick={() => onDelete(employee)}
+                                        >
+                                            삭제
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            );
+
+                        })
 
                     )}
 

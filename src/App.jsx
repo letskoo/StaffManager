@@ -1,4 +1,8 @@
+import { useEffect } from "react";
+
 import { Routes, Route } from "react-router-dom";
+
+import { syncNationalHolidays } from "./services/HolidayService";
 
 import WorkPad from "./pages/WorkPad";
 import Admin from "./pages/Admin";
@@ -12,6 +16,17 @@ import Setting from "./pages/Setting";
 import EmployeeDetail from "./pages/EmployeeDetail";
 
 function App() {
+
+    useEffect(() => {
+
+        const year = new Date().getFullYear();
+
+        syncNationalHolidays(year);
+
+        syncNationalHolidays(year + 1);
+
+    }, []);
+
     return (
         <Routes>
 

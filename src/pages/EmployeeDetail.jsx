@@ -21,11 +21,27 @@ import {
 import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
 
+import {
+
+    getMonthlySalary,
+
+    getRetirement,
+
+} from "../services/salaryService";
+
+import {
+
+    getMonthlyAttendanceSummary,
+
+} from "../services/attendanceService";
+
 function EmployeeDetail() {
 
     const { employeeNo } = useParams();
 
     const [openModal, setOpenModal] = useState(false);
+
+    const [editEmployee, setEditEmployee] = useState(null);
 
     const navigate = useNavigate();
 
@@ -52,6 +68,58 @@ function EmployeeDetail() {
         (item) => item.no === employeeNo
 
     );
+
+    const monthlySalary = employee
+        ? getMonthlySalary(employee)
+        : 0;
+
+    const retirement = employee
+        ? getRetirement(employee)
+        : 0;
+
+    const age = (() => {
+
+        if (!employee?.birth) return "";
+
+        const birth = new Date(employee.birth);
+        const today = new Date();
+
+        let age =
+            today.getFullYear() -
+            birth.getFullYear();
+
+        const birthday =
+            new Date(
+                today.getFullYear(),
+                birth.getMonth(),
+                birth.getDate()
+            );
+
+        if (today < birthday) {
+            age--;
+        }
+
+        return age;
+
+    })();
+
+    const attendance = employee
+
+        ? getMonthlyAttendanceSummary(employee.no)
+
+        : {
+
+            checkIn: 0,
+
+            checkOut: 0,
+
+            late: 0,
+
+            earlyLeave: 0,
+
+            absent: 0,
+
+        };
 
     const handleSaveEmployee = (newEmployee) => {
 
@@ -119,7 +187,10 @@ function EmployeeDetail() {
 
             <Header
                 title="직원 상세보기"
-                onRegister={() => setOpenModal(true)}
+                onRegister={() => {
+                    setEditEmployee(null);
+                    setOpenModal(true);
+                }}
             />
 
             <div className="employee-detail">
@@ -141,7 +212,10 @@ function EmployeeDetail() {
                                 </button>
 
                                 <button
-                                    onClick={() => setOpenModal(true)}
+                                    onClick={() => {
+                                        setEditEmployee(employee);
+                                        setOpenModal(true);
+                                    }}
                                 >
                                     <Pencil size={20} />
                                 </button>
@@ -173,7 +247,10 @@ function EmployeeDetail() {
 
                         <div className="detail-row">
                             <span>생년월일</span>
-                            <strong>{employee.birth}</strong>
+                            <strong>
+                                {employee.birth}
+                                {age !== "" && ` (만 ${age}세)`}
+                            </strong>
                         </div>
 
                         <div className="detail-row">
@@ -231,27 +308,27 @@ function EmployeeDetail() {
 
                         <div className="detail-row">
                             <span>출근</span>
-                            <strong>0회</strong>
+                            <strong>{attendance.checkIn}회</strong>
                         </div>
 
                         <div className="detail-row">
                             <span>퇴근</span>
-                            <strong>0회</strong>
+                            <strong>{attendance.checkOut}회</strong>
                         </div>
 
                         <div className="detail-row">
                             <span>지각</span>
-                            <strong>0회</strong>
+                            <strong>{attendance.late}회</strong>
                         </div>
 
                         <div className="detail-row">
                             <span>조퇴</span>
-                            <strong>0회</strong>
+                            <strong>{attendance.earlyLeave}회</strong>
                         </div>
 
                         <div className="detail-row">
                             <span>결근</span>
-                            <strong>0회</strong>
+                            <strong>{attendance.absent}회</strong>
                         </div>
 
                     </div>
@@ -266,7 +343,7 @@ function EmployeeDetail() {
 
                                 <div className="salary-total">
 
-                                    0원
+                                    {monthlySalary.toLocaleString()}원
 
                                 </div>
 
@@ -278,7 +355,11 @@ function EmployeeDetail() {
 
                                 <div className="salary-total">
 
-                                    0원
+                                    {retirement === null
+
+                                        ? "대상 아님"
+
+                                        : `${retirement.toLocaleString()}원`}
 
                                 </div>
 
@@ -306,8 +387,11 @@ function EmployeeDetail() {
 
             <EmployeeModal
                 open={openModal}
-                employee={employee}
-                onClose={() => setOpenModal(false)}
+                employee={editEmployee}
+                onClose={() => {
+                    setOpenModal(false);
+                    setEditEmployee(null);
+                }}
                 onSave={handleSaveEmployee}
                 onUpdate={handleUpdateEmployee}
             />

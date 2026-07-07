@@ -37,11 +37,10 @@ const initialForm = {
 
     allowWeeklyHoliday: true,
 
-    breakEnabled: false,
+    breakEnabled: true,
 
-    breakStart: "12:00",
+    allowHoliday: true,
 
-    breakEnd: "13:00",
 };
 
 function EmployeeModal({
@@ -66,6 +65,11 @@ function EmployeeModal({
                 ...initialForm,
 
                 ...employee,
+
+                breakEnabled:
+                    employee.workPolicy?.breakEnabled ??
+                    employee.breakEnabled ??
+                    true,
 
             });
 
@@ -173,13 +177,57 @@ function EmployeeModal({
 
     const handleSubmit = () => {
 
+        const employeeData = {
+
+            ...form,
+
+            workPolicy: {
+
+                ...(form.workPolicy || {}),
+
+                payType: form.payType,
+
+                monthlySalary:
+
+                    form.payType === "monthly"
+
+                        ? Number(form.payAmount)
+
+                        : 0,
+
+                hourlyWage:
+
+                    form.payType === "hourly"
+
+                        ? Number(form.payAmount)
+
+                        : 0,
+
+                startTime: form.startTime,
+
+                endTime: form.endTime,
+
+                breakEnabled: form.breakEnabled,
+
+                allowOvertime: form.allowOvertime,
+
+                allowNight: form.allowNight,
+
+                allowHoliday: form.allowHoliday,
+
+                allowWeeklyHoliday: form.allowWeeklyHoliday,
+
+            },
+
+        };
+
         if (employee) {
 
-            onUpdate(form);
+            onUpdate(employeeData);
 
         } else {
 
-            onSave(form);
+            onSave(employeeData);
 
         }
 
@@ -766,7 +814,7 @@ function EmployeeModal({
 
                     </div>
 
-                    <label>휴게시간</label>
+                    <label>휴일수당</label>
 
                     <div className="radio-group">
 
@@ -774,18 +822,41 @@ function EmployeeModal({
 
                             <input
                                 type="radio"
-                                checked={!form.breakEnabled}
+                                checked={form.allowHoliday === true}
                                 onChange={() =>
                                     setForm({
                                         ...form,
-                                        breakEnabled: false
+                                        allowHoliday: true
                                     })
                                 }
                             />
 
-                            없음
+                            지급
 
                         </label>
+
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                checked={form.allowHoliday === false}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        allowHoliday: false
+                                    })
+                                }
+                            />
+
+                            미지급
+
+                        </label>
+
+                    </div>
+
+                    <label>휴게시간</label>
+
+                    <div className="radio-group">
 
                         <label className="radio-inline">
 
@@ -804,41 +875,24 @@ function EmployeeModal({
 
                         </label>
 
+                        <label className="radio-inline">
+
+                            <input
+                                type="radio"
+                                checked={!form.breakEnabled}
+                                onChange={() =>
+                                    setForm({
+                                        ...form,
+                                        breakEnabled: false
+                                    })
+                                }
+                            />
+
+                            없음
+
+                        </label>
+
                     </div>
-
-                    {form.breakEnabled && (
-
-                        <>
-
-                            <label>휴게 시작</label>
-
-                            <input
-                                type="time"
-                                value={form.breakStart}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        breakStart: e.target.value
-                                    })
-                                }
-                            />
-
-                            <label>휴게 종료</label>
-
-                            <input
-                                type="time"
-                                value={form.breakEnd}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        breakEnd: e.target.value
-                                    })
-                                }
-                            />
-
-                        </>
-
-                    )}
 
                 </div>
 
