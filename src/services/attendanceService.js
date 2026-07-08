@@ -67,15 +67,13 @@ export function saveAttendanceHistory(record) {
 
 export function getTodayAttendance(employeeNo) {
 
-    const today = getTodayText();
-
     return getAttendanceRecords().find(
 
         (record) =>
 
             record.employeeNo === employeeNo &&
 
-            record.date === today
+            !record.checkOut
 
     );
 
@@ -83,23 +81,35 @@ export function getTodayAttendance(employeeNo) {
 
 export function getNextAttendanceType(employeeNo) {
 
-    const todayRecord = getTodayAttendance(employeeNo);
+    const openRecord = getTodayAttendance(employeeNo);
 
-    if (!todayRecord) {
-
-        return "checkin";
-
-    }
-
-    if (!todayRecord.checkOut) {
+    if (openRecord) {
 
         return "checkout";
 
     }
 
-    // 오늘 이미 출근 + 퇴근 완료
-    // 다음 출근은 다음날만 가능
-    return "done";
+    const today = getTodayText();
+
+    const todayFinished = getAttendanceRecords().find(
+
+        (record) =>
+
+            record.employeeNo === employeeNo &&
+
+            record.date === today &&
+
+            record.checkOut
+
+    );
+
+    if (todayFinished) {
+
+        return "done";
+
+    }
+
+    return "checkin";
 
 }
 
@@ -186,21 +196,7 @@ export function saveCheckOut(employee) {
 
     }
 
-    let now = new Date();
-
-    const checkInTime = new Date(todayRecord.checkIn);
-
-    // 출근 후 12시간 이상 지나면
-    // 실제 퇴근시간은 출근 + 12시간으로 고정
-    const maxCheckoutTime = new Date(
-        checkInTime.getTime() + 12 * 60 * 60 * 1000
-    );
-
-    if (now > maxCheckoutTime) {
-
-        now = maxCheckoutTime;
-
-    }
+    const now = new Date();
 
     let updatedRecord = analyzeAttendance(
 
