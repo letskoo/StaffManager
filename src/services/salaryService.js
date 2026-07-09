@@ -107,26 +107,17 @@ function getBreakMinutes(totalMinutes, employee) {
 
 function getScheduledMinutesForDay(employee, dayKey) {
 
-    if (!employee.workDays?.includes(dayKey)) {
+    const schedule = employee.weekSchedule?.[dayKey];
+
+    if (!schedule) {
 
         return 0;
 
     }
 
-    let startTime = employee.startTime || "09:00";
+    const startTime = schedule.start;
 
-    let endTime = employee.endTime || "18:00";
-
-    if (
-        employee.workTimeType === "week" &&
-        employee.weekSchedule?.[dayKey]
-    ) {
-
-        startTime = employee.weekSchedule[dayKey].start;
-
-        endTime = employee.weekSchedule[dayKey].end;
-
-    }
+    const endTime = schedule.end;
 
     const totalMinutes =
         getMinutesBetween(startTime, endTime);
@@ -198,7 +189,7 @@ function hasWorkedAllScheduledDays(
 
     return dayKeys.every((dayKey, index) => {
 
-        if (!employee.workDays?.includes(dayKey)) {
+        if (!employee.weekSchedule?.[dayKey]) {
 
             return true;
 
@@ -633,9 +624,9 @@ export function getMonthlyAbsentCount(employee, month = new Date().toISOString()
         localStorage.getItem(HISTORY_KEY)
     ) || [];
 
-    const workDays = employee.workDays || [];
+    const weekSchedule = employee.weekSchedule || {};
 
-    if (workDays.length === 0) {
+    if (Object.keys(weekSchedule).length === 0) {
         return 0;
     }
 
@@ -681,7 +672,7 @@ export function getMonthlyAbsentCount(employee, month = new Date().toISOString()
 
             const dateText = getDateText(current);
 
-            const isWorkDay = workDays.includes(dayKey);
+            const isWorkDay = !!weekSchedule[dayKey];
 
             const hasRecord = history.some(
                 (record) =>

@@ -1,6 +1,42 @@
 import "../styles/dashboard.css";
 
+import useEmployees from "../hooks/useEmployees";
+
+import {
+    getAttendanceRecords,
+} from "../services/attendanceService";
+
+import {
+    getMonthlyAbsentCount,
+} from "../services/salaryService";
+
 function DashboardAttendanceSummary() {
+
+    const { employees } = useEmployees();
+
+    const records = getAttendanceRecords();
+
+    const late =
+        records.filter(
+            item => item.late
+        ).length;
+
+    const early =
+        records.filter(
+            item => item.earlyLeave
+        ).length;
+
+    const overtime =
+        records.filter(
+            item => item.overtime
+        ).length;
+
+    const absent =
+        employees.reduce(
+            (sum, employee) =>
+                sum + getMonthlyAbsentCount(employee),
+            0
+        );
 
     return (
 
@@ -18,7 +54,7 @@ function DashboardAttendanceSummary() {
 
                     <span>지각</span>
 
-                    <strong>0건</strong>
+                    <strong>{late}건</strong>
 
                 </div>
 
@@ -26,7 +62,7 @@ function DashboardAttendanceSummary() {
 
                     <span>조퇴</span>
 
-                    <strong>0건</strong>
+                    <strong>{early}건</strong>
 
                 </div>
 
@@ -34,7 +70,7 @@ function DashboardAttendanceSummary() {
 
                     <span>결근</span>
 
-                    <strong>0건</strong>
+                    <strong>{absent}건</strong>
 
                 </div>
 
@@ -42,7 +78,7 @@ function DashboardAttendanceSummary() {
 
                     <span>연장</span>
 
-                    <strong>0건</strong>
+                    <strong>{overtime}건</strong>
 
                 </div>
 

@@ -1,6 +1,28 @@
 import "../styles/dashboard.css";
 
+import useEmployees from "../hooks/useEmployees";
+
+import {
+    getMonthlySalary,
+} from "../services/salaryService";
+
 function DashboardTopSalary() {
+
+    const { employees } = useEmployees();
+
+    const topEmployees = [...employees]
+
+        .sort(
+
+            (a, b) =>
+
+                getMonthlySalary(b) -
+
+                getMonthlySalary(a)
+
+        )
+
+        .slice(0, 5);
 
     return (
 
@@ -30,15 +52,19 @@ function DashboardTopSalary() {
 
                 <tbody>
 
-                    {[1,2,3,4,5].map((rank)=>(
+                    {topEmployees.map((employee, index) => (
 
-                        <tr key={rank}>
+                        <tr key={employee.no}>
 
-                            <td>{rank}</td>
+                            <td>{index + 1}</td>
 
-                            <td>-</td>
+                            <td>{employee.name}</td>
 
-                            <td>-</td>
+                            <td>
+
+                                {getMonthlySalary(employee).toLocaleString()}원
+
+                            </td>
 
                         </tr>
 

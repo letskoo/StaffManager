@@ -1325,9 +1325,9 @@ export function getMonthlyAbsentCount(
         localStorage.getItem(HISTORY_KEY)
     ) || [];
 
-    const workDays = employee.workDays || [];
+    const weekSchedule = employee.weekSchedule || {};
 
-    if (workDays.length === 0) {
+    if (Object.keys(weekSchedule).length === 0) {
         return 0;
     }
 
@@ -1371,7 +1371,7 @@ export function getMonthlyAbsentCount(
 
             const dayKey = dayKeys[current.getDay()];
 
-            if (workDays.includes(dayKey)) {
+            if (weekSchedule[dayKey]) {
 
                 const dateText =
                     `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-${String(current.getDate()).padStart(2, "0")}`;

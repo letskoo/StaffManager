@@ -27,15 +27,7 @@ const initialForm = {
 
     endTime: "18:00",
 
-    weekSchedule: {
-        mon: { start: "09:00", end: "18:00" },
-        tue: { start: "09:00", end: "18:00" },
-        wed: { start: "09:00", end: "18:00" },
-        thu: { start: "09:00", end: "18:00" },
-        fri: { start: "09:00", end: "18:00" },
-        sat: { start: "09:00", end: "18:00" },
-        sun: { start: "09:00", end: "18:00" },
-    },
+    weekSchedule: {},
 
     allowOvertime: true,
 
@@ -183,9 +175,42 @@ function EmployeeModal({
 
     const handleSubmit = () => {
 
+        const weekSchedule =
+            Object.fromEntries(
+
+                form.workDays.map(day => [
+
+                    day,
+
+                    form.workTimeType === "same"
+
+                        ? {
+
+                            start: form.startTime,
+
+                            end: form.endTime,
+
+                        }
+
+                        : {
+
+                            start:
+                                form.weekSchedule[day]?.start || "",
+
+                            end:
+                                form.weekSchedule[day]?.end || "",
+
+                        }
+
+                ])
+
+            );
+
         const employeeData = {
 
             ...form,
+
+            weekSchedule,
 
             workPolicy: {
 
@@ -194,19 +219,13 @@ function EmployeeModal({
                 payType: form.payType,
 
                 monthlySalary:
-
                     form.payType === "monthly"
-
                         ? Number(form.payAmount)
-
                         : 0,
 
                 hourlyWage:
-
                     form.payType === "hourly"
-
                         ? Number(form.payAmount)
-
                         : 0,
 
                 startTime: form.startTime,
@@ -650,7 +669,7 @@ function EmployeeModal({
 
                                         <input
                                             type="time"
-                                            value={form.weekSchedule[key].start}
+                                            value={form.weekSchedule[key]?.start || ""}
                                             disabled={!form.workDays.includes(key)}
                                             onChange={(e) => {
 
@@ -663,11 +682,9 @@ function EmployeeModal({
                                                         ...form.weekSchedule,
 
                                                         [key]: {
-
-                                                            ...form.weekSchedule[key],
-
-                                                            start: e.target.value
-
+                                                            ...(form.weekSchedule[key] || {}),
+                                                            start: e.target.value,
+                                                            end: form.weekSchedule[key]?.end || ""
                                                         }
 
                                                     }
@@ -681,7 +698,7 @@ function EmployeeModal({
 
                                         <input
                                             type="time"
-                                            value={form.weekSchedule[key].end}
+                                            value={form.weekSchedule[key]?.end || ""}
                                             disabled={!form.workDays.includes(key)}
                                             onChange={(e) => {
 
@@ -695,7 +712,10 @@ function EmployeeModal({
 
                                                         [key]: {
 
-                                                            ...form.weekSchedule[key],
+                                                            ...(form.weekSchedule[key] || {}),
+
+                                                            start:
+                                                                form.weekSchedule[key]?.start || "",
 
                                                             end: e.target.value
 

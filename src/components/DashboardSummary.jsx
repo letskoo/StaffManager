@@ -1,31 +1,79 @@
 import "../styles/dashboard.css";
 
+import useEmployees from "../hooks/useEmployees";
+
+import {
+    getMonthlySalary,
+    getRetirement,
+} from "../services/salaryService";
+
+import {
+    getApprovalList,
+} from "../services/attendanceService";
+
+import { useNavigate } from "react-router-dom";
+
 function DashboardSummary() {
+
+    const navigate = useNavigate();
+
+    const { employees } = useEmployees();
+
+    const totalSalary = employees.reduce(
+        (sum, employee) =>
+            sum + getMonthlySalary(employee),
+        0
+    );
+
+    const totalRetirement = employees.reduce(
+        (sum, employee) =>
+            sum + (getRetirement(employee) || 0),
+        0
+    );
+
+    const approvalCount =
+        getApprovalList().length;
 
     return (
 
         <div className="dashboard-summary">
 
-            <div className="detail-card dashboard-card">
+            <div
+
+                className="detail-card dashboard-card dashboard-card-clickable"
+
+                onClick={() => navigate("/admin/employee")}
+
+                style={{ cursor: "pointer" }}
+
+            >
 
                 <span className="dashboard-card-title">
-                    직원수
+                    직원수 ↗
                 </span>
 
                 <strong className="dashboard-card-value">
-                    0명
+                    {employees.length}명
                 </strong>
 
             </div>
 
-            <div className="detail-card dashboard-card">
+            <div
+
+                className="detail-card dashboard-card dashboard-card-clickable"
+
+                onClick={() => navigate("/admin/policy")}
+
+                style={{ cursor: "pointer" }}
+
+            >
 
                 <span className="dashboard-card-title">
-                    미승인 현황
+                    미승인 현황 ↗
                 </span>
 
                 <strong className="dashboard-card-value">
-                    0건
+                    {approvalCount}건
                 </strong>
 
             </div>
@@ -37,7 +85,7 @@ function DashboardSummary() {
                 </span>
 
                 <strong className="dashboard-card-value">
-                    0원
+                    {totalSalary.toLocaleString()}원
                 </strong>
 
             </div>
@@ -49,7 +97,7 @@ function DashboardSummary() {
                 </span>
 
                 <strong className="dashboard-card-value">
-                    0원
+                    {totalRetirement.toLocaleString()}원
                 </strong>
 
             </div>
