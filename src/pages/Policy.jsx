@@ -277,7 +277,7 @@ function Policy() {
 
                         >
 
-                            ▼ 히스토리
+                            다운로드
 
                         </button>
 

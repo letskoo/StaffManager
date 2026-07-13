@@ -1,6 +1,9 @@
 import "../styles/dashboard.css";
 
-function DashboardWeekCalendar() {
+function DashboardWeekCalendar({
+    employee = null,
+    embedded = false
+}) {
 
     const days = [
         { label: "월", key: "mon" },
@@ -16,8 +19,13 @@ function DashboardWeekCalendar() {
         7, 9, 11, 13, 15, 17, 19, 21, 23, 0, 2, 4, 6,
     ];
 
-    const employees =
+    const allEmployees =
         JSON.parse(localStorage.getItem("employees")) || [];
+
+    const employees =
+        employee
+            ? [employee]
+            : allEmployees;
 
     const rowHeight = 38;
 
@@ -55,7 +63,13 @@ function DashboardWeekCalendar() {
 
     return (
 
-        <div className="detail-card">
+        <div
+            className={
+                embedded
+                    ? "embedded-week-calendar"
+                    : "detail-card"
+            }
+        >
 
             <h2>주간 근무 다이어리</h2>
 

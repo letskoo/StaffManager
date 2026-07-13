@@ -1,68 +1,10 @@
 .employee-detail {
 
     display: flex;
+
     flex-direction: column;
 
     gap: 20px;
-}
-
-.summary-row {
-
-    display: grid;
-
-    grid-template-columns: 1fr 2fr;
-
-    gap: 24px;
-
-    align-items: stretch;
-
-}
-
-.right-column {
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: stretch;
-
-}
-
-.top-summary {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 16px;
-
-    height: 100%;
-
-}
-
-.top-summary>.detail-card {
-
-    min-height: 0;
-
-    height: 100%;
-
-    display: flex;
-
-    flex-direction: column;
-
-}
-
-.top-summary .detail-card {
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    min-height: 0;
-
-    height: 100%;
 
 }
 
@@ -74,40 +16,46 @@
 
     gap: 16px;
 
+    align-items: stretch;
+
 }
 
-.summary-row {
+.detail-middle-row {
 
     display: grid;
 
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 2fr 1fr 1.35fr;
 
     gap: 16px;
 
-}
-
-.summary-row .detail-card {
-
-    margin: 0;
+    align-items: stretch;
 
 }
 
 .detail-card {
 
-    background: #fff;
+    background:#fff;
 
-    border: 1px solid #ececec;
+    border:1px solid #ececec;
 
-    border-radius: 14px;
+    border-radius:14px;
 
-    padding: 28px;
+    padding:28px;
+
+    display:flex;
+
+    flex-direction:column;
+
 }
 
 .detail-card h2 {
 
+    margin-top: 0;
+
     margin-bottom: 24px;
 
     font-size: 22px;
+
 }
 
 .detail-row {
@@ -121,11 +69,13 @@
     height: 52px;
 
     border-bottom: 1px solid #f2f2f2;
+
 }
 
 .detail-row:last-child {
 
-    border: none;
+    border-bottom: none;
+
 }
 
 .detail-row span {
@@ -137,6 +87,7 @@
     color: #777;
 
     font-size: 15px;
+
 }
 
 .detail-row strong {
@@ -148,6 +99,7 @@
     color: #222;
 
     text-align: left;
+
 }
 
 .detail-card-header {
@@ -210,6 +162,140 @@
 
 }
 
+.salary-chart {
+
+    flex:1;
+
+    width:100%;
+
+    min-height:220px;
+
+    padding: 10px;
+
+    border: 1px dashed #ddd;
+
+    border-radius: 12px;
+
+    color: #999;
+
+    box-sizing: border-box;
+
+}
+
+.employee-schedule-card {
+
+    height: 360px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+}
+
+.embedded-week-calendar {
+
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+}
+
+.embedded-week-calendar > h2 {
+
+    flex-shrink: 0;
+
+}
+
+.employee-schedule-card .week-calendar {
+
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+}
+
+.employee-schedule-card .week-header {
+
+    flex-shrink: 0;
+
+}
+
+.employee-schedule-card .week-body {
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: scroll;
+
+    padding-bottom: 0;
+
+}
+
+.attendance-card{
+
+    height:360px;
+
+    overflow:hidden;
+
+}
+
+.attendance-card .detail-row {
+
+    gap:30px;
+
+}
+
+.attendance-card .detail-row strong {
+
+    flex:1;
+
+    text-align:right;
+
+}
+
+.detail-pay-column {
+
+    height:360px;
+
+    display:grid;
+
+    grid-template-rows:1fr 1fr;
+
+    gap:16px;
+
+}
+
+.detail-pay-card {
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+}
+
+.detail-pay-card h2 {
+
+    margin-bottom: 10px;
+
+}
+
 .salary-total {
 
     flex: 1;
@@ -220,35 +306,15 @@
 
     align-items: center;
 
-    font-size: 34px;
+    min-height: 90px;
+
+    font-size: 30px;
 
     font-weight: 700;
 
     color: #1f73b9;
 
-    min-height: 140px;
-
-}
-
-.salary-chart {
-
-    width: 100%;
-    
-    height: 340px;
-
-    padding: 10px;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    border: 1px dashed #ddd;
-
-    border-radius: 12px;
-
-    color: #999;
+    text-align: center;
 
 }
 
@@ -265,9 +331,13 @@
 }
 
 .salary-line-chart {
+
     width: 100%;
+
     height: 220px;
+
     color: #333;
+
 }
 
 .recharts-wrapper {
@@ -288,7 +358,7 @@
 
     border-radius: 12px !important;
 
-    box-shadow: 0 8px 30px rgba(0,0,0,.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .12);
 
     padding: 10px 14px !important;
 
@@ -305,5 +375,49 @@
     stroke-linecap: round;
 
     stroke-linejoin: round;
+
+}
+
+@media (max-width: 1200px) {
+
+    .detail-middle-row {
+
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+    .employee-schedule-card {
+
+        grid-column: 1 / -1;
+
+    }
+
+}
+
+@media (max-width: 900px) {
+
+    .top-row {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .detail-middle-row {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .employee-schedule-card {
+
+        grid-column: auto;
+
+    }
+
+    .detail-row {
+
+        gap: 30px;
+
+    }
 
 }
