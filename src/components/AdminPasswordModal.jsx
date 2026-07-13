@@ -10,7 +10,10 @@ function AdminPasswordModal({
     if (!open) return null;
 
     const handleSubmit = () => {
-        if (password === "1234") {
+        const adminPassword =
+            localStorage.getItem("adminPassword") || "1234";
+
+        if (password === adminPassword) {
             setPassword("");
             onSuccess();
         } else {

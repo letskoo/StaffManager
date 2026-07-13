@@ -28,6 +28,10 @@ export function saveAttendanceCards(cards) {
         JSON.stringify(cards)
     );
 
+    window.dispatchEvent(
+        new Event("attendanceCardsUpdated")
+    );
+
 }
 
 export function addAttendanceCard(card) {
@@ -77,5 +81,17 @@ export function deleteAttendanceCard(id) {
     );
 
     saveAttendanceCards(cards);
+
+}
+
+export function resetNoticeCards() {
+
+    saveAttendanceCards([]);
+
+}
+
+export function resetAttendanceCards() {
+
+    saveAttendanceCards([]);
 
 }

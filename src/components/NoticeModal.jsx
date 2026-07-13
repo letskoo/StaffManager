@@ -38,17 +38,33 @@ function NoticeModal({
 
     useEffect(() => {
 
-        if (notice) {
+        if (!open) {
 
-            setForm(notice);
-
-        } else {
-
-            setForm(initialForm);
+            return;
 
         }
 
-    }, [notice]);
+        if (notice) {
+
+            setForm({
+
+                ...initialForm,
+
+                ...notice,
+
+            });
+
+        } else {
+
+            setForm({
+
+                ...initialForm,
+
+            });
+
+        }
+
+    }, [open, notice]);
 
     useEffect(() => {
 
@@ -85,6 +101,18 @@ function NoticeModal({
             );
 
     }, [open, onClose]);
+
+    const handleClose = () => {
+
+        setForm({
+
+            ...initialForm,
+
+        });
+
+        onClose();
+
+    };
 
     if (!open) return null;
 
@@ -159,6 +187,12 @@ function NoticeModal({
 
         }
 
+        setForm({
+
+            ...initialForm,
+
+        });
+
     };
 
     return (
@@ -167,7 +201,7 @@ function NoticeModal({
 
             className="modal-backdrop"
 
-            onClick={onClose}
+            onClick={handleClose}
 
         >
 
@@ -203,7 +237,7 @@ function NoticeModal({
 
                         className="close-btn"
 
-                        onClick={onClose}
+                        onClick={handleClose}
 
                     >
 
@@ -339,7 +373,7 @@ function NoticeModal({
 
                         className="cancel-btn"
 
-                        onClick={onClose}
+                        onClick={handleClose}
 
                     >
 

@@ -1,0 +1,199 @@
+.setting-page{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+
+}
+
+.setting-section{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+.setting-section h2{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#222;
+
+}
+
+.setting-card{
+
+    background:#fff;
+
+    border:1px solid #ececec;
+
+    border-radius:14px;
+
+    padding:24px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:30px;
+
+}
+
+.setting-card-left{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.setting-card-left h3{
+
+    font-size:18px;
+
+    font-weight:600;
+
+    color:#222;
+
+}
+
+.setting-card-left p{
+
+    font-size:14px;
+
+    color:#777;
+
+    line-height:1.5;
+
+}
+
+.setting-card-right{
+
+    flex-shrink:0;
+
+}
+
+.setting-btn{
+
+    min-width:120px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#1f73b9;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+}
+
+.setting-btn:hover{
+
+    background:#185d96;
+
+}
+
+.setting-btn-danger{
+
+    background:#d93025;
+
+}
+
+.setting-btn-danger:hover{
+
+    background:#b3261e;
+
+}
+
+.setting-password{
+
+    background:#fff;
+
+    border:1px solid #ececec;
+
+    border-radius:14px;
+
+    padding:24px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.setting-input-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.setting-input-group label{
+
+    font-size:15px;
+
+    font-weight:500;
+
+    color:#555;
+
+}
+
+.setting-input{
+
+    width:30%;
+
+    height:46px;
+
+    padding:0 14px;
+
+    border:1px solid #ddd;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:.15s;
+
+}
+
+.setting-input:focus{
+
+    border-color:#1f73b9;
+
+}
+
+.setting-password-footer{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+}

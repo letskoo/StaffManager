@@ -22,6 +22,19 @@ import AdminPasswordModal from "../components/AdminPasswordModal";
 
 function WorkPad() {
 
+    useEffect(() => {
+
+        if (!localStorage.getItem("adminPassword")) {
+
+            localStorage.setItem(
+                "adminPassword",
+                "1234"
+            );
+
+        }
+
+    }, []);
+
     const navigate = useNavigate();
 
     const [adminModalOpen, setAdminModalOpen] = useState(false);

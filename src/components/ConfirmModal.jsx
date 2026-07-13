@@ -6,6 +6,7 @@ function ConfirmModal({
     message,
     onCancel,
     onConfirm,
+    confirmText = "삭제",
 }) {
 
     if (!open) return null;
@@ -39,7 +40,7 @@ function ConfirmModal({
                         className="delete-btn"
                         onClick={onConfirm}
                     >
-                        삭제
+                        {confirmText}
                     </button>
 
                 </div>

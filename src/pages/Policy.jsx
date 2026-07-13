@@ -60,48 +60,62 @@ function Policy() {
 
     useEffect(() => {
 
-        const saved = JSON.parse(
+        const loadPolicy = () => {
 
-            localStorage.getItem("policy")
+            const saved = JSON.parse(
+                localStorage.getItem("policy")
+            );
 
+            if (saved) {
+
+                setPolicy({
+
+                    earlyPayExcludeMinutes:
+                        saved.earlyPayExcludeMinutes ??
+                        saved.checkInEarly ??
+                        30,
+
+                    lateLimit:
+                        saved.lateLimit ?? 5,
+
+                    earlyLeaveLimit:
+                        saved.earlyLeaveLimit ?? 10,
+
+                    overtimeLimit:
+                        saved.overtimeLimit ?? 15,
+
+                });
+
+            } else {
+
+                setPolicy({
+
+                    earlyPayExcludeMinutes: 30,
+                    lateLimit: 5,
+                    earlyLeaveLimit: 10,
+                    overtimeLimit: 15,
+
+                });
+
+            }
+
+        };
+
+        loadPolicy();
+
+        window.addEventListener(
+            "policyUpdated",
+            loadPolicy
         );
 
-        if (saved) {
+        return () => {
 
-            setPolicy({
+            window.removeEventListener(
+                "policyUpdated",
+                loadPolicy
+            );
 
-                earlyPayExcludeMinutes:
-                    saved.earlyPayExcludeMinutes ??
-                    saved.checkInEarly ??
-                    30,
-
-                lateLimit: saved.lateLimit ?? 5,
-
-                earlyLeaveLimit: saved.earlyLeaveLimit ?? 10,
-
-                overtimeLimit: saved.overtimeLimit ?? 15,
-
-            });
-
-        }
-
-        setApprovalList(
-
-            getApprovalList()
-
-        );
-
-        setResolvedList(
-
-            getResolvedApprovalList()
-
-        );
-
-        setHistoryMonths(
-
-            getHistoryMonths()
-
-        );
+        };
 
     }, []);
 

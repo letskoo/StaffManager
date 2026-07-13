@@ -14,7 +14,29 @@ export default function useAttendanceCards() {
 
     useEffect(() => {
 
-        setCards(getAttendanceCards());
+        const loadCards = () => {
+
+            setCards(
+                getAttendanceCards()
+            );
+
+        };
+
+        loadCards();
+
+        window.addEventListener(
+            "attendanceCardsUpdated",
+            loadCards
+        );
+
+        return () => {
+
+            window.removeEventListener(
+                "attendanceCardsUpdated",
+                loadCards
+            );
+
+        };
 
     }, []);
 
