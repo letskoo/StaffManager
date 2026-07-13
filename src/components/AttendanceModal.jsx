@@ -264,16 +264,8 @@ function AttendanceModal({
 
                                 <div className="bonus-header">
 
-                                    <div className="notice-item-title">
-
-                                        {card.title}
-
-                                    </div>
-
                                     <div className="bonus-amount">
-
                                         {Number(card.amount).toLocaleString()}원
-
                                     </div>
 
                                 </div>
@@ -281,9 +273,7 @@ function AttendanceModal({
                                 {card.content && (
 
                                     <div className="notice-item-content">
-
                                         {card.content}
-
                                     </div>
 
                                 )}

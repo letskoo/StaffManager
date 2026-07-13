@@ -173,8 +173,6 @@ function NoticeModal({
 
             ...form,
 
-            title: form.content || "개인메모",
-
         };
 
         if (notice) {
