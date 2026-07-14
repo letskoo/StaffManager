@@ -81,7 +81,7 @@ function Download() {
         <div className="download-page">
 
             <img
-                src="/pwa-512x512.png"
+                src="/pwa-512x512-v2.png"
                 className="download-logo"
             />
 

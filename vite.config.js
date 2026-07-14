@@ -7,119 +7,97 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
 
-    plugins: [
+  plugins: [
 
-        react(),
+    react(),
 
-        tailwindcss(),
+    tailwindcss(),
 
-        VitePWA({
+    VitePWA({
 
-            registerType: "autoUpdate",
+      registerType: "autoUpdate",
 
-            injectRegister: false,
+      injectRegister: false,
 
-            includeAssets: [
+      includeAssets: [
 
-                "favicon.ico",
+        "favicon.ico",
 
-                "pwa-192x192.png",
+        "pwa-192x192.png",
 
-                "pwa-512x512.png",
+        "pwa-512x512.png",
 
-            ],
+      ],
 
-            manifest: {
+      manifest: {
 
-                id: "/",
+        id: "/",
 
-                name: "Staff Manager",
+        name: "Staff Manager",
 
-                short_name: "Staff Manager",
+        short_name: "Staff Manager",
 
-                description:
-                    "직원, 근태, 급여, 공지와 정책을 관리하는 프로그램",
+        description:
+          "직원, 근태, 급여, 공지와 정책을 관리하는 프로그램",
 
-                lang: "ko-KR",
+        lang: "ko-KR",
 
-                start_url: "/",
+        start_url: "/",
 
-                scope: "/",
+        scope: "/",
 
-                display: "standalone",
+        display: "standalone",
 
-                orientation: "any",
+        orientation: "any",
 
-                background_color: "#f5f6f8",
+        background_color: "#f5f6f8",
 
-                theme_color: "#1f73b9",
+        theme_color: "#1f73b9",
 
-                prefer_related_applications: false,
+        prefer_related_applications: false,
 
-                icons: [
+        icons: [
 
-                    {
+          {
+            src: "/pwa-192x192-v2.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
 
-                        src: "/pwa-192x192.png",
+          {
+            src: "/pwa-512x512-v2.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
 
-                        sizes: "192x192",
+        ],
 
-                        type: "image/png",
+      },
 
-                        purpose: "any",
+      workbox: {
 
-                    },
+        globPatterns: [
 
-                    {
+          "**/*.{js,css,html,ico,png,svg,woff,woff2}",
 
-                        src: "/pwa-512x512.png",
+        ],
 
-                        sizes: "512x512",
+        navigateFallback: "/index.html",
 
-                        type: "image/png",
+        cleanupOutdatedCaches: true,
 
-                        purpose: "any",
+      },
 
-                    },
+      devOptions: {
 
-                    {
+        enabled: true,
 
-                        src: "/pwa-512x512.png",
+      },
 
-                        sizes: "512x512",
+    }),
 
-                        type: "image/png",
-
-                        purpose: "maskable",
-
-                    },
-
-                ],
-
-            },
-
-            workbox: {
-
-                globPatterns: [
-
-                    "**/*.{js,css,html,ico,png,svg,woff,woff2}",
-
-                ],
-
-                navigateFallback: "/index.html",
-
-                cleanupOutdatedCaches: true,
-
-            },
-
-            devOptions: {
-
-                enabled: true,
-
-            },
-
-        }),
-
-    ],
+  ],
 
 });
