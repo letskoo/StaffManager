@@ -1,0 +1,99 @@
+.download-page{
+
+    width:100%;
+
+    min-height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#f5f6f8;
+
+    padding:40px;
+
+}
+
+.download-logo{
+
+    width:150px;
+
+    height:150px;
+
+    border-radius:30px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.12);
+
+}
+
+.download-page h1{
+
+    margin-top:30px;
+
+    font-size:42px;
+
+    font-weight:700;
+
+    color:#222;
+
+}
+
+.download-page p{
+
+    margin-top:14px;
+
+    font-size:20px;
+
+    color:#666;
+
+    text-align:center;
+
+    line-height:1.7;
+
+}
+
+.download-btn{
+
+    margin-top:40px;
+
+    width:260px;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#1f73b9;
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-decoration:none;
+
+    transition:.2s;
+
+}
+
+.download-btn:hover{
+
+    background:#185d96;
+
+    transform:translateY(-2px);
+
+}

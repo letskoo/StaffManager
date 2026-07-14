@@ -1,3 +1,5 @@
+import Download from "./pages/Download";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -61,6 +63,11 @@ function App() {
             <Route
                 path="/"
                 element={<WorkPad />}
+            />
+
+            <Route
+                path="/download"
+                element={<Download />}
             />
 
             <Route
