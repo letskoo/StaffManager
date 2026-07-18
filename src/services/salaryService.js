@@ -411,54 +411,81 @@ export function getMonthlySalary(employee) {
 
         .slice(0, 7);
 
-    const dailyPay = history
+    let basePay = 0;
 
-        .filter(
+    if (employee.workPolicy?.payType === "monthly") {
 
-            (record) =>
-
-                record.employeeNo === employee.no &&
-
-                record.date.startsWith(currentMonth) &&
-
-                record.checkOut
-
-        )
-
-        .reduce(
-
-            (total, record) =>
-
-                total +
-
-                calculateDailyPay(
-
-                    record,
-
-                    employee
-
-                ),
-
-            0
-
+        basePay = Number(
+            employee.workPolicy.monthlySalary || 0
         );
+
+    } else {
+
+        basePay = history
+
+            .filter(
+                (record) =>
+                    record.employeeNo === employee.no &&
+                    record.date.startsWith(currentMonth) &&
+                    record.checkOut
+            )
+
+            .reduce(
+                (total, record) =>
+                    total +
+                    calculateDailyPay(
+                        record,
+                        employee
+                    ),
+                0
+            );
+
+    }
 
     const weeklyHolidayPay =
         getMonthlyWeeklyHolidayPay(
-
             employee,
-
             currentMonth
-
         );
 
     const bonus =
         getMonthlyBonus(
-
             employee,
-
             currentMonth
+        );
 
+    const detail = history
+        .filter(
+            record =>
+                record.employeeNo === employee.no &&
+                record.date.startsWith(currentMonth) &&
+                record.checkOut
+        )
+        .reduce(
+            (sum, record) => {
+
+                const pay =
+                    calculatePayDetail(
+                        record,
+                        employee
+                    );
+
+                sum.overtime += pay.overtimePay;
+                sum.night += pay.nightPay;
+                sum.holiday += pay.holidayPay;
+                sum.late += pay.lateDeduction;
+                sum.early += pay.earlyLeaveDeduction;
+
+                return sum;
+
+            },
+            {
+                overtime: 0,
+                night: 0,
+                holiday: 0,
+                late: 0,
+                early: 0,
+            }
         );
 
     const absentCount =
@@ -476,13 +503,31 @@ export function getMonthlySalary(employee) {
             )
             : 0;
 
+    const joinMonth = employee.join?.slice(0, 7);
+
+    if (joinMonth && currentMonth < joinMonth) {
+
+        return 0;
+
+    }
+
     return Math.max(
 
-        dailyPay +
+        basePay +
+
+        detail.overtime +
+
+        detail.night +
+
+        detail.holiday +
 
         weeklyHolidayPay +
 
         bonus -
+
+        detail.late -
+
+        detail.early -
 
         absentDeduction,
 
@@ -674,14 +719,21 @@ export function getMonthlyAbsentCount(employee, month = new Date().toISOString()
 
             const isWorkDay = !!weekSchedule[dayKey];
 
-            const hasRecord = history.some(
+            const absentRecord = history.find(
                 (record) =>
                     record.employeeNo === employee.no &&
-                    record.date === dateText
+                    record.date === dateText &&
+                    record.status === "결근"
             );
 
-            if (isWorkDay && !hasRecord) {
+            if (
+                isWorkDay &&
+                absentRecord?.approval?.absent?.required &&
+                absentRecord?.approval?.absent?.status === "approved"
+            ) {
+
                 absent++;
+
             }
 
         }
@@ -700,42 +752,151 @@ export function getMonthlySalaryByMonth(employee, month) {
         localStorage.getItem(HISTORY_KEY)
     ) || [];
 
-    const dailyPay = history
+    let basePay = 0;
 
+    if (employee.workPolicy?.payType === "monthly") {
+
+        basePay = Number(
+            employee.workPolicy.monthlySalary || 0
+        );
+
+    } else {
+
+        basePay = history
+
+            .filter(
+                (record) =>
+                    record.employeeNo === employee.no &&
+                    record.date.startsWith(month) &&
+                    record.checkOut
+            )
+
+            .reduce(
+                (total, record) =>
+                    total +
+                    calculateDailyPay(
+                        record,
+                        employee
+                    ),
+                0
+            );
+
+    }
+
+    const weeklyHolidayPay =
+        getMonthlyWeeklyHolidayPay(
+            employee,
+            month
+        );
+
+    const bonus =
+        getMonthlyBonus(
+            employee,
+            month
+        );
+
+    const detail = history
         .filter(
             (record) =>
                 record.employeeNo === employee.no &&
                 record.date.startsWith(month) &&
                 record.checkOut
         )
-
         .reduce(
-            (total, record) =>
-                total + calculateDailyPay(record, employee),
-            0
+            (sum, record) => {
+
+                const pay =
+                    calculatePayDetail(
+                        record,
+                        employee
+                    );
+
+                sum.overtime +=
+                    pay.overtimePay;
+
+                sum.night +=
+                    pay.nightPay;
+
+                sum.holiday +=
+                    pay.holidayPay;
+
+                sum.late +=
+                    pay.lateDeduction;
+
+                sum.early +=
+                    pay.earlyLeaveDeduction;
+
+                return sum;
+
+            },
+            {
+                overtime: 0,
+                night: 0,
+                holiday: 0,
+                late: 0,
+                early: 0,
+            }
         );
 
-    const weeklyHolidayPay =
-        getMonthlyWeeklyHolidayPay(employee, month);
-
-    const bonus =
-        getMonthlyBonus(employee, month);
-
     const absentCount =
-        getMonthlyAbsentCount(employee, month);
+        getMonthlyAbsentCount(
+            employee,
+            month
+        );
 
     const absentDeduction =
         employee.workPolicy?.payType === "monthly"
             ? Math.floor(
-                Number(employee.workPolicy.monthlySalary || 0) /
+                Number(
+                    employee.workPolicy.monthlySalary || 0
+                ) /
                 30 *
                 absentCount
             )
             : 0;
 
+    const joinMonth =
+        employee.join?.slice(0, 7);
+
+    if (
+        joinMonth &&
+        month < joinMonth
+    ) {
+
+        return 0;
+
+    }
+
+    const currentMonth = new Date()
+        .toISOString()
+        .slice(0, 7);
+
+    if (month > currentMonth) {
+        return 0;
+    }
+
     return Math.max(
-        dailyPay + weeklyHolidayPay + bonus - absentDeduction,
+
+        basePay +
+
+        detail.overtime +
+
+        detail.night +
+
+        detail.holiday +
+
+        weeklyHolidayPay +
+
+        bonus -
+
+        detail.late -
+
+        detail.early -
+
+        absentDeduction,
+
         0
+
     );
 
 }
@@ -780,8 +941,18 @@ export function getMonthlyPayrollStatement(employee) {
     let overtimePay = 0;
     let nightPay = 0;
     let holidayPay = 0;
+    let lateDeduction = 0;
+    let earlyLeaveDeduction = 0;
 
-    records.forEach(record => {
+    if (employee.workPolicy?.payType === "monthly") {
+
+        basePay = Number(
+            employee.workPolicy.monthlySalary || 0
+        );
+
+    }
+
+    records.forEach((record) => {
 
         const detail =
             calculatePayDetail(
@@ -789,10 +960,29 @@ export function getMonthlyPayrollStatement(employee) {
                 employee
             );
 
-        basePay += detail.basePay;
-        overtimePay += detail.overtimePay;
-        nightPay += detail.nightPay;
-        holidayPay += detail.holidayPay;
+        if (
+            employee.workPolicy?.payType === "hourly"
+        ) {
+
+            basePay +=
+                detail.basePay;
+
+        }
+
+        overtimePay +=
+            detail.overtimePay;
+
+        nightPay +=
+            detail.nightPay;
+
+        holidayPay +=
+            detail.holidayPay;
+
+        lateDeduction +=
+            detail.lateDeduction;
+
+        earlyLeaveDeduction +=
+            detail.earlyLeaveDeduction;
 
     });
 
@@ -825,6 +1015,20 @@ export function getMonthlyPayrollStatement(employee) {
             )
             : 0;
 
+    const joinMonth = employee.join?.slice(0, 7);
+
+    if (joinMonth && month < joinMonth) {
+
+        basePay = 0;
+
+        overtimePay = 0;
+
+        nightPay = 0;
+
+        holidayPay = 0;
+
+    }
+
     return {
 
         employeeName: employee.name,
@@ -850,6 +1054,12 @@ export function getMonthlyPayrollStatement(employee) {
 
         bonus,
 
+        lateDeduction:
+            Math.floor(lateDeduction),
+
+        earlyLeaveDeduction:
+            Math.floor(earlyLeaveDeduction),
+
         absentDeduction,
 
         totalPay:
@@ -865,6 +1075,10 @@ export function getMonthlyPayrollStatement(employee) {
             weeklyHolidayPay +
 
             bonus -
+
+            lateDeduction -
+
+            earlyLeaveDeduction -
 
             absentDeduction,
 

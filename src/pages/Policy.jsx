@@ -177,25 +177,26 @@ function Policy() {
     const refreshApprovalList = () => {
 
         setApprovalList(
-
             getApprovalList()
-
         );
 
         setResolvedList(
-
             getResolvedApprovalList()
-
         );
 
     };
 
+    // ✅ 추가
+    useEffect(() => {
+
+        refreshApprovalList();
+
+    }, []);
+
     const handleApprove = (
 
         id,
-
         type,
-
         status
 
     ) => {
@@ -587,6 +588,21 @@ function Policy() {
                                                     minute: "2-digit",
                                                     hour12: false
                                                 });
+                                            break;
+
+                                        case "night":
+                                            reason = "야간근무";
+                                            time = new Date(item.checkOut)
+                                                .toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false
+                                                });
+                                            break;
+
+                                        case "absent":
+                                            reason = "결근";
+                                            time = "-";
                                             break;
 
                                     }

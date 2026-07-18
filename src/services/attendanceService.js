@@ -30,9 +30,68 @@ function isEnabled(value) {
 
 }
 
-export function getAttendanceRecords() {
+const DAY_KEYS = [
+    "sun",
+    "mon",
+    "tue",
+    "wed",
+    "thu",
+    "fri",
+    "sat",
+];
 
-    clearOldPendingApprovals();
+function getScheduledDateTime(record, employee) {
+
+    const workPolicy =
+        employee.workPolicy || {};
+
+    const workDate = new Date(
+        `${record.date}T00:00:00`
+    );
+
+    const dayKey =
+        DAY_KEYS[workDate.getDay()];
+
+    const schedule =
+        employee.weekSchedule?.[dayKey];
+
+    const startText =
+        schedule?.start ||
+        workPolicy.startTime ||
+        "09:00";
+
+    const endText =
+        schedule?.end ||
+        workPolicy.endTime ||
+        "18:00";
+
+    const startTime = new Date(
+        `${record.date}T${startText}:00`
+    );
+
+    const endTime = new Date(
+        `${record.date}T${endText}:00`
+    );
+
+    if (endTime <= startTime) {
+
+        endTime.setDate(
+            endTime.getDate() + 1
+        );
+
+    }
+
+    return {
+
+        startTime,
+
+        endTime,
+
+    };
+
+}
+
+export function getAttendanceRecords() {
 
     const saved = localStorage.getItem(STORAGE_KEY);
 
@@ -67,11 +126,19 @@ export function saveAttendanceHistory(record) {
 
 export function getTodayAttendance(employeeNo) {
 
+    const today = getTodayText();
+
     return getAttendanceRecords().find(
 
         (record) =>
 
             record.employeeNo === employeeNo &&
+
+            record.date === today &&
+
+            record.status === "출근" &&
+
+            Boolean(record.checkIn) &&
 
             !record.checkOut
 
@@ -99,7 +166,11 @@ export function getNextAttendanceType(employeeNo) {
 
             record.date === today &&
 
-            record.checkOut
+            record.status === "퇴근" &&
+
+            Boolean(record.checkIn) &&
+
+            Boolean(record.checkOut)
 
     );
 
@@ -121,7 +192,43 @@ export function getAttendanceType(employeeNo) {
 
 export function saveCheckIn(employee) {
 
-    const records = getAttendanceRecords();
+    let records = getAttendanceRecords();
+
+    records = records.filter(
+        record =>
+            !(
+                record.employeeNo === employee.no &&
+                record.date === getTodayText() &&
+                record.status === "결근"
+            )
+    );
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(HISTORY_KEY)
+        ) || [];
+
+    const updatedHistory =
+        history.filter(
+
+            record =>
+
+                !(
+
+                    record.employeeNo === employee.no &&
+
+                    record.date === getTodayText() &&
+
+                    record.status === "결근"
+
+                )
+
+        );
+
+    localStorage.setItem(
+        HISTORY_KEY,
+        JSON.stringify(updatedHistory)
+    );
 
     const now = new Date();
 
@@ -166,6 +273,16 @@ export function saveCheckIn(employee) {
                 status: null,
             },
             overtime: {
+                required: false,
+                resolved: false,
+                status: null,
+            },
+            night: {
+                required: false,
+                resolved: false,
+                status: null,
+            },
+            absent: {
                 required: false,
                 resolved: false,
                 status: null,
@@ -314,14 +431,18 @@ export function analyzeAttendance(record, employee) {
 
     ) || {};
 
-    const workDate = record.date;
+    const {
 
-    const startTime = new Date(
-        `${workDate}T${workPolicy.startTime}:00`
-    );
+        startTime,
 
-    const endTime = new Date(
-        `${workDate}T${workPolicy.endTime}:00`
+        endTime,
+
+    } = getScheduledDateTime(
+
+        record,
+
+        employee
+
     );
 
     const checkIn = new Date(record.checkIn);
@@ -359,6 +480,14 @@ export function analyzeAttendance(record, employee) {
         new Date(
             endTime.getTime()
             + overtimeLimit * 60000
+        );
+
+    const night =
+
+        checkOut >
+
+        new Date(
+            `${record.date}T22:00:00`
         );
 
     const earlyCheckInApprovalRequired =
@@ -400,6 +529,18 @@ export function analyzeAttendance(record, employee) {
                 required: overtime,
                 resolved: record.approval?.overtime?.resolved || false,
                 status: record.approval?.overtime?.status || null,
+            },
+
+            night: {
+                required: night,
+                resolved: record.approval?.night?.resolved || false,
+                status: record.approval?.night?.status || null,
+            },
+
+            absent: {
+                required: record.approval?.absent?.required || false,
+                resolved: record.approval?.absent?.resolved || false,
+                status: record.approval?.absent?.status || null,
             },
         },
 
@@ -768,21 +909,51 @@ function getHourlyPay(employee) {
 
 export function calculatePayDetail(record, employee) {
 
+    const emptyPayDetail = {
+        baseMinutes: 0,
+        overtimeMinutes: 0,
+        nightMinutes: 0,
+        holidayMinutes: 0,
+        lateMinutes: 0,
+        earlyLeaveMinutes: 0,
+        basePay: 0,
+        overtimePay: 0,
+        nightPay: 0,
+        holidayPay: 0,
+        lateDeduction: 0,
+        earlyLeaveDeduction: 0,
+        totalPay: 0,
+    };
+
     const workPolicy = employee.workPolicy;
 
     if (!workPolicy) {
 
-        return {
-            baseMinutes: 0,
-            overtimeMinutes: 0,
-            nightMinutes: 0,
-            holidayMinutes: 0,
-            basePay: 0,
-            overtimePay: 0,
-            nightPay: 0,
-            holidayPay: 0,
-            totalPay: 0,
-        };
+        return emptyPayDetail;
+
+    }
+
+    if (
+        !record ||
+        !record.checkIn ||
+        !record.checkOut
+    ) {
+
+        return emptyPayDetail;
+
+    }
+
+    const checkInDate = new Date(record.checkIn);
+
+    const checkOutDate = new Date(record.checkOut);
+
+    if (
+        Number.isNaN(checkInDate.getTime()) ||
+        Number.isNaN(checkOutDate.getTime()) ||
+        checkOutDate <= checkInDate
+    ) {
+
+        return emptyPayDetail;
 
     }
 
@@ -790,59 +961,113 @@ export function calculatePayDetail(record, employee) {
 
     const approval = record.approval || {};
 
-    const lateApproved =
+    const lateDeductionApproved =
+
+        record.late === true &&
+
         approval.late?.status === "approved";
 
-    const earlyLeaveApproved =
+    const earlyLeaveDeductionApproved =
+
+        record.earlyLeave === true &&
+
         approval.earlyLeave?.status === "approved";
 
     const earlyCheckInApproved =
+
         approval.earlyCheckIn?.status === "approved";
 
     const overtimeApproved =
+
         approval.overtime?.status === "approved";
+
+    const nightApproved =
+        approval.night?.status === "approved";
 
     const holidayInfo =
         splitWorkMinutesByHoliday(record);
 
-    const startTime = new Date(
-        `${record.date}T${workPolicy.startTime}:00`
-    );
+    const {
 
-    const endTime = new Date(
-        `${record.date}T${workPolicy.endTime}:00`
+        startTime,
+
+        endTime,
+
+    } = getScheduledDateTime(
+
+        record,
+
+        employee
+
     );
 
     const checkIn = new Date(record.checkIn);
 
     const checkOut = new Date(record.checkOut);
 
-    let payStart =
-        earlyCheckInApproved
-            ? checkIn
-            : new Date(
-                Math.max(
-                    checkIn.getTime(),
-                    startTime.getTime()
-                )
-            );
+    let payStart = startTime;
 
-    let payEnd =
-        earlyLeaveApproved
-            ? endTime
-            : checkOut;
+    if (checkIn < startTime) {
 
-    if (lateApproved) {
+        payStart =
+            earlyCheckInApproved
+                ? checkIn
+                : startTime;
 
-        payStart = startTime;
+    } else if (record.late === true) {
+
+        payStart =
+            lateDeductionApproved
+                ? checkIn
+                : startTime;
 
     }
 
-    if (!overtimeApproved && payEnd > endTime) {
+    let payEnd = endTime;
 
-        payEnd = endTime;
+    if (checkOut > endTime) {
+
+        payEnd =
+            overtimeApproved
+                ? checkOut
+                : endTime;
+
+    } else if (record.earlyLeave === true) {
+
+        payEnd =
+            earlyLeaveDeductionApproved
+                ? checkOut
+                : endTime;
 
     }
+
+    const scheduledMinutes =
+        Math.max(
+            Math.floor(
+                (endTime - startTime) / 60000
+            ),
+            1
+        );
+
+    const lateMinutes =
+        lateDeductionApproved
+            ? Math.max(
+                Math.floor(
+                    (checkIn - startTime) / 60000
+                ),
+                0
+            )
+            : 0;
+
+    const earlyLeaveMinutes =
+        earlyLeaveDeductionApproved
+            ? Math.max(
+                Math.floor(
+                    (endTime - checkOut) / 60000
+                ),
+                0
+            )
+            : 0;
 
     const approvedMinutes =
         Math.max(
@@ -858,11 +1083,16 @@ export function calculatePayDetail(record, employee) {
             480
         );
 
-    const overtimeMinutes =
+    const actualOvertimeMinutes =
         Math.max(
-            approvedMinutes - 480,
+            approvedMinutes - scheduledMinutes,
             0
         );
+
+    const overtimeMinutes =
+        isEnabled(workPolicy.allowOvertime)
+            ? actualOvertimeMinutes
+            : 0;
 
     const nightMinutes = getNightMinutes(record);
 
@@ -880,28 +1110,37 @@ export function calculatePayDetail(record, employee) {
 
     );
 
-    let basePay =
+    let basePay = 0;
 
-        baseMinutes / 60 *
+    let lateDeduction = 0;
 
-        hourlyPay;
+    let earlyLeaveDeduction = 0;
+
+    if (workPolicy.payType === "monthly") {
+
+        lateDeduction =
+            lateMinutes / 60 *
+            hourlyPay;
+
+        earlyLeaveDeduction =
+            earlyLeaveMinutes / 60 *
+            hourlyPay;
+
+    } else {
+
+        basePay =
+            baseMinutes / 60 *
+            hourlyPay;
+
+    }
 
     let overtimePay = 0;
 
-    if (
-
-        overtimeMinutes > 0 &&
-
-        isEnabled(workPolicy.allowOvertime)
-
-    ) {
+    if (overtimeMinutes > 0) {
 
         overtimePay =
-
             overtimeMinutes / 60 *
-
             hourlyPay *
-
             1.5;
 
     } else {
@@ -917,6 +1156,8 @@ export function calculatePayDetail(record, employee) {
     let nightPay = 0;
 
     if (
+
+        nightApproved &&
 
         isEnabled(workPolicy.allowNight) &&
 
@@ -1039,16 +1280,29 @@ export function calculatePayDetail(record, employee) {
         nightMinutes,
 
         holidayMinutes:
-
             holidayInfo.holidayMinutes,
 
-        basePay: Math.floor(basePay),
+        lateMinutes,
 
-        overtimePay: Math.floor(overtimePay),
+        earlyLeaveMinutes,
 
-        nightPay: Math.floor(nightPay),
+        basePay:
+            Math.floor(basePay),
 
-        holidayPay: Math.floor(holidayPay),
+        overtimePay:
+            Math.floor(overtimePay),
+
+        nightPay:
+            Math.floor(nightPay),
+
+        holidayPay:
+            Math.floor(holidayPay),
+
+        lateDeduction:
+            Math.floor(lateDeduction),
+
+        earlyLeaveDeduction:
+            Math.floor(earlyLeaveDeduction),
 
         totalPay,
 
@@ -1072,25 +1326,32 @@ export function getApprovalList() {
 
     const records = getAttendanceRecords();
 
+    generateAbsentApprovals();
+
+    const latestRecords = getAttendanceRecords();
+
     const result = [];
 
-    records.forEach((record) => {
+    latestRecords.forEach((record) => {
 
         const approval = record.approval || {};
 
         Object.entries(approval).forEach(([type, item]) => {
 
-            if (
-                item.required &&
-                !item.resolved
-            ) {
+            if (item.required && !item.resolved) {
 
                 result.push({
+
                     ...record,
+
                     approvalId: `${record.id}-${type}`,
+
                     recordId: record.id,
+
                     approvalType: type,
+
                     approvalStatus: item.status,
+
                 });
 
             }
@@ -1236,6 +1497,178 @@ export function getResolvedApprovalList() {
 
 }
 
+export function generateAbsentApprovals() {
+
+    clearOldPendingApprovals();
+
+    const employees = JSON.parse(
+        localStorage.getItem("employees")
+    ) || [];
+
+    const records = getAttendanceRecords();
+
+    const today = new Date();
+
+    const dayKeys = [
+        "sun",
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+    ];
+
+    employees.forEach(employee => {
+
+        const joinDate = employee.join
+            ? new Date(`${employee.join}T00:00:00`)
+            : null;
+
+        if (!joinDate) return;
+
+        const today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        for (
+
+            let current = new Date(joinDate);
+
+            current <= today;
+
+            current.setDate(current.getDate() + 1)
+
+        ) {
+
+            const dayKey =
+                dayKeys[current.getDay()];
+
+            const schedule =
+                employee.weekSchedule?.[dayKey];
+
+            if (!schedule) continue;
+
+            const dateText =
+                `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-${String(current.getDate()).padStart(2, "0")}`;
+
+            // 오늘은 출근시간 +30분 이후부터만 결근 생성
+            if (dateText === getTodayText()) {
+
+                const [hour, minute] =
+                    schedule.start.split(":").map(Number);
+
+                const absentTime = new Date();
+
+                absentTime.setHours(hour);
+                absentTime.setMinutes(minute + 30);
+                absentTime.setSeconds(0);
+                absentTime.setMilliseconds(0);
+
+                if (new Date() <= absentTime) {
+
+                    continue;
+
+                }
+
+            }
+
+            const exists = records.some(
+                record =>
+                    record.employeeNo === employee.no &&
+                    record.date === dateText
+            );
+
+            if (exists) continue;
+
+            const absentRecord = {
+
+                id: Date.now() + Math.random(),
+
+                employeeNo: employee.no,
+
+                employeeName: employee.name,
+
+                date: dateText,
+
+                checkIn: null,
+
+                checkOut: null,
+
+                workMinutes: 0,
+
+                status: "결근",
+
+                late: false,
+
+                earlyLeave: false,
+
+                overtime: false,
+
+                approval: {
+
+                    earlyCheckIn: {
+                        required: false,
+                        resolved: false,
+                        status: null,
+                    },
+
+                    late: {
+                        required: false,
+                        resolved: false,
+                        status: null,
+                    },
+
+                    earlyLeave: {
+                        required: false,
+                        resolved: false,
+                        status: null,
+                    },
+
+                    overtime: {
+                        required: false,
+                        resolved: false,
+                        status: null,
+                    },
+
+                    night: {
+                        required: false,
+                        resolved: false,
+                        status: null,
+                    },
+
+                    absent: {
+                        required: true,
+                        resolved: false,
+                        status: null,
+                    },
+
+                },
+
+            };
+
+            records.unshift(absentRecord);
+
+            saveAttendanceHistory(absentRecord);
+
+        }
+
+    });
+
+    const before = JSON.stringify(
+        getAttendanceRecords()
+    );
+
+    const after = JSON.stringify(records);
+
+    if (before !== after) {
+
+        saveAttendanceRecords(records);
+
+    }
+
+}
+
 export function clearOldPendingApprovals() {
 
     const currentMonth = getTodayText().slice(0, 7);
@@ -1376,13 +1809,17 @@ export function getMonthlyAbsentCount(
                 const dateText =
                     `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-${String(current.getDate()).padStart(2, "0")}`;
 
-                const worked = history.some(
+                const absentRecord = history.find(
                     record =>
                         record.employeeNo === employee.no &&
-                        record.date === dateText
+                        record.date === dateText &&
+                        record.status === "결근"
                 );
 
-                if (!worked) {
+                if (
+                    absentRecord &&
+                    absentRecord.approval?.absent?.status === "approved"
+                ) {
                     absent++;
                 }
 
