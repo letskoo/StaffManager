@@ -1080,7 +1080,7 @@ export function calculatePayDetail(record, employee) {
     const baseMinutes =
         Math.min(
             approvedMinutes,
-            480
+            scheduledMinutes
         );
 
     const actualOvertimeMinutes =
@@ -1094,7 +1094,11 @@ export function calculatePayDetail(record, employee) {
             ? actualOvertimeMinutes
             : 0;
 
-    const nightMinutes = getNightMinutes(record);
+    const nightMinutes = getNightMinutes({
+        ...record,
+        checkIn: payStart.toISOString(),
+        checkOut: payEnd.toISOString(),
+    });
 
     const isHolidayWork =
 
@@ -1141,7 +1145,7 @@ export function calculatePayDetail(record, employee) {
         overtimePay =
             overtimeMinutes / 60 *
             hourlyPay *
-            1.5;
+            0.5;
 
     } else {
 

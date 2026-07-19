@@ -515,12 +515,6 @@ export function getMonthlySalary(employee) {
 
         basePay +
 
-        detail.overtime +
-
-        detail.night +
-
-        detail.holiday +
-
         weeklyHolidayPay +
 
         bonus -
@@ -878,12 +872,6 @@ export function getMonthlySalaryByMonth(employee, month) {
     return Math.max(
 
         basePay +
-
-        detail.overtime +
-
-        detail.night +
-
-        detail.holiday +
 
         weeklyHolidayPay +
 
