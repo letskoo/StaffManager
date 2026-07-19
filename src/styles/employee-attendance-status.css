@@ -94,6 +94,12 @@
 
 }
 
+.attendance-table tbody .attendance-row-small td {
+
+    height: 30px;
+
+}
+
 .attendance-label {
 
     width: 80px;
@@ -105,6 +111,8 @@
     color: #666;
 
     background: transparent;
+
+    vertical-align: middle;
 
 }
 
@@ -229,5 +237,23 @@
 .waiting {
 
     background: #ff9800;
+
+}
+
+.dashboard-attendance-title {
+
+    margin: 0 0 22px;
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+    color: #222;
+
+}
+
+.attendance-table tbody tr.attendance-checkout-row td {
+
+    border-top: none;
 
 }

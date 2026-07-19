@@ -9,6 +9,7 @@ import useEmployees from "../hooks/useEmployees";
 import DashboardSummary from "../components/DashboardSummary";
 import DashboardCharts from "../components/DashboardCharts";
 import DashboardWeekCalendar from "../components/DashboardWeekCalendar";
+import DashboardAttendanceBoard from "../components/DashboardAttendanceBoard";
 
 import DashboardTodo from "../components/DashboardTodo";
 import DashboardWorking from "../components/DashboardWorking";
@@ -113,6 +114,12 @@ function Dashboard() {
                     <DashboardCharts />
 
                     <DashboardWeekCalendar />
+
+                </div>
+
+                <div className="detail-card">
+
+                    <DashboardAttendanceBoard />
 
                 </div>
 
