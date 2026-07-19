@@ -1,0 +1,233 @@
+.employee-attendance-status {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+}
+
+.attendance-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 0px;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+}
+
+.attendance-title {
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+.attendance-legend {
+
+    display: flex;
+
+    gap: 18px;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+}
+
+.attendance-legend span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #666;
+
+    font-size: 14px;
+
+}
+
+.attendance-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+
+}
+
+.attendance-table thead th {
+
+    height: 46px;
+
+    background: #f8f8f8;
+
+    border-bottom: 1px solid #ececec;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #666;
+
+}
+
+.attendance-table tbody td {
+
+    height: 56px;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    text-align: center;
+
+}
+
+.attendance-label {
+
+    width: 80px;
+
+    font-weight: 600;
+
+    font-size: 13px;
+
+    color: #666;
+
+    background: transparent;
+
+}
+
+.attendance-dot {
+
+    width: 12px;
+
+    height: 12px;
+
+    border-radius: 50%;
+
+    display: inline-block;
+
+}
+
+.attendance-legend i {
+
+    width: 12px;
+
+    height: 12px;
+
+    border-radius: 50%;
+
+    display: inline-block;
+
+    flex-shrink: 0;
+
+}
+
+.attendance-off {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 16px;
+
+    height: 16px;
+
+    color: #999;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+}
+
+.attendance-legend .off {
+
+    background: none;
+
+    width: auto;
+
+    height: auto;
+
+    color: #999;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+.attendance-today-circle {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius: 50%;
+
+    background: #e8f2ff;
+
+    color: #2563eb;
+
+    border: 1px solid #93c5fd;
+
+    font-weight: 700;
+
+    font-size: 13px;
+
+}
+
+.normal {
+
+    background: #43a047;
+
+}
+
+.absent {
+
+    background: #e53935;
+
+}
+
+.empty {
+
+    background: #fff;
+
+    border: 1px solid #999;
+
+    box-sizing: border-box;
+
+}
+
+.approved {
+
+    background: #2962ff;
+
+}
+
+.waiting {
+
+    background: #ff9800;
+
+}

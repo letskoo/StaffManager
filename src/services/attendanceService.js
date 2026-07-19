@@ -1834,3 +1834,396 @@ export function getMonthlyAbsentCount(
     return absent;
 
 }
+
+export function getEmployeeMonthlyAttendanceStatus(
+    employee,
+    month = null
+) {
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(HISTORY_KEY)
+        ) || [];
+
+    const now = new Date();
+
+    const targetMonth =
+        month ||
+        `${now.getFullYear()}-${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    const [year, monthNumber] =
+        targetMonth.split("-").map(Number);
+
+    const monthIndex =
+        monthNumber - 1;
+
+    const daysInMonth =
+        new Date(
+            year,
+            monthNumber,
+            0
+        ).getDate();
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const dayKeys = [
+        "sun",
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+    ];
+
+    /*
+     * 승인 상태 확인
+     */
+    const getApprovalState = (
+        approval,
+        types
+    ) => {
+
+        const items = types
+            .map(
+                type => approval?.[type]
+            )
+            .filter(Boolean);
+
+        const waiting = items.some(
+            item =>
+                item.required &&
+                !item.resolved
+        );
+
+        if (waiting) {
+
+            return "waiting";
+
+        }
+
+        const approved = items.some(
+            item =>
+                item.required &&
+                item.resolved &&
+                item.status === "approved"
+        );
+
+        if (approved) {
+
+            return "approved";
+
+        }
+
+        return null;
+
+    };
+
+    /*
+     * 날짜 상태를 한 곳에서 생성
+     *
+     * 앞으로 날짜와 관련된 속성은
+     * 이 함수에만 추가하면 됩니다.
+     */
+    const createDayStatus = ({
+
+        day,
+
+        date,
+
+        dateText,
+
+        dayKey,
+
+        isWorkDay,
+
+        checkIn,
+
+        checkOut,
+
+    }) => {
+
+        const dayNumber =
+            date.getDay();
+
+        return {
+
+            day,
+
+            date: dateText,
+
+            dayKey,
+
+            isWorkDay,
+
+            isPast:
+                date < today,
+
+            isToday:
+                date.getTime() ===
+                today.getTime(),
+
+            isFuture:
+                date > today,
+
+            isWeekend:
+                dayNumber === 0 ||
+                dayNumber === 6,
+
+            isHoliday:
+                isHoliday(date),
+
+            checkIn,
+
+            checkOut,
+
+        };
+
+    };
+
+    return Array.from(
+        {
+            length: daysInMonth,
+        },
+        (_, index) => {
+
+            const day =
+                index + 1;
+
+            const date = new Date(
+                year,
+                monthIndex,
+                day
+            );
+
+            date.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+            const dateText =
+                `${year}-${String(
+                    monthNumber
+                ).padStart(2, "0")}-${String(
+                    day
+                ).padStart(2, "0")}`;
+
+            const dayKey =
+                dayKeys[
+                date.getDay()
+                ];
+
+            const isWorkDay =
+                Boolean(
+                    employee
+                        .weekSchedule?.[
+                    dayKey
+                    ]
+                );
+
+            /*
+             * 공통 날짜 정보를 자동으로 포함하는
+             * 반환 함수
+             */
+            const createStatus = (
+                checkIn,
+                checkOut
+            ) => {
+
+                return createDayStatus({
+
+                    day,
+
+                    date,
+
+                    dateText,
+
+                    dayKey,
+
+                    isWorkDay,
+
+                    checkIn,
+
+                    checkOut,
+
+                });
+
+            };
+
+            /*
+             * 미래 날짜
+             */
+            if (date > today) {
+
+                return createStatus(
+                    null,
+                    null
+                );
+
+            }
+
+            /*
+             * 휴무일
+             */
+            if (!isWorkDay) {
+
+                return createStatus(
+                    "off",
+                    "off"
+                );
+
+            }
+
+            const record =
+                history.find(
+                    item =>
+                        item.employeeNo ===
+                        employee.no &&
+                        item.date ===
+                        dateText
+                );
+
+            /*
+             * 근무일이지만 기록 없음
+             */
+            if (!record) {
+
+                return createStatus(
+                    "empty",
+                    "empty"
+                );
+
+            }
+
+            /*
+             * 결근 기록
+             */
+            if (
+                record.status ===
+                "결근"
+            ) {
+
+                const absentApproval =
+                    record
+                        .approval
+                        ?.absent;
+
+                /*
+                 * 결근 승인대기
+                 */
+                if (
+                    absentApproval
+                        ?.required &&
+                    !absentApproval
+                        ?.resolved
+                ) {
+
+                    return createStatus(
+                        "waiting",
+                        "waiting"
+                    );
+
+                }
+
+                /*
+                 * 결근 승인
+                 */
+                if (
+                    absentApproval
+                        ?.status ===
+                    "approved"
+                ) {
+
+                    return createStatus(
+                        "absent",
+                        "absent"
+                    );
+
+                }
+
+                /*
+                 * 결근 거절
+                 *
+                 * 근태 기록은 처리되었지만
+                 * 급여 영향은 적용하지 않음
+                 */
+                if (
+                    absentApproval
+                        ?.status ===
+                    "rejected"
+                ) {
+
+                    return createStatus(
+                        "approved",
+                        "approved"
+                    );
+
+                }
+
+                /*
+                 * 결근 상태지만
+                 * 승인 정보가 없는 경우
+                 */
+                return createStatus(
+                    "empty",
+                    "empty"
+                );
+
+            }
+
+            /*
+             * 출근 관련 승인 상태
+             */
+            const checkInApprovalState =
+                getApprovalState(
+                    record.approval,
+                    [
+                        "earlyCheckIn",
+                        "late",
+                    ]
+                );
+
+            /*
+             * 퇴근 관련 승인 상태
+             */
+            const checkOutApprovalState =
+                getApprovalState(
+                    record.approval,
+                    [
+                        "earlyLeave",
+                        "overtime",
+                        "night",
+                    ]
+                );
+
+            const checkInStatus =
+                checkInApprovalState ||
+                (
+                    record.checkIn
+                        ? "normal"
+                        : "empty"
+                );
+
+            const checkOutStatus =
+                checkOutApprovalState ||
+                (
+                    record.checkOut
+                        ? "normal"
+                        : "empty"
+                );
+
+            return createStatus(
+                checkInStatus,
+                checkOutStatus
+            );
+
+        }
+    );
+
+}

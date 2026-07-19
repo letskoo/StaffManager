@@ -1,4 +1,7 @@
-import { useState } from "react";
+import {
+    useState,
+    useMemo,
+} from "react";
 
 import useEmployees from "../hooks/useEmployees";
 
@@ -7,7 +10,11 @@ import EmployeeModal from "../components/EmployeeModal";
 import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
 import PayrollStatementModal from "../components/PayrollStatementModal";
-import DashboardWeekCalendar from "../components/DashboardWeekCalendar";
+import DashboardWeekCalendar
+    from "../components/DashboardWeekCalendar";
+
+import EmployeeAttendanceStatus
+    from "../components/EmployeeAttendanceStatus";
 
 import "../styles/employee-detail.css";
 
@@ -71,6 +78,57 @@ function EmployeeDetail() {
     const employee = employees.find(
         (item) => item.no === employeeNo
     );
+
+    const [selectedMonth, setSelectedMonth] = useState(() => {
+
+        const now = new Date();
+
+        return `${now.getFullYear()}-${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    });
+
+    const monthLabel = useMemo(() => {
+
+        const [year, month] =
+            selectedMonth.split("-");
+
+        return `${year}년 ${Number(month)}월`;
+
+    }, [selectedMonth]);
+
+    const moveMonth = (diff) => {
+
+        const current = new Date(
+            `${selectedMonth}-01T00:00:00`
+        );
+
+        current.setMonth(
+            current.getMonth() + diff
+        );
+
+        const nextMonth =
+            `${current.getFullYear()}-${String(
+                current.getMonth() + 1
+            ).padStart(2, "0")}`;
+
+        const now = new Date();
+
+        const currentMonth =
+            `${now.getFullYear()}-${String(
+                now.getMonth() + 1
+            ).padStart(2, "0")}`;
+
+        if (nextMonth > currentMonth) {
+
+            return;
+
+        }
+
+        setSelectedMonth(nextMonth);
+
+    };
 
     const monthlySalary = employee
         ? getMonthlySalary(employee)
@@ -574,6 +632,24 @@ function EmployeeDetail() {
                         </div>
 
                     </div>
+
+                </div>
+
+                <div className="detail-card">
+
+                    <h2>
+
+                        출근 현황
+
+                    </h2>
+
+                    <EmployeeAttendanceStatus
+                        employee={employee}
+                        month={selectedMonth}
+                        monthLabel={monthLabel}
+                        moveMonth={moveMonth}
+                        selectedMonth={selectedMonth}
+                    />
 
                 </div>
 
