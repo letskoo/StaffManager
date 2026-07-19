@@ -274,7 +274,7 @@ function DashboardAttendanceBoard() {
                                 <tr className="attendance-row-small attendance-checkin-row">
 
                                     <td
-                                        className="attendance-label"
+                                        className="attendance-label attendance-employee-name"
                                         rowSpan={2}
                                     >
 

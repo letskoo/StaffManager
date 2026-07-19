@@ -252,8 +252,22 @@
 
 }
 
+.attendance-table tbody tr.attendance-checkin-row td {
+
+    border-bottom: none;
+
+}
+
 .attendance-table tbody tr.attendance-checkout-row td {
 
-    border-top: none;
+    border-bottom: 1px solid #f0f0f0;
+
+}
+
+.attendance-table tbody
+.attendance-checkin-row
+.attendance-employee-name {
+
+    border-bottom: 1px solid #f0f0f0;
 
 }
