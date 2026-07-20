@@ -229,9 +229,9 @@ function AttendanceModal({
                                 className="notice-item"
                             >
 
-                                <div className="notice-item-title">
+                                <div className="notice-item-content">
 
-                                    {card.title}
+                                    {card.content || card.title}
 
                                 </div>
 
