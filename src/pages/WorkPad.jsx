@@ -8,8 +8,12 @@ import {
 
     processAttendance,
     getAttendanceType,
+    getOpenAttendance,
+    saveBreakStart,
+    saveBreakEnd,
 
 } from "../services/attendanceService";
+
 import AttendanceModal from "../components/AttendanceModal";
 
 import AttendanceCompleteModal from "../components/AttendanceCompleteModal";
@@ -53,6 +57,8 @@ function WorkPad() {
 
     const [completedType, setCompletedType] = useState("");
 
+    const [completedRecord, setCompletedRecord] = useState(null);
+
     const [modalType, setModalType] = useState("");
 
     const [selectedEmployees, setSelectedEmployees] = useState([]);
@@ -74,8 +80,80 @@ function WorkPad() {
         setEmployeeNo(employeeNo.slice(0, -1));
     };
 
-    const handleClear = () => {
+    const handleBreak = () => {
+
+        const inputNo = employeeNo.join("");
+
+        if (inputNo.length !== 4) {
+
+            alert("직원번호 4자리를 입력하세요.");
+
+            return;
+
+        }
+
+        const matchedEmployees = employees.filter(
+
+            item => item.no === inputNo
+
+        );
+
+        if (matchedEmployees.length === 0) {
+
+            alert("직원을 찾을 수 없습니다.");
+
+            setEmployeeNo([]);
+
+            return;
+
+        }
+
+        if (matchedEmployees.length > 1) {
+
+            setSelectedEmployees(matchedEmployees);
+
+            setModalType("employeeSelectBreak");
+
+            setModalOpen(true);
+
+            return;
+
+        }
+
+        const employee = matchedEmployees[0];
+
+        const attendance = getOpenAttendance(employee.no);
+
+        if (!attendance) {
+
+            alert("먼저 출근을 진행해주세요.");
+
+            setEmployeeNo([]);
+
+            return;
+
+        }
+
+        const breaks = attendance.breaks || [];
+
+        const lastBreak = breaks[breaks.length - 1];
+
+        setSelectedEmployees([employee]);
+
+        if (!lastBreak || lastBreak.end) {
+
+            setModalType("breakStart");
+
+        } else {
+
+            setModalType("breakEnd");
+
+        }
+
+        setModalOpen(true);
+
         setEmployeeNo([]);
+
     };
 
     const handleConfirm = () => {
@@ -111,24 +189,6 @@ function WorkPad() {
             const nextType = getAttendanceType(
                 matchedEmployees[0].no
             );
-
-            if (nextType === "done") {
-
-                setCompletedEmployee(
-
-                    matchedEmployees[0]
-
-                );
-
-                setCompletedType("done");
-
-                setCompleteOpen(true);
-
-                setEmployeeNo([]);
-
-                return;
-
-            }
 
             setSelectedEmployees(matchedEmployees);
 
@@ -250,8 +310,8 @@ function WorkPad() {
                         0
                     </button>
 
-                    <button onClick={handleClear}>
-                        지우기
+                    <button onClick={handleBreak}>
+                        휴식
                     </button>
 
                 </div>
@@ -285,11 +345,17 @@ function WorkPad() {
 
                         onConfirm={(employee) => {
 
-                            const result = processAttendance(employee);
+                            if (modalType === "breakStart") {
 
-                            if (result.type === "done") {
+                                const result = saveBreakStart(employee);
 
-                                alert("오늘은 이미 퇴근 처리되었습니다.");
+                                setCompletedEmployee(employee);
+
+                                setCompletedType("breakStart");
+
+                                setCompletedRecord(result);
+
+                                setCompleteOpen(true);
 
                                 setModalOpen(false);
 
@@ -299,6 +365,56 @@ function WorkPad() {
 
                             }
 
+                            if (modalType === "breakEnd") {
+
+                                const result = saveBreakEnd(employee);
+
+                                setCompletedEmployee(employee);
+
+                                setCompletedType("breakEnd");
+
+                                setCompletedRecord(result);
+
+                                setCompleteOpen(true);
+
+                                setModalOpen(false);
+
+                                setEmployeeNo([]);
+
+                                return;
+
+                            }
+
+                            // 퇴근 전 휴식중인지 확인
+                            if (modalType === "checkout") {
+
+                                const attendance =
+                                    getOpenAttendance(employee.no);
+
+                                const breaks =
+                                    attendance?.breaks || [];
+
+                                const lastBreak =
+                                    breaks[breaks.length - 1];
+
+                                if (lastBreak && !lastBreak.end) {
+
+                                    alert(
+                                        "휴식 중입니다.\n휴식을 먼저 종료하세요."
+                                    );
+
+                                    setModalOpen(false);
+
+                                    setEmployeeNo([]);
+
+                                    return;
+
+                                }
+
+                            }
+
+                            const result = processAttendance(employee);
+
                             setEmployeeNo([]);
 
                             setModalOpen(false);
@@ -306,6 +422,8 @@ function WorkPad() {
                             setCompletedEmployee(employee);
 
                             setCompletedType(result.type);
+
+                            setCompletedRecord(result.record);
 
                             setCompleteOpen(true);
 
@@ -318,13 +436,10 @@ function WorkPad() {
                 {completeOpen && (
 
                     <AttendanceCompleteModal
-
                         type={completedType}
-
                         employee={completedEmployee}
-
+                        record={completedRecord}
                         onClose={handleCloseComplete}
-
                     />
 
                 )}

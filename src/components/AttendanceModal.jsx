@@ -17,6 +17,12 @@ import {
     getRetirement,
 } from "../services/salaryService";
 
+import {
+    getOpenAttendance,
+    calculateBreak,
+    getScheduledWorkMinutes,
+} from "../services/attendanceService";
+
 function AttendanceModal({
 
     type,
@@ -49,11 +55,24 @@ function AttendanceModal({
 
     const currentEmployee =
 
-        type === "employeeSelect"
+        type === "employeeSelect" ||
+
+            type === "employeeSelectBreak"
 
             ? selectedEmployee
 
             : employees[0];
+
+    const attendance = currentEmployee
+        ? getOpenAttendance(currentEmployee.no)
+        : null;
+
+    const breakInfo = attendance
+        ? calculateBreak(
+            getScheduledWorkMinutes(currentEmployee),
+            attendance.breaks || []
+        )
+        : null;
 
     const monthlySalary =
         currentEmployee
@@ -124,7 +143,9 @@ function AttendanceModal({
 
                 <h2 className="attendance-name">
 
-                    {type === "employeeSelect"
+                    {type === "employeeSelect" ||
+
+                        type === "employeeSelectBreak"
 
                         ? "동일한 번호가 있습니다"
 
@@ -134,7 +155,9 @@ function AttendanceModal({
 
                 <p className="attendance-message">
 
-                    {type === "employeeSelect"
+                    {type === "employeeSelect" ||
+
+                        type === "employeeSelectBreak"
 
                         ? "본인을 선택하세요"
 
@@ -142,22 +165,34 @@ function AttendanceModal({
 
                             ? "퇴근 처리하시겠습니까?"
 
-                            : "출근 처리하시겠습니까?"}
+                            : type === "breakStart"
+
+                                ? breakInfo?.remainingBreakMinutes === 0
+
+                                    ? "부여된 휴게시간을 모두 사용했습니다. 그래도 휴식하시겠습니까?"
+
+                                    : "휴식을 시작하시겠습니까?"
+
+                                : type === "breakEnd"
+
+                                    ? "휴식을 종료하시겠습니까?"
+
+                                    : "출근 처리하시겠습니까?"}
 
                 </p>
 
-                {type !== "employeeSelect" && (
+                {type === "breakStart" && breakInfo && (
 
                     <div className="attendance-summary">
 
                         <div className="summary-card">
 
                             <span>
-                                이번 달 예상 급여
+                                사용한 휴게시간
                             </span>
 
                             <strong>
-                                {monthlySalary.toLocaleString()}원
+                                {breakInfo.actualBreakMinutes}분
                             </strong>
 
                         </div>
@@ -165,17 +200,11 @@ function AttendanceModal({
                         <div className="summary-card">
 
                             <span>
-                                예상 퇴직금
+                                남은 휴게시간
                             </span>
 
                             <strong>
-
-                                {
-                                    retirement === null
-                                        ? "대상 아님"
-                                        : `${retirement.toLocaleString()}원`
-                                }
-
+                                {breakInfo.remainingBreakMinutes}분
                             </strong>
 
                         </div>
@@ -184,32 +213,74 @@ function AttendanceModal({
 
                 )}
 
-                {type === "employeeSelect" && (
+                {type !== "employeeSelect" &&
 
-                    employees.map((employee) => (
+                    type !== "employeeSelectBreak" && (
 
-                        <button
+                        <div className="attendance-summary">
 
-                            key={employee.no + employee.name}
+                            <div className="summary-card">
 
-                            className={`employee-select ${selectedEmployee?.no === employee.no &&
-                                selectedEmployee?.name === employee.name
-                                ? "selected"
-                                : ""
-                                }`}
+                                <span>
+                                    이번 달 예상 급여
+                                </span>
 
-                            onClick={() => setSelectedEmployee(employee)}
+                                <strong>
+                                    {monthlySalary.toLocaleString()}원
+                                </strong>
 
-                        >
+                            </div>
 
-                            {employee.name}
-                            ({employee.position})
+                            <div className="summary-card">
 
-                        </button>
+                                <span>
+                                    예상 퇴직금
+                                </span>
 
-                    ))
+                                <strong>
 
-                )}
+                                    {
+                                        retirement === null
+                                            ? "대상 아님"
+                                            : `${retirement.toLocaleString()}원`
+                                    }
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+                {(type === "employeeSelect" ||
+
+                    type === "employeeSelectBreak") && (
+
+                        employees.map((employee) => (
+
+                            <button
+
+                                key={employee.no + employee.name}
+
+                                className={`employee-select ${selectedEmployee?.no === employee.no &&
+                                    selectedEmployee?.name === employee.name
+                                    ? "selected"
+                                    : ""
+                                    }`}
+
+                                onClick={() => setSelectedEmployee(employee)}
+
+                            >
+
+                                {employee.name}
+                                ({employee.position})
+
+                            </button>
+
+                        ))
+
+                    )}
 
                 {noticeCards.length > 0 && (
 
@@ -370,16 +441,20 @@ function AttendanceModal({
                         className="attendance-confirm"
 
                         disabled={
-
-                            type === "employeeSelect" &&
-
+                            (type === "employeeSelect" ||
+                                type === "employeeSelectBreak") &&
                             !selectedEmployee
-
                         }
 
                         onClick={() => {
 
-                            if (type === "employeeSelect") {
+                            if (
+
+                                type === "employeeSelect" ||
+
+                                type === "employeeSelectBreak"
+
+                            ) {
 
                                 if (!selectedEmployee) {
 

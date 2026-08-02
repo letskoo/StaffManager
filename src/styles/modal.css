@@ -233,3 +233,15 @@
     color:#666;
 
 }
+
+/* 숫자 입력 다이얼(▲▼) 제거 */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.no-spinner {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}

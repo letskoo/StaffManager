@@ -1,5 +1,18 @@
 import { isHoliday } from "./HolidayService";
 
+import {
+    isEnabled,
+    getScheduledDateTime,
+    getNightMinutes,
+    splitWorkMinutesByHoliday,
+    getHourlyPay,
+} from "./pay/payCommon";
+
+import {
+    calculateBreak,
+    getScheduledWorkMinutes,
+} from "./break/breakService";
+
 const STORAGE_KEY = "attendanceRecords";
 
 const HISTORY_KEY = "attendanceHistory";
@@ -11,83 +24,6 @@ function getTodayText() {
     const now = new Date();
 
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
-}
-
-function isEnabled(value) {
-
-    return (
-
-        value === true ||
-
-        value === "true" ||
-
-        value === 1 ||
-
-        value === "1"
-
-    );
-
-}
-
-const DAY_KEYS = [
-    "sun",
-    "mon",
-    "tue",
-    "wed",
-    "thu",
-    "fri",
-    "sat",
-];
-
-function getScheduledDateTime(record, employee) {
-
-    const workPolicy =
-        employee.workPolicy || {};
-
-    const workDate = new Date(
-        `${record.date}T00:00:00`
-    );
-
-    const dayKey =
-        DAY_KEYS[workDate.getDay()];
-
-    const schedule =
-        employee.weekSchedule?.[dayKey];
-
-    const startText =
-        schedule?.start ||
-        workPolicy.startTime ||
-        "09:00";
-
-    const endText =
-        schedule?.end ||
-        workPolicy.endTime ||
-        "18:00";
-
-    const startTime = new Date(
-        `${record.date}T${startText}:00`
-    );
-
-    const endTime = new Date(
-        `${record.date}T${endText}:00`
-    );
-
-    if (endTime <= startTime) {
-
-        endTime.setDate(
-            endTime.getDate() + 1
-        );
-
-    }
-
-    return {
-
-        startTime,
-
-        endTime,
-
-    };
 
 }
 
@@ -124,19 +60,13 @@ export function saveAttendanceHistory(record) {
     );
 }
 
-export function getTodayAttendance(employeeNo) {
-
-    const today = getTodayText();
+export function getOpenAttendance(employeeNo) {
 
     return getAttendanceRecords().find(
 
         (record) =>
 
             record.employeeNo === employeeNo &&
-
-            record.date === today &&
-
-            record.status === "출근" &&
 
             Boolean(record.checkIn) &&
 
@@ -148,35 +78,12 @@ export function getTodayAttendance(employeeNo) {
 
 export function getNextAttendanceType(employeeNo) {
 
-    const openRecord = getTodayAttendance(employeeNo);
+    const openRecord =
+        getOpenAttendance(employeeNo);
 
     if (openRecord) {
 
         return "checkout";
-
-    }
-
-    const today = getTodayText();
-
-    const todayFinished = getAttendanceRecords().find(
-
-        (record) =>
-
-            record.employeeNo === employeeNo &&
-
-            record.date === today &&
-
-            record.status === "퇴근" &&
-
-            Boolean(record.checkIn) &&
-
-            Boolean(record.checkOut)
-
-    );
-
-    if (todayFinished) {
-
-        return "done";
 
     }
 
@@ -246,6 +153,8 @@ export function saveCheckIn(employee) {
 
         checkOut: null,
 
+        breaks: [],
+
         workMinutes: 0,
 
         status: "출근",
@@ -282,6 +191,13 @@ export function saveCheckIn(employee) {
                 resolved: false,
                 status: null,
             },
+
+            break: {
+                required: false,
+                resolved: false,
+                status: null,
+            },
+
             absent: {
                 required: false,
                 resolved: false,
@@ -305,9 +221,10 @@ export function saveCheckOut(employee) {
 
     const records = getAttendanceRecords();
 
-    const todayRecord = getTodayAttendance(employee.no);
+    const openRecord =
+        getOpenAttendance(employee.no);
 
-    if (!todayRecord) {
+    if (!openRecord) {
 
         return null;
 
@@ -319,7 +236,7 @@ export function saveCheckOut(employee) {
 
         {
 
-            ...todayRecord,
+            ...openRecord,
 
             checkOut: now.toISOString(),
 
@@ -341,7 +258,7 @@ export function saveCheckOut(employee) {
 
     const updatedRecords = records.map((record) =>
 
-        record.id === todayRecord.id
+        record.id === openRecord.id
 
             ? updatedRecord
 
@@ -379,27 +296,151 @@ export function saveCheckOut(employee) {
 
 }
 
-export function processAttendance(employee) {
+export function saveBreakStart(employee) {
 
-    const nextType = getNextAttendanceType(employee.no);
+    const records = getAttendanceRecords();
 
-    if (nextType === "checkin") {
+    const openRecord =
+        getOpenAttendance(employee.no);
 
-        const record = saveCheckIn(employee);
+    if (!openRecord) {
 
-        return {
-
-            type: "checkin",
-
-            record,
-
-        };
+        return null;
 
     }
 
+    const totalMinutes =
+        getScheduledWorkMinutes(employee);
+
+    const breakInfo = calculateBreak(
+
+        totalMinutes,
+
+        openRecord.breaks || []
+
+    );
+
+    const updatedRecord = {
+
+        ...openRecord,
+
+        breaks: [
+
+            ...(openRecord.breaks || []),
+
+            {
+
+                start: new Date().toISOString(),
+
+                end: null,
+
+            },
+
+        ],
+
+    };
+
+    const updatedRecords = records.map((record) =>
+
+        record.id === openRecord.id
+
+            ? updatedRecord
+
+            : record
+
+    );
+
+    saveAttendanceRecords(updatedRecords);
+
+    return {
+
+        ...updatedRecord,
+
+        breakInfo,
+
+    };
+
+}
+
+export function saveBreakEnd(employee) {
+
+    const records = getAttendanceRecords();
+
+    const openRecord =
+        getOpenAttendance(employee.no);
+
+    if (!openRecord) {
+
+        return null;
+
+    }
+
+    const breaks = [
+        ...(openRecord.breaks || []),
+    ];
+
+    const lastBreak =
+        breaks[breaks.length - 1];
+
+    if (!lastBreak || lastBreak.end) {
+
+        return null;
+
+    }
+
+    lastBreak.end =
+        new Date().toISOString();
+
+    const updatedRecord = {
+
+        ...openRecord,
+
+        breaks,
+
+    };
+
+    const updatedRecords = records.map((record) =>
+
+        record.id === openRecord.id
+
+            ? updatedRecord
+
+            : record
+
+    );
+
+    const totalMinutes =
+        getScheduledWorkMinutes(employee);
+
+    const breakInfo = calculateBreak(
+
+        totalMinutes,
+
+        updatedRecord.breaks || []
+
+    );
+
+    saveAttendanceRecords(updatedRecords);
+
+    return {
+
+        ...updatedRecord,
+
+        breakInfo,
+
+    };
+
+}
+
+export function processAttendance(employee) {
+
+    const nextType =
+        getNextAttendanceType(employee.no);
+
     if (nextType === "checkout") {
 
-        const record = saveCheckOut(employee);
+        const record =
+            saveCheckOut(employee);
 
         return {
 
@@ -411,11 +452,14 @@ export function processAttendance(employee) {
 
     }
 
+    const record =
+        saveCheckIn(employee);
+
     return {
 
-        type: "done",
+        type: "checkin",
 
-        record: getTodayAttendance(employee.no),
+        record,
 
     };
 
@@ -497,6 +541,17 @@ export function analyzeAttendance(record, employee) {
             - earlyPayExcludeMinutes * 60000
         );
 
+    const totalMinutes =
+        getScheduledWorkMinutes(employee);
+
+    const breakInfo = calculateBreak(
+
+        totalMinutes,
+
+        record.breaks || []
+
+    );
+
     return {
 
         ...record,
@@ -535,6 +590,12 @@ export function analyzeAttendance(record, employee) {
                 required: night,
                 resolved: record.approval?.night?.resolved || false,
                 status: record.approval?.night?.status || null,
+            },
+
+            break: {
+                required: breakInfo.approvalRequired,
+                resolved: record.approval?.break?.resolved || false,
+                status: record.approval?.break?.status || null,
             },
 
             absent: {
@@ -624,21 +685,22 @@ export function calculateWorkMinutes(record, employee) {
 
     if (workPolicy.breakEnabled) {
 
-        if (totalMinutes >= 960) {
+        const breakInfo = calculateBreak(
 
-            breakMinutes = 120;
+            totalMinutes,
 
-        } else if (totalMinutes >= 720) {
+            record.breaks || []
 
-            breakMinutes = 90;
+        );
 
-        } else if (totalMinutes >= 480) {
+        if (
 
-            breakMinutes = 60;
+            record.approval?.break?.status === "approved"
 
-        } else if (totalMinutes >= 240) {
+        ) {
 
-            breakMinutes = 30;
+            breakMinutes =
+                breakInfo.exceededBreakMinutes;
 
         }
 
@@ -651,103 +713,6 @@ export function calculateWorkMinutes(record, employee) {
         0
 
     );
-
-}
-
-function getOverlapMinutes(
-
-    start1,
-    end1,
-    start2,
-    end2
-
-) {
-
-    const start = Math.max(
-
-        start1.getTime(),
-
-        start2.getTime()
-
-    );
-
-    const end = Math.min(
-
-        end1.getTime(),
-
-        end2.getTime()
-
-    );
-
-    if (end <= start) {
-
-        return 0;
-
-    }
-
-    return Math.floor(
-
-        (end - start) / 60000
-
-    );
-
-}
-
-function getNightMinutes(record) {
-
-    if (!record.checkOut) {
-
-        return 0;
-
-    }
-
-    const checkIn = new Date(record.checkIn);
-
-    const checkOut = new Date(record.checkOut);
-
-    let total = 0;
-
-    const current = new Date(checkIn);
-
-    current.setHours(0, 0, 0, 0);
-
-    while (current <= checkOut) {
-
-        const nightStart = new Date(current);
-
-        nightStart.setHours(22, 0, 0, 0);
-
-        const nightEnd = new Date(current);
-
-        nightEnd.setDate(
-
-            nightEnd.getDate() + 1
-
-        );
-
-        nightEnd.setHours(6, 0, 0, 0);
-
-        total += getOverlapMinutes(
-
-            checkIn,
-
-            checkOut,
-
-            nightStart,
-
-            nightEnd
-
-        );
-
-        current.setDate(
-
-            current.getDate() + 1
-
-        );
-
-    }
-
-    return total;
 
 }
 
@@ -802,527 +767,6 @@ function getHolidayMinutes(record) {
         normalMinutes,
 
     };
-
-}
-
-function splitWorkMinutesByHoliday(record) {
-
-    if (!record.checkOut) {
-
-        return {
-
-            holidayMinutes: 0,
-
-            normalMinutes: 0,
-
-        };
-
-    }
-
-    const checkIn = new Date(record.checkIn);
-
-    const checkOut = new Date(record.checkOut);
-
-    let holidayMinutes = 0;
-
-    const current = new Date(checkIn);
-
-    current.setHours(0, 0, 0, 0);
-
-    while (current <= checkOut) {
-
-        const dayStart = new Date(current);
-
-        dayStart.setHours(0, 0, 0, 0);
-
-        const dayEnd = new Date(current);
-
-        dayEnd.setHours(24, 0, 0, 0);
-
-        if (isHoliday(dayStart)) {
-
-            holidayMinutes += getOverlapMinutes(
-
-                checkIn,
-
-                checkOut,
-
-                dayStart,
-
-                dayEnd
-
-            );
-
-        }
-
-        current.setDate(
-
-            current.getDate() + 1
-
-        );
-
-    }
-
-    const totalMinutes = Math.floor(
-
-        (checkOut - checkIn) / 60000
-
-    );
-
-    return {
-
-        holidayMinutes,
-
-        normalMinutes:
-
-            Math.max(
-
-                totalMinutes - holidayMinutes,
-
-                0
-
-            ),
-
-    };
-
-}
-
-function getHourlyPay(employee) {
-
-    const workPolicy = employee.workPolicy;
-
-    if (!workPolicy) {
-
-        return 0;
-
-    }
-
-    if (workPolicy.payType === "hourly") {
-
-        return Number(workPolicy.hourlyWage || 0);
-
-    }
-
-    return Number(workPolicy.monthlySalary || 0) / 209;
-
-}
-
-export function calculatePayDetail(record, employee) {
-
-    const emptyPayDetail = {
-        baseMinutes: 0,
-        overtimeMinutes: 0,
-        nightMinutes: 0,
-        holidayMinutes: 0,
-        lateMinutes: 0,
-        earlyLeaveMinutes: 0,
-        basePay: 0,
-        overtimePay: 0,
-        nightPay: 0,
-        holidayPay: 0,
-        lateDeduction: 0,
-        earlyLeaveDeduction: 0,
-        totalPay: 0,
-    };
-
-    const workPolicy = employee.workPolicy;
-
-    if (!workPolicy) {
-
-        return emptyPayDetail;
-
-    }
-
-    if (
-        !record ||
-        !record.checkIn ||
-        !record.checkOut
-    ) {
-
-        return emptyPayDetail;
-
-    }
-
-    const checkInDate = new Date(record.checkIn);
-
-    const checkOutDate = new Date(record.checkOut);
-
-    if (
-        Number.isNaN(checkInDate.getTime()) ||
-        Number.isNaN(checkOutDate.getTime()) ||
-        checkOutDate <= checkInDate
-    ) {
-
-        return emptyPayDetail;
-
-    }
-
-    const hourlyPay = getHourlyPay(employee);
-
-    const approval = record.approval || {};
-
-    const lateDeductionApproved =
-
-        record.late === true &&
-
-        approval.late?.status === "approved";
-
-    const earlyLeaveDeductionApproved =
-
-        record.earlyLeave === true &&
-
-        approval.earlyLeave?.status === "approved";
-
-    const earlyCheckInApproved =
-
-        approval.earlyCheckIn?.status === "approved";
-
-    const overtimeApproved =
-
-        approval.overtime?.status === "approved";
-
-    const nightApproved =
-        approval.night?.status === "approved";
-
-    const holidayInfo =
-        splitWorkMinutesByHoliday(record);
-
-    const {
-
-        startTime,
-
-        endTime,
-
-    } = getScheduledDateTime(
-
-        record,
-
-        employee
-
-    );
-
-    const checkIn = new Date(record.checkIn);
-
-    const checkOut = new Date(record.checkOut);
-
-    let payStart = startTime;
-
-    if (checkIn < startTime) {
-
-        payStart =
-            earlyCheckInApproved
-                ? checkIn
-                : startTime;
-
-    } else if (record.late === true) {
-
-        payStart =
-            lateDeductionApproved
-                ? checkIn
-                : startTime;
-
-    }
-
-    let payEnd = endTime;
-
-    if (checkOut > endTime) {
-
-        payEnd =
-            overtimeApproved
-                ? checkOut
-                : endTime;
-
-    } else if (record.earlyLeave === true) {
-
-        payEnd =
-            earlyLeaveDeductionApproved
-                ? checkOut
-                : endTime;
-
-    }
-
-    const scheduledMinutes =
-        Math.max(
-            Math.floor(
-                (endTime - startTime) / 60000
-            ),
-            1
-        );
-
-    const lateMinutes =
-        lateDeductionApproved
-            ? Math.max(
-                Math.floor(
-                    (checkIn - startTime) / 60000
-                ),
-                0
-            )
-            : 0;
-
-    const earlyLeaveMinutes =
-        earlyLeaveDeductionApproved
-            ? Math.max(
-                Math.floor(
-                    (endTime - checkOut) / 60000
-                ),
-                0
-            )
-            : 0;
-
-    const approvedMinutes =
-        Math.max(
-            Math.floor(
-                (payEnd - payStart) / 60000
-            ),
-            0
-        );
-
-    const baseMinutes =
-        Math.min(
-            approvedMinutes,
-            scheduledMinutes
-        );
-
-    const actualOvertimeMinutes =
-        Math.max(
-            approvedMinutes - scheduledMinutes,
-            0
-        );
-
-    const overtimeMinutes =
-        isEnabled(workPolicy.allowOvertime)
-            ? actualOvertimeMinutes
-            : 0;
-
-    const nightMinutes = getNightMinutes({
-        ...record,
-        checkIn: payStart.toISOString(),
-        checkOut: payEnd.toISOString(),
-    });
-
-    const isHolidayWork =
-
-        record.isHoliday === true ||
-
-        record.holidayWork === true;
-
-    const allowHoliday = isEnabled(
-
-        workPolicy.allowHoliday ??
-
-        employee.allowHoliday
-
-    );
-
-    let basePay = 0;
-
-    let lateDeduction = 0;
-
-    let earlyLeaveDeduction = 0;
-
-    if (workPolicy.payType === "monthly") {
-
-        lateDeduction =
-            lateMinutes / 60 *
-            hourlyPay;
-
-        earlyLeaveDeduction =
-            earlyLeaveMinutes / 60 *
-            hourlyPay;
-
-    } else {
-
-        basePay =
-            baseMinutes / 60 *
-            hourlyPay;
-
-    }
-
-    let overtimePay = 0;
-
-    if (overtimeMinutes > 0) {
-
-        overtimePay =
-            overtimeMinutes / 60 *
-            hourlyPay *
-            0.5;
-
-    } else {
-
-        basePay +=
-
-            overtimeMinutes / 60 *
-
-            hourlyPay;
-
-    }
-
-    let nightPay = 0;
-
-    if (
-
-        nightApproved &&
-
-        isEnabled(workPolicy.allowNight) &&
-
-        nightMinutes > 0
-
-    ) {
-
-        nightPay =
-
-            nightMinutes / 60 *
-
-            hourlyPay *
-
-            0.5;
-
-    }
-
-    let holidayPay = 0;
-
-    if (
-
-        allowHoliday &&
-
-        holidayInfo.holidayMinutes > 0
-
-    ) {
-
-        const holidayBaseMinutes =
-
-            Math.min(
-
-                holidayInfo.holidayMinutes,
-
-                480
-
-            );
-
-        const holidayOverMinutes =
-
-            Math.max(
-
-                holidayInfo.holidayMinutes - 480,
-
-                0
-
-            );
-
-        // 월급제
-
-        if (workPolicy.payType === "monthly") {
-
-            holidayPay =
-
-                holidayBaseMinutes / 60 *
-
-                hourlyPay *
-
-                1.5 +
-
-                holidayOverMinutes / 60 *
-
-                hourlyPay *
-
-                2.0;
-
-        }
-
-        // 시급제
-
-        else {
-
-            holidayPay =
-
-                holidayBaseMinutes / 60 *
-
-                hourlyPay *
-
-                2.5 +
-
-                holidayOverMinutes / 60 *
-
-                hourlyPay *
-
-                3.0;
-
-        }
-
-    }
-
-    if (approvedMinutes <= 0) {
-
-        basePay = 0;
-
-        overtimePay = 0;
-
-        nightPay = 0;
-
-        holidayPay = 0;
-
-    }
-
-    const totalPay = Math.floor(
-
-        basePay +
-
-        overtimePay +
-
-        nightPay +
-
-        holidayPay
-
-    );
-
-    return {
-
-        baseMinutes,
-
-        overtimeMinutes,
-
-        nightMinutes,
-
-        holidayMinutes:
-            holidayInfo.holidayMinutes,
-
-        lateMinutes,
-
-        earlyLeaveMinutes,
-
-        basePay:
-            Math.floor(basePay),
-
-        overtimePay:
-            Math.floor(overtimePay),
-
-        nightPay:
-            Math.floor(nightPay),
-
-        holidayPay:
-            Math.floor(holidayPay),
-
-        lateDeduction:
-            Math.floor(lateDeduction),
-
-        earlyLeaveDeduction:
-            Math.floor(earlyLeaveDeduction),
-
-        totalPay,
-
-    };
-
-}
-
-export function calculateDailyPay(record, employee) {
-
-    return calculatePayDetail(
-
-        record,
-
-        employee
-
-    ).totalPay;
 
 }
 
@@ -1577,13 +1021,39 @@ export function generateAbsentApprovals() {
 
             }
 
-            const exists = records.some(
+            const hasOpenAttendance = records.some(
+
                 record =>
+
                     record.employeeNo === employee.no &&
-                    record.date === dateText
+
+                    record.checkIn &&
+
+                    !record.checkOut
+
             );
 
-            if (exists) continue;
+            if (hasOpenAttendance) {
+
+                continue;
+
+            }
+
+            const exists = records.some(
+
+                record =>
+
+                    record.employeeNo === employee.no &&
+
+                    record.date === dateText
+
+            );
+
+            if (exists) {
+
+                continue;
+
+            }
 
             const absentRecord = {
 
@@ -1675,20 +1145,13 @@ export function generateAbsentApprovals() {
 
 export function clearOldPendingApprovals() {
 
-    const currentMonth = getTodayText().slice(0, 7);
+    const currentMonth =
+        getTodayText().slice(0, 7);
 
-    const savedMonth = localStorage.getItem(APPROVAL_MONTH_KEY);
-
-    if (!savedMonth) {
-
-        localStorage.setItem(
-            APPROVAL_MONTH_KEY,
-            currentMonth
+    const savedMonth =
+        localStorage.getItem(
+            APPROVAL_MONTH_KEY
         );
-
-        return;
-
-    }
 
     if (savedMonth === currentMonth) {
 
@@ -1696,7 +1159,12 @@ export function clearOldPendingApprovals() {
 
     }
 
-    saveAttendanceRecords([]);
+    /*
+     * 월이 바뀌어도 근태기록은 삭제하지 않는다.
+     *
+     * 화면에서는 selectedMonth로 월별 필터링하고,
+     * 실제 기록은 localStorage에 계속 보관한다.
+     */
 
     localStorage.setItem(
         APPROVAL_MONTH_KEY,
@@ -2231,3 +1699,8 @@ export function getEmployeeMonthlyAttendanceStatus(
     );
 
 }
+
+export {
+    calculateBreak,
+    getScheduledWorkMinutes,
+};

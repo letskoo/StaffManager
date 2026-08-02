@@ -198,8 +198,6 @@
 
     gap: 10px;
 
-    margin-bottom: 28px;
-
 }
 
 .policy-tabs button {
@@ -260,7 +258,15 @@
 
 .policy-card .employee-table td {
 
-    height: 72px;
+    height: 84px;
+
+}
+
+.policy-card .employee-table td:nth-child(4) {
+
+    white-space: pre-line;
+
+    line-height: 1.5;
 
 }
 
@@ -354,5 +360,125 @@
 
     width: 150px;
     height: 45px;
+
+}
+
+.policy-approval-toolbar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 24px;
+
+    margin-bottom: 28px;
+
+}
+
+.policy-month-nav {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+}
+
+.policy-month-nav button {
+
+    width: auto;
+
+    height: auto;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 0;
+
+    background: transparent;
+
+    color: #222;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+}
+
+.policy-month-nav button:hover:not(:disabled) {
+
+    background: transparent;
+
+    color: #1f73b9;
+
+}
+
+.policy-month-nav button:disabled {
+
+    background: transparent;
+
+    color: #c4c4c4;
+
+    cursor: default;
+
+}
+
+.policy-month-nav span {
+
+    min-width: 110px;
+
+    text-align: center;
+
+    color: #111;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+.policy-title-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 26px;
+
+}
+
+.policy-title-row h2 {
+
+    margin: 0;
+
+}
+
+.policy-approval-toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:26px;
+
+}
+
+.policy-tabs{
+
+    display:flex;
+
+    gap:５px;
+
+    margin:0;
 
 }

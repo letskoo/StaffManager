@@ -387,6 +387,8 @@ function EmployeeModal({
                         name="payAmount"
                         value={form.payAmount}
                         onChange={handleChange}
+                        onWheel={(e) => e.currentTarget.blur()}
+                        className="no-spinner"
                     />
 
                     <label>은행</label>

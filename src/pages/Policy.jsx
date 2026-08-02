@@ -20,9 +20,15 @@ import {
 
 import {
 
-    exportHistory,
+    calculateBreak,
 
-    getHistoryMonths,
+}
+
+    from "../services/break/breakService";
+
+import {
+
+    exportHistory,
 
 }
 
@@ -52,11 +58,55 @@ function Policy() {
 
     const [resolvedList, setResolvedList] = useState([]);
 
+    const [selectedMonth, setSelectedMonth] = useState(() => {
+
+        const now = new Date();
+
+        return `${now.getFullYear()}-${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    });
+
     const [historyOpen, setHistoryOpen] = useState(false);
 
-    const [historyMonths, setHistoryMonths] = useState([]);
-
     const historyWrapRef = useRef(null);
+
+    const now = new Date();
+
+    const currentMonth =
+        `${now.getFullYear()}-${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    const moveMonth = (offset) => {
+
+        const [year, month] =
+            selectedMonth.split("-").map(Number);
+
+        const date = new Date(
+            year,
+            month - 1 + offset
+        );
+
+        setSelectedMonth(
+
+            `${date.getFullYear()}-${String(
+                date.getMonth() + 1
+            ).padStart(2, "0")}`
+
+        );
+
+    };
+
+    const monthLabel = (() => {
+
+        const [year, month] =
+            selectedMonth.split("-");
+
+        return `${year}년 ${Number(month)}월`;
+
+    })();
 
     useEffect(() => {
 
@@ -213,12 +263,6 @@ function Policy() {
 
         refreshApprovalList();
 
-        setHistoryMonths(
-
-            getHistoryMonths()
-
-        );
-
     };
 
     const handleRestore = (
@@ -239,21 +283,27 @@ function Policy() {
 
         refreshApprovalList();
 
-        setHistoryMonths(
-
-            getHistoryMonths()
-
-        );
-
     };
 
-    const list =
+    const list = (
 
         activeTab === "pending"
 
             ? approvalList
 
-            : resolvedList;
+            : resolvedList
+
+    ).filter(
+
+        item =>
+
+            typeof item.date === "string" &&
+
+            item.date.startsWith(
+                selectedMonth
+            )
+
+    );
 
     return (
 
@@ -275,12 +325,6 @@ function Policy() {
                             className="register-btn"
 
                             onClick={() => {
-
-                                setHistoryMonths(
-
-                                    getHistoryMonths()
-
-                                );
 
                                 setHistoryOpen(
 
@@ -304,6 +348,24 @@ function Policy() {
 
                                     onClick={() => {
 
+                                        exportHistory(
+                                            selectedMonth
+                                        );
+
+                                        setHistoryOpen(false);
+
+                                    }}
+
+                                >
+
+                                    현재 월 다운로드
+
+                                </button>
+
+                                <button
+
+                                    onClick={() => {
+
                                         exportHistory();
 
                                         setHistoryOpen(false);
@@ -315,28 +377,6 @@ function Policy() {
                                     전체 다운로드
 
                                 </button>
-
-                                {historyMonths.map((month) => (
-
-                                    <button
-
-                                        key={month}
-
-                                        onClick={() => {
-
-                                            exportHistory(month);
-
-                                            setHistoryOpen(false);
-
-                                        }}
-
-                                    >
-
-                                        {month} 다운로드
-
-                                    </button>
-
-                                ))}
 
                             </div>
 
@@ -456,47 +496,93 @@ function Policy() {
 
                     <h2>승인 관리</h2>
 
-                    <div className="policy-tabs">
+                    <div className="policy-approval-toolbar">
 
-                        <button
+                        <div className="policy-month-nav">
 
-                            className={
-                                activeTab === "pending"
-                                    ? "policy-tab-active"
-                                    : "policy-tab"
-                            }
+                            <button
 
-                            onClick={() =>
+                                type="button"
 
-                                setActiveTab("pending")
+                                aria-label="이전 달"
 
-                            }
+                                onClick={() => moveMonth(-1)}
 
-                        >
+                            >
 
-                            승인대기
+                                〈
 
-                        </button>
+                            </button>
 
-                        <button
+                            <span>
 
-                            className={
-                                activeTab === "resolved"
-                                    ? "policy-tab-active"
-                                    : "policy-tab"
-                            }
+                                {monthLabel}
 
-                            onClick={() =>
+                            </span>
 
-                                setActiveTab("resolved")
+                            <button
 
-                            }
+                                type="button"
 
-                        >
+                                aria-label="다음 달"
 
-                            휴지통
+                                disabled={
+                                    selectedMonth === currentMonth
+                                }
 
-                        </button>
+                                onClick={() => moveMonth(1)}
+
+                            >
+
+                                〉
+
+                            </button>
+
+                        </div>
+
+                        <div className="policy-tabs">
+
+                            <button
+
+                                className={
+                                    activeTab === "pending"
+                                        ? "policy-tab-active"
+                                        : "policy-tab"
+                                }
+
+                                onClick={() =>
+
+                                    setActiveTab("pending")
+
+                                }
+
+                            >
+
+                                승인대기
+
+                            </button>
+
+                            <button
+
+                                className={
+                                    activeTab === "resolved"
+                                        ? "policy-tab-active"
+                                        : "policy-tab"
+                                }
+
+                                onClick={() =>
+
+                                    setActiveTab("resolved")
+
+                                }
+
+                            >
+
+                                처리내역
+
+                            </button>
+
+                        </div>
 
                     </div>
 
@@ -599,6 +685,30 @@ function Policy() {
                                                     hour12: false
                                                 });
                                             break;
+
+                                        case "break": {
+
+                                            const totalMinutes = Math.floor(
+                                                (
+                                                    new Date(item.checkOut) -
+                                                    new Date(item.checkIn)
+                                                ) / 60000
+                                            );
+
+                                            const breakInfo = calculateBreak(
+                                                totalMinutes,
+                                                item.breaks || []
+                                            );
+
+                                            time = `초과 ${breakInfo.exceededBreakMinutes}분`;
+
+                                            reason =
+                                                `휴게시간 초과\n` +
+                                                `(허용 ${breakInfo.allowedBreakMinutes}분 / ` +
+                                                `사용 ${breakInfo.actualBreakMinutes}분)`;
+
+                                            break;
+                                        }
 
                                         case "absent":
                                             reason = "결근";

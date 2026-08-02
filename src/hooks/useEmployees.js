@@ -72,48 +72,48 @@ export default function useEmployees() {
 
     const addEmployee = (employee) => {
 
-    const employeeNo =
-        employee.phone.replace(/\D/g, "").slice(-4);
+        const employeeNo =
+            employee.phone.replace(/\D/g, "").slice(-4);
 
-    const payAmount =
-        Math.round(
-            Number(employee.payAmount) || 0
-        );
+        const payAmount =
+            Math.round(
+                Number(employee.payAmount) || 0
+            );
 
-    const payType =
-        employee.payType || "monthly";
+        const payType =
+            employee.payType || "monthly";
 
-    const newEmployee = {
+        const newEmployee = {
 
-        ...employee,
+            ...employee,
 
-        no: employeeNo,
-
-        payType,
-
-        payAmount,
-
-        salary: "0원",
-
-        retirement: "0원",
-
-        status: "재직",
-
-        workPolicy: {
-
-            ...(employee.workPolicy || {}),
+            no: employeeNo,
 
             payType,
 
-            monthlySalary:
-                payType === "monthly"
-                    ? payAmount
-                    : 0,
+            payAmount,
 
-            hourlyWage:
-                payType === "hourly"
-                    ? payAmount
-                    : 0,
+            salary: "0원",
+
+            retirement: "0원",
+
+            status: "재직",
+
+            workPolicy: {
+
+                ...(employee.workPolicy || {}),
+
+                payType,
+
+                monthlySalary:
+                    payType === "monthly"
+                        ? payAmount
+                        : 0,
+
+                hourlyWage:
+                    payType === "hourly"
+                        ? payAmount
+                        : 0,
 
                 startTime:
 
@@ -176,58 +176,58 @@ export default function useEmployees() {
 
     const updateEmployee = (employee) => {
 
-    const payAmount =
-        Math.round(
-            Number(employee.payAmount) || 0
-        );
+        const payAmount =
+            Math.round(
+                Number(employee.payAmount) || 0
+            );
 
-    const payType =
-        employee.payType ||
-        employee.workPolicy?.payType ||
-        "monthly";
+        const payType =
+            employee.payType ||
+            employee.workPolicy?.payType ||
+            "monthly";
 
-    const updated = employees.map((item) =>
+        const updated = employees.map((item) =>
 
-        item.no === employee.no
-            ? {
+            item.no === employee.no
+                ? {
 
-                ...item,
+                    ...item,
 
-                ...employee,
-
-                payType,
-
-                payAmount,
-
-                workPolicy: {
-
-                    ...item.workPolicy,
-
-                    ...employee.workPolicy,
+                    ...employee,
 
                     payType,
 
-                    monthlySalary:
-                        payType === "monthly"
-                            ? payAmount
-                            : 0,
+                    payAmount,
 
-                    hourlyWage:
-                        payType === "hourly"
-                            ? payAmount
-                            : 0,
+                    workPolicy: {
 
-                },
+                        ...item.workPolicy,
 
-            }
+                        ...employee.workPolicy,
 
-            : item
+                        payType,
 
-    );
+                        monthlySalary:
+                            payType === "monthly"
+                                ? payAmount
+                                : 0,
 
-    saveEmployees(updated);
+                        hourlyWage:
+                            payType === "hourly"
+                                ? payAmount
+                                : 0,
 
-};
+                    },
+
+                }
+
+                : item
+
+        );
+
+        saveEmployees(updated);
+
+    };
 
     const deleteEmployee = (employeeNo) => {
 
