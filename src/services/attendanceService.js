@@ -667,7 +667,7 @@ export function calculateWorkMinutes(record, employee) {
 
         checkIn < earlyLimit &&
 
-        !record.approved
+        record.approval?.earlyCheckIn?.status !== "approved"
 
     ) {
 
@@ -693,13 +693,16 @@ export function calculateWorkMinutes(record, employee) {
 
         );
 
+        breakMinutes =
+            breakInfo.allowedBreakMinutes;
+
         if (
 
             record.approval?.break?.status === "approved"
 
         ) {
 
-            breakMinutes =
+            breakMinutes +=
                 breakInfo.exceededBreakMinutes;
 
         }

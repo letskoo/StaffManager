@@ -1,6 +1,188 @@
-import { useEffect, useState } from "react";
+import {
+    Fragment,
+    useEffect,
+    useState,
+} from "react";
 
 import "../styles/modal.css";
+
+const HOURS = Array.from(
+    { length: 24 },
+    (_, index) =>
+        String(index + 1).padStart(2, "0")
+);
+
+const MINUTES = Array.from(
+    { length: 12 },
+    (_, index) =>
+        String(index * 5).padStart(2, "0")
+);
+
+function splitTime(time = "09:00") {
+
+    const [
+        savedHour = "09",
+        savedMinute = "00",
+    ] = time.split(":");
+
+    return {
+
+        hour:
+            savedHour === "00"
+                ? "24"
+                : savedHour,
+
+        minute:
+            savedHour === "00"
+                ? "00"
+                : savedMinute,
+
+    };
+
+}
+
+function mergeTime(hour, minute) {
+
+    /*
+     * 화면에서는 24:00으로 표시하지만
+     * 기존 계산 로직과의 호환을 위해
+     * 저장할 때는 00:00으로 변환한다.
+     */
+    if (hour === "24") {
+
+        return "00:00";
+
+    }
+
+    return `${hour}:${minute}`;
+
+}
+
+function TimeWheel({
+    value,
+    onChange,
+    disabled = false,
+}) {
+
+    const {
+        hour,
+        minute,
+    } = splitTime(value);
+
+    const minuteOptions =
+        hour === "24"
+            ? ["00"]
+            : MINUTES;
+
+    const handleHourChange = (nextHour) => {
+
+        const nextMinute =
+            nextHour === "24"
+                ? "00"
+                : minute;
+
+        onChange(
+            mergeTime(
+                nextHour,
+                nextMinute
+            )
+        );
+
+    };
+
+    const handleMinuteChange = (nextMinute) => {
+
+        onChange(
+            mergeTime(
+                hour,
+                nextMinute
+            )
+        );
+
+    };
+
+    return (
+
+        <div
+            className={`time-wheel ${disabled
+                    ? "time-wheel-disabled"
+                    : ""
+                }`}
+        >
+
+            <div className="time-wheel-column">
+
+                <select
+                    value={hour}
+                    disabled={disabled}
+                    aria-label="시간"
+                    onChange={(event) =>
+                        handleHourChange(
+                            event.target.value
+                        )
+                    }
+                >
+
+                    {HOURS.map((item) => (
+
+                        <option
+                            key={item}
+                            value={item}
+                        >
+                            {Number(item)}
+                        </option>
+
+                    ))}
+
+                </select>
+
+                <span className="time-wheel-unit">
+                    시
+                </span>
+
+            </div>
+
+            <span className="time-wheel-colon">
+                :
+            </span>
+
+            <div className="time-wheel-column">
+
+                <select
+                    value={minute}
+                    disabled={disabled}
+                    aria-label="분"
+                    onChange={(event) =>
+                        handleMinuteChange(
+                            event.target.value
+                        )
+                    }
+                >
+
+                    {minuteOptions.map((item) => (
+
+                        <option
+                            key={item}
+                            value={item}
+                        >
+                            {item}
+                        </option>
+
+                    ))}
+
+                </select>
+
+                <span className="time-wheel-unit">
+                    분
+                </span>
+
+            </div>
+
+        </div>
+
+    );
+
+}
 
 const initialForm = {
     name: "",
@@ -629,20 +811,36 @@ function EmployeeModal({
 
                             <label>출근시간</label>
 
-                            <input
-                                type="time"
-                                name="startTime"
+                            <TimeWheel
                                 value={form.startTime}
-                                onChange={handleChange}
+                                onChange={(nextTime) => {
+
+                                    setForm({
+
+                                        ...form,
+
+                                        startTime: nextTime,
+
+                                    });
+
+                                }}
                             />
 
                             <label>퇴근시간</label>
 
-                            <input
-                                type="time"
-                                name="endTime"
+                            <TimeWheel
                                 value={form.endTime}
-                                onChange={handleChange}
+                                onChange={(nextTime) => {
+
+                                    setForm({
+
+                                        ...form,
+
+                                        endTime: nextTime,
+
+                                    });
+
+                                }}
                             />
 
                         </>
@@ -661,80 +859,104 @@ function EmployeeModal({
                                 ["fri", "금"],
                                 ["sat", "토"],
                                 ["sun", "일"],
-                            ].map(([key, label]) => (
+                            ].map(([key, label]) => {
 
-                                <>
+                                const disabled =
+                                    !form.workDays.includes(key);
 
-                                    <label>{label}</label>
+                                const startValue =
+                                    form.weekSchedule[key]?.start ||
+                                    "09:00";
 
-                                    <div className="week-time-row">
+                                const endValue =
+                                    form.weekSchedule[key]?.end ||
+                                    "18:00";
 
-                                        <input
-                                            type="time"
-                                            value={form.weekSchedule[key]?.start || ""}
-                                            disabled={!form.workDays.includes(key)}
-                                            onChange={(e) => {
+                                return (
 
-                                                setForm({
+                                    <Fragment key={key}>
 
-                                                    ...form,
+                                        <label>{label}</label>
 
-                                                    weekSchedule: {
+                                        <div className="week-time-row">
 
-                                                        ...form.weekSchedule,
+                                            <TimeWheel
+                                                value={startValue}
+                                                disabled={disabled}
+                                                onChange={(nextTime) => {
 
-                                                        [key]: {
-                                                            ...(form.weekSchedule[key] || {}),
-                                                            start: e.target.value,
-                                                            end: form.weekSchedule[key]?.end || ""
-                                                        }
+                                                    setForm({
 
-                                                    }
+                                                        ...form,
 
-                                                });
+                                                        weekSchedule: {
 
-                                            }}
-                                        />
+                                                            ...form.weekSchedule,
 
-                                        <span>~</span>
+                                                            [key]: {
 
-                                        <input
-                                            type="time"
-                                            value={form.weekSchedule[key]?.end || ""}
-                                            disabled={!form.workDays.includes(key)}
-                                            onChange={(e) => {
+                                                                ...(
+                                                                    form.weekSchedule[key] ||
+                                                                    {}
+                                                                ),
 
-                                                setForm({
+                                                                start: nextTime,
 
-                                                    ...form,
+                                                                end: endValue,
 
-                                                    weekSchedule: {
+                                                            },
 
-                                                        ...form.weekSchedule,
+                                                        },
 
-                                                        [key]: {
+                                                    });
 
-                                                            ...(form.weekSchedule[key] || {}),
+                                                }}
+                                            />
 
-                                                            start:
-                                                                form.weekSchedule[key]?.start || "",
+                                            <span className="week-time-divider">
+                                                ~
+                                            </span>
 
-                                                            end: e.target.value
+                                            <TimeWheel
+                                                value={endValue}
+                                                disabled={disabled}
+                                                onChange={(nextTime) => {
 
-                                                        }
+                                                    setForm({
 
-                                                    }
+                                                        ...form,
 
-                                                });
+                                                        weekSchedule: {
 
-                                            }}
-                                        />
+                                                            ...form.weekSchedule,
 
-                                    </div>
+                                                            [key]: {
 
-                                </>
+                                                                ...(
+                                                                    form.weekSchedule[key] ||
+                                                                    {}
+                                                                ),
 
-                            ))}
+                                                                start: startValue,
+
+                                                                end: nextTime,
+
+                                                            },
+
+                                                        },
+
+                                                    });
+
+                                                }}
+                                            />
+
+                                        </div>
+
+                                    </Fragment>
+
+                                );
+
+                            })}
 
                         </>
 

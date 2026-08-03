@@ -1,5 +1,4 @@
 import {
-    calculateDailyPay,
     calculatePayDetail,
 } from "./hourlyPayService";
 
@@ -514,12 +513,17 @@ export function getMonthlySalary(employee) {
             )
 
             .reduce(
-                (total, record) =>
-                    total +
-                    calculateDailyPay(
-                        record,
-                        employee
-                    ),
+                (total, record) => {
+
+                    const detail =
+                        calculatePayDetail(
+                            record,
+                            employee
+                        );
+
+                    return total + detail.basePay;
+
+                },
                 0
             );
 
@@ -556,6 +560,7 @@ export function getMonthlySalary(employee) {
                 sum.overtime += pay.overtimePay;
                 sum.night += pay.nightPay;
                 sum.holiday += pay.holidayPay;
+
                 sum.late += pay.lateDeduction;
                 sum.early += pay.earlyLeaveDeduction;
 
@@ -646,12 +651,17 @@ export function getMonthlySalaryByMonth(employee, month) {
             )
 
             .reduce(
-                (total, record) =>
-                    total +
-                    calculateDailyPay(
-                        record,
-                        employee
-                    ),
+                (total, record) => {
+
+                    const detail =
+                        calculatePayDetail(
+                            record,
+                            employee
+                        );
+
+                    return total + detail.basePay;
+
+                },
                 0
             );
 

@@ -116,7 +116,7 @@ export function getOverlapMinutes(
 
 }
 
- export function getNightMinutes(record) {
+export function getNightMinutes(record) {
 
     if (!record.checkOut) {
 
