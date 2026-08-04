@@ -517,3 +517,95 @@
     margin: 24px 0;
 
 }
+
+.attendance-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 16px;
+
+}
+
+.attendance-table th {
+
+    background: #f6f6f6;
+
+    border: 1px solid #ddd;
+
+    padding: 10px;
+
+    font-size: 14px;
+
+}
+
+.attendance-table td {
+
+    border: 1px solid #ddd;
+
+    padding: 10px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+}
+
+.attendance-empty {
+
+    height: 80px;
+
+    color: #888;
+
+    text-align: center;
+
+    font-size: 14px;
+
+}
+
+.attendance-record-summary {
+
+    margin-top: 18px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #dcdcdc;
+
+}
+
+.attendance-record-summary div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+
+}
+
+.attendance-record-summary div:last-child {
+
+    margin-bottom: 0;
+
+}
+
+.attendance-record-summary span {
+
+    color: #666;
+
+    font-size: 14px;
+
+}
+
+.attendance-record-summary strong {
+
+    color: #222;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}

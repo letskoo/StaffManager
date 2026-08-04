@@ -1703,6 +1703,42 @@ export function getEmployeeMonthlyAttendanceStatus(
 
 }
 
+export function getAttendanceByPeriod(
+
+    employeeNo,
+
+    startDate,
+
+    endDate,
+
+) {
+
+    const history = JSON.parse(
+
+        localStorage.getItem(HISTORY_KEY)
+
+    ) || [];
+
+    return history
+
+        .filter(record =>
+
+            record.employeeNo === employeeNo &&
+
+            record.date >= startDate &&
+
+            record.date <= endDate
+
+        )
+
+        .sort((a, b) =>
+
+            a.date.localeCompare(b.date)
+
+        );
+
+}
+
 export {
     calculateBreak,
     getScheduledWorkMinutes,

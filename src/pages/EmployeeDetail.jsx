@@ -57,6 +57,12 @@ import {
     getMonthlyAttendanceSummary,
 } from "../services/attendanceService";
 
+import AttendanceRecordModal
+    from "../components/AttendanceRecordModal";
+
+import AttendancePeriodModal
+    from "../components/AttendancePeriodModal";
+
 function EmployeeDetail() {
 
     const { employeeNo } = useParams();
@@ -81,6 +87,23 @@ function EmployeeDetail() {
     const [employmentCertificateOpen,
         setEmploymentCertificateOpen] =
         useState(false);
+
+    const [attendanceRecordOpen,
+        setAttendanceRecordOpen] =
+        useState(false);
+
+    const [
+        attendancePeriodOpen,
+        setAttendancePeriodOpen,
+    ] = useState(false);
+
+    const [
+        attendancePeriod,
+        setAttendancePeriod,
+    ] = useState({
+        startDate: "",
+        endDate: "",
+    });
 
     const [historyOpen, setHistoryOpen] = useState(false);
 
@@ -402,7 +425,15 @@ function EmployeeDetail() {
 
                                 </button>
 
-                                <button>
+                                <button
+                                    onClick={() => {
+
+                                        setAttendancePeriodOpen(true);
+
+                                        setHistoryOpen(false);
+
+                                    }}
+                                >
 
                                     출근기록부
 
@@ -875,6 +906,42 @@ function EmployeeDetail() {
                     setEmploymentCertificateOpen(false)
                 }
                 employee={employee}
+            />
+
+            <AttendancePeriodModal
+
+                open={attendancePeriodOpen}
+
+                onClose={() =>
+                    setAttendancePeriodOpen(false)
+                }
+
+                onConfirm={(period) => {
+
+                    setAttendancePeriod(period);
+
+                    setAttendancePeriodOpen(false);
+
+                    setAttendanceRecordOpen(true);
+
+                }}
+
+            />
+
+            <AttendanceRecordModal
+
+                open={attendanceRecordOpen}
+
+                onClose={() =>
+                    setAttendanceRecordOpen(false)
+                }
+
+                employee={employee}
+
+                startDate={attendancePeriod.startDate}
+
+                endDate={attendancePeriod.endDate}
+
             />
 
         </>

@@ -227,3 +227,81 @@
     background: #185d96;
 
 }
+
+.period-radio {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+}
+
+.period-radio input {
+
+    margin: 0;
+
+}
+
+.attendance-divider {
+
+    border: none;
+
+    border-top: 1px solid #ececec;
+
+    margin: 8px 0 4px;
+
+}
+
+.period-date-area {
+
+    margin-top: 14px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+.period-date-label {
+
+    font-size: 14px;
+
+    color: #666;
+
+    font-weight: 600;
+
+}
+
+.period-date-input {
+
+    width: 100%;
+
+    height: 48px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    padding: 0 14px;
+
+    font-size: 15px;
+
+    background: #fafafa;
+
+}
+
+.period-date-input:disabled {
+
+    background: #f4f4f4;
+
+    color: #999;
+
+}
