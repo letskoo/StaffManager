@@ -1,6 +1,8 @@
 import {
     useState,
     useMemo,
+    useRef,
+    useEffect,
 } from "react";
 
 import useEmployees from "../hooks/useEmployees";
@@ -10,6 +12,8 @@ import EmployeeModal from "../components/EmployeeModal";
 import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
 import PayrollStatementModal from "../components/PayrollStatementModal";
+import EmploymentContractModal
+    from "../components/EmploymentContractModal";
 import DashboardWeekCalendar
     from "../components/DashboardWeekCalendar";
 
@@ -67,6 +71,13 @@ function EmployeeDetail() {
     const [toastMessage, setToastMessage] = useState("");
 
     const [statementOpen, setStatementOpen] = useState(false);
+
+    const [employmentContractOpen, setEmploymentContractOpen] =
+        useState(false);
+
+    const [historyOpen, setHistoryOpen] = useState(false);
+
+    const historyWrapRef = useRef(null);
 
     const {
         employees,
@@ -184,6 +195,46 @@ function EmployeeDetail() {
         ? getMonthlyPayrollStatement(employee)
         : null;
 
+    useEffect(() => {
+
+        const handleClickOutside = (e) => {
+
+            if (
+
+                historyWrapRef.current &&
+
+                !historyWrapRef.current.contains(e.target)
+
+            ) {
+
+                setHistoryOpen(false);
+
+            }
+
+        };
+
+        document.addEventListener(
+
+            "mousedown",
+
+            handleClickOutside
+
+        );
+
+        return () => {
+
+            document.removeEventListener(
+
+                "mousedown",
+
+                handleClickOutside
+
+            );
+
+        };
+
+    }, []);
+
     const handleSaveEmployee = (newEmployee) => {
 
         addEmployee(newEmployee);
@@ -259,11 +310,101 @@ function EmployeeDetail() {
         <>
 
             <Header
+
                 title="직원 상세보기"
-                registerText="급여명세서"
-                onRegister={() =>
-                    setStatementOpen(true)
+
+                rightContent={
+
+                    <div
+
+                        className="history-wrap"
+
+                        ref={historyWrapRef}
+
+                    >
+
+                        <button
+
+                            className="register-btn"
+
+                            onClick={() =>
+
+                                setHistoryOpen(
+
+                                    !historyOpen
+
+                                )
+
+                            }
+
+                        >
+
+                            문서출력
+
+                        </button>
+
+                        {historyOpen && (
+
+                            <div className="history-menu">
+
+                                <button
+
+                                    onClick={() => {
+
+                                        setStatementOpen(true);
+
+                                        setHistoryOpen(false);
+
+                                    }}
+
+                                >
+
+                                    급여명세서
+
+                                </button>
+
+                                <button
+
+                                    onClick={() => {
+
+                                        setEmploymentContractOpen(true);
+
+                                        setHistoryOpen(false);
+
+                                    }}
+
+                                >
+
+                                    근로계약서
+
+                                </button>
+
+                                <button>
+
+                                    재직증명서
+
+                                </button>
+
+                                <button>
+
+                                    경력증명서
+
+                                </button>
+
+                                <button>
+
+                                    출근기록부
+
+                                </button>
+
+                            </div>
+
+                        )}
+
+                    </div>
+
                 }
+
             />
 
             <div className="employee-detail">
@@ -707,6 +848,14 @@ function EmployeeDetail() {
                     setStatementOpen(false)
                 }
                 statement={statement}
+            />
+
+            <EmploymentContractModal
+                open={employmentContractOpen}
+                onClose={() =>
+                    setEmploymentContractOpen(false)
+                }
+                employee={employee}
             />
 
         </>

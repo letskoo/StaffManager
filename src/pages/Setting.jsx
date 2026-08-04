@@ -271,7 +271,7 @@ function Setting() {
 
                     <div className="setting-company">
 
-                        <div className="setting-company-grid">
+                        <div className="setting-company-column">
 
                             <div className="setting-input-group">
 
@@ -387,7 +387,7 @@ function Setting() {
 
                         </div>
 
-                        <div className="setting-company-grid">
+                        <div className="setting-company-column">
 
                             <div className="setting-input-group">
 

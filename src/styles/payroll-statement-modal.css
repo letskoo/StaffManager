@@ -383,3 +383,123 @@
     color: #d93025;
 
 }
+
+.contract-body {
+
+    margin: 30px 0;
+
+}
+
+.contract-intro {
+
+    margin-bottom: 28px;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+
+}
+
+.contract-section {
+
+    margin-bottom: 30px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #ececec;
+
+}
+
+.contract-section h3 {
+
+    margin-bottom: 16px;
+
+    font-size: 18px;
+
+}
+
+.contract-section p {
+
+    margin: 8px 0;
+
+    line-height: 1.8;
+
+    color: #333;
+
+}
+
+.contract-section strong {
+
+    font-weight: 700;
+
+}
+
+.contract-note {
+
+    color: #666 !important;
+
+    font-size: 13px;
+
+}
+
+.contract-row {
+
+    display: grid;
+
+    grid-template-columns: 120px 1fr;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 6px 0;
+
+}
+
+.contract-row span {
+
+    color: #555;
+
+    font-size: 15px;
+
+}
+
+.contract-row strong {
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #222;
+
+}
+
+.contract-section .contract-row {
+
+    padding: 4px 0;
+
+}
+
+.contract-divider {
+
+    border: none;
+
+    border-top: 1px solid #d8d8d8;
+
+    margin: 34px 0;
+
+}
+
+.contract-footer {
+
+    border-top: none;
+
+}
+
+.contract-section-last {
+
+    border-bottom: none;
+
+    padding-bottom: 0;
+
+}

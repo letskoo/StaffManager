@@ -34,17 +34,17 @@
 
 .detail-card {
 
-    background:#fff;
+    background: #fff;
 
-    border:1px solid #ececec;
+    border: 1px solid #ececec;
 
-    border-radius:14px;
+    border-radius: 14px;
 
-    padding:28px;
+    padding: 28px;
 
-    display:flex;
+    display: flex;
 
-    flex-direction:column;
+    flex-direction: column;
 
 }
 
@@ -164,11 +164,11 @@
 
 .salary-chart {
 
-    flex:1;
+    flex: 1;
 
-    width:100%;
+    width: 100%;
 
-    min-height:220px;
+    min-height: 220px;
 
     padding: 10px;
 
@@ -208,7 +208,7 @@
 
 }
 
-.embedded-week-calendar > h2 {
+.embedded-week-calendar>h2 {
 
     flex-shrink: 0;
 
@@ -246,47 +246,47 @@
 
 }
 
-.attendance-card{
+.attendance-card {
 
-    height:360px;
+    height: 360px;
 
-    overflow:hidden;
+    overflow: hidden;
 
 }
 
 .attendance-card .detail-row {
 
-    gap:30px;
+    gap: 30px;
 
 }
 
 .attendance-card .detail-row strong {
 
-    flex:1;
+    flex: 1;
 
-    text-align:right;
+    text-align: right;
 
 }
 
 .detail-pay-column {
 
-    height:360px;
+    height: 360px;
 
-    display:grid;
+    display: grid;
 
-    grid-template-rows:1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 
-    gap:16px;
+    gap: 16px;
 
 }
 
 .detail-pay-card {
 
-    display:flex;
+    display: flex;
 
-    flex-direction:column;
+    flex-direction: column;
 
-    overflow:hidden;
+    overflow: hidden;
 
 }
 
@@ -422,70 +422,130 @@
 
 }
 
-.attendance-title-row{
+.attendance-title-row {
 
-    display:flex;
+    display: flex;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    align-items:center;
+    align-items: center;
 
-    margin-bottom:18px;
-
-}
-
-.attendance-month-nav{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    font-size:14px;
+    margin-bottom: 18px;
 
 }
 
-.attendance-month-nav button{
+.attendance-month-nav {
 
-    width:24px;
+    display: flex;
 
-    height:24px;
+    align-items: center;
 
-    border:none;
+    gap: 10px;
 
-    background:transparent;
-
-    cursor:pointer;
-
-    font-size:14px;
-
-    font-weight:600;
+    font-size: 14px;
 
 }
 
-.attendance-month-nav button:hover:not(:disabled){
+.attendance-month-nav button {
 
-    background:#e9e9e9;
+    width: 24px;
+
+    height: 24px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
 
 }
 
-.attendance-month-nav button:disabled{
+.attendance-month-nav button:hover:not(:disabled) {
 
-    opacity:.4;
-
-    cursor:default;
+    background: #e9e9e9;
 
 }
 
-.attendance-month-nav span{
+.attendance-month-nav button:disabled {
 
-    min-width:95px;
+    opacity: .4;
 
-    text-align:center;
+    cursor: default;
 
-    font-size:14px;
+}
 
-    font-weight:600;
+.attendance-month-nav span {
+
+    min-width: 95px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+.history-wrap {
+
+    position: relative;
+
+    width: 150px;
+
+    flex-shrink: 0;
+
+}
+
+.history-menu {
+
+    position: absolute;
+
+    top: 54px;
+
+    right: 0;
+
+    width: 180px;
+
+    background: white;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+
+    overflow: hidden;
+
+    z-index: 50;
+
+}
+
+.history-menu button {
+
+    width: 100%;
+
+    height: 44px;
+
+    border: none;
+
+    background: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    text-align: left;
+
+    padding: 0 16px;
+
+}
+
+.history-menu button:hover {
+
+    background: #f6f6f6;
 
 }

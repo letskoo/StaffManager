@@ -212,17 +212,17 @@
 
     flex-direction: column;
 
-    gap: 18px;
+    gap: 14px;
 
 }
 
-.setting-company-grid {
+.setting-company-column {
 
-    display: grid;
+    display: flex;
 
-    grid-template-columns: 1fr 1fr;
+    flex-direction: column;
 
-    gap: 18px;
+    gap: 16px;
 
 }
 
@@ -230,21 +230,25 @@
 
     width: 100%;
 
+    max-width: 600px;
+
 }
 
 .setting-company textarea {
 
     width: 100%;
 
-    min-height: 90px;
+    max-width: 600px;
 
-    padding: 14px;
+    min-height: 46px;
+
+    padding: 12px 14px;
 
     border: 1px solid #ddd;
 
     border-radius: 10px;
 
-    resize: none;
+    resize: vertical;
 
     font-size: 15px;
 

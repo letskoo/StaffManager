@@ -14,35 +14,6 @@ function DocumentFooter() {
 
         <div className="payroll-footer">
 
-            <div className="document-footer-company">
-
-                <span>
-
-                    {companyInfo.companyName ||
-                        "사업장명 미등록"}
-
-                </span>
-
-                <strong>
-
-                    대표자&nbsp;
-
-                    {companyInfo.ownerName || "-"}
-
-                </strong>
-
-                <CompanySeal
-
-                    seal={companyInfo.seal}
-
-                    companyName={
-                        companyInfo.companyName
-                    }
-
-                />
-
-            </div>
-
             <p>
 
                 본 문서는&nbsp;
