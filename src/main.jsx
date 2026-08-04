@@ -11,11 +11,17 @@ import "./styles/global.css";
 import App from "./App";
 
 const UPDATE_INTERVAL =
-    60 * 60 * 1000;
+    5 * 60 * 1000;
 
-registerSW({
+const updateSW = registerSW({
 
     immediate: true,
+
+    onNeedRefresh() {
+
+        updateSW(true);
+
+    },
 
     onRegisteredSW(
         serviceWorkerUrl,
@@ -36,10 +42,15 @@ registerSW({
 
             }
 
-            if (
-                registration.installing ||
-                registration.waiting
-            ) {
+            if (registration.installing) {
+
+                return;
+
+            }
+
+            if (registration.waiting) {
+
+                updateSW(true);
 
                 return;
 
@@ -66,6 +77,8 @@ registerSW({
             }
 
         };
+
+        checkForUpdate();
 
         window.setInterval(
             checkForUpdate,
