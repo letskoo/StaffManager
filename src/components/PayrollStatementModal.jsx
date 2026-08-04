@@ -8,11 +8,28 @@ import Toast from "./Toast";
 
 import "../styles/payroll-statement-modal.css";
 
+import DocumentHeader
+    from "../documents/components/DocumentHeader";
+
+import DocumentFooter
+    from "../documents/components/DocumentFooter";
+
+import {
+    generateDocumentNumber,
+} from "../documents/documentNumber";
+
+import {
+    getCompanyInfo,
+} from "../documents/companyService";
+
 function PayrollStatementModal({
     open,
     onClose,
     statement,
 }) {
+
+    const companyInfo =
+        getCompanyInfo();
 
     const [showToast, setShowToast] = useState(false);
 
@@ -48,11 +65,25 @@ function PayrollStatementModal({
 
         await new Promise(resolve => setTimeout(resolve, 50));
 
+        const node = payrollRef.current;
+
         const dataUrl = await htmlToImage.toPng(
-            payrollRef.current,
+            node,
             {
                 pixelRatio: 3,
+
                 backgroundColor: "#ffffff",
+
+                width: node.scrollWidth,
+                height: node.scrollHeight,
+
+                canvasWidth: node.scrollWidth * 3,
+                canvasHeight: node.scrollHeight * 3,
+
+                style: {
+                    margin: "0",
+                    transform: "none",
+                },
             }
         );
 
@@ -141,34 +172,122 @@ function PayrollStatementModal({
 
                 <div className="payroll-paper">
 
-                    <div className="payroll-header">
+                    <DocumentHeader
 
-                        <h2>급여명세서</h2>
+                        title="급여명세서"
 
-                        <p>2026년 7월</p>
+                        subtitle={`${new Date().getFullYear()}년 ${new Date().getMonth() + 1}월`}
 
-                    </div>
+                        documentNumber={generateDocumentNumber()}
 
-                    <div className="payroll-section payroll-info">
+                        issueDate={new Date()}
 
-                        <div className="payroll-row">
-                            <span>직원명</span>
-                            <strong>{statement.employeeName}</strong>
+                    />
+
+                    <div className="payroll-company-grid">
+
+                        <div className="payroll-company-card">
+
+                            <h3>회사 정보</h3>
+
+                            <div className="payroll-row">
+
+                                <span>사업장명</span>
+
+                                <strong>
+
+                                    {companyInfo.companyName || "-"}
+
+                                </strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>대표자</span>
+
+                                <strong>
+
+                                    {companyInfo.ownerName || "-"}
+
+                                </strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>사업자번호</span>
+
+                                <strong>
+
+                                    {companyInfo.businessNumber || "-"}
+
+                                </strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>대표전화</span>
+
+                                <strong>
+
+                                    {companyInfo.phone || "-"}
+
+                                </strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>주소</span>
+
+                                <strong>
+
+                                    {companyInfo.address || "-"}
+
+                                </strong>
+
+                            </div>
+
                         </div>
 
-                        <div className="payroll-row">
-                            <span>직원번호</span>
-                            <strong>{statement.employeeNo}</strong>
-                        </div>
+                        <div className="payroll-company-card">
 
-                        <div className="payroll-row">
-                            <span>직급</span>
-                            <strong>{statement.position}</strong>
-                        </div>
+                            <h3>직원 정보</h3>
 
-                        <div className="payroll-row">
-                            <span>급여방식</span>
-                            <strong>{statement.payType}</strong>
+                            <div className="payroll-row">
+
+                                <span>직원명</span>
+
+                                <strong>{statement.employeeName}</strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>직원번호</span>
+
+                                <strong>{statement.employeeNo}</strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>직급</span>
+
+                                <strong>{statement.position}</strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>급여방식</span>
+
+                                <strong>{statement.payType}</strong>
+
+                            </div>
+
                         </div>
 
                     </div>
@@ -205,9 +324,64 @@ function PayrollStatementModal({
                             <strong>{statement.bonus.toLocaleString()}원</strong>
                         </div>
 
-                        <div className="payroll-row">
-                            <span>결근차감</span>
-                            <strong>{statement.absentDeduction.toLocaleString()}원</strong>
+                        <div className="payroll-section payroll-attendance-impact">
+
+                            <h3>
+                                근태 영향
+                            </h3>
+
+                            <div className="payroll-row">
+
+                                <span>
+                                    지각
+                                </span>
+
+                                <strong className="payroll-deduction">
+
+                                    {statement.lateDeduction > 0
+                                        ? `-${Number(
+                                            statement.lateDeduction
+                                        ).toLocaleString()}원 / ${statement.lateMinutes}분`
+                                        : "-"}
+
+                                </strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>
+                                    조기퇴근
+                                </span>
+
+                                <strong className="payroll-deduction">
+
+                                    {statement.earlyLeaveDeduction > 0
+                                        ? `-${Number(
+                                            statement.earlyLeaveDeduction
+                                        ).toLocaleString()}원 / ${statement.earlyLeaveMinutes}분`
+                                        : "-"}
+
+                                </strong>
+
+                            </div>
+
+                            <div className="payroll-row">
+
+                                <span>결근</span>
+
+                                <strong className="payroll-deduction">
+
+                                    {statement.absentDeduction > 0
+                                        ? `-${Number(
+                                            statement.absentDeduction
+                                        ).toLocaleString()}원 / ${statement.absentDays}일`
+                                        : "-"}
+
+                                </strong>
+
+                            </div>
+
                         </div>
 
                     </div>
@@ -221,6 +395,8 @@ function PayrollStatementModal({
                         </strong>
 
                     </div>
+
+                    <DocumentFooter />
 
                     {capturing ? (
 

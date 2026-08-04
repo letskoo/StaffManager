@@ -808,6 +808,8 @@ export function getMonthlyPayrollStatement(employee) {
     let holidayPay = 0;
     let lateDeduction = 0;
     let earlyLeaveDeduction = 0;
+    let lateMinutes = 0;
+    let earlyLeaveMinutes = 0;
 
     if (employee.workPolicy?.payType === "monthly") {
 
@@ -848,6 +850,12 @@ export function getMonthlyPayrollStatement(employee) {
 
         earlyLeaveDeduction +=
             detail.earlyLeaveDeduction;
+
+        lateMinutes +=
+            detail.lateMinutes;
+
+        earlyLeaveMinutes +=
+            detail.earlyLeaveMinutes;
 
     });
 
@@ -924,6 +932,10 @@ export function getMonthlyPayrollStatement(employee) {
 
         earlyLeaveDeduction:
             Math.floor(earlyLeaveDeduction),
+
+        lateMinutes,
+
+        earlyLeaveMinutes,
 
         absentDeduction,
 

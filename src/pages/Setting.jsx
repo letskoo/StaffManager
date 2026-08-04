@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+import {
+    getCompanyInfo,
+    saveCompanyInfo,
+} from "../documents/companyService";
+
 import Header from "../components/Header";
 import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
@@ -30,6 +35,12 @@ function Setting() {
     const [showToast, setShowToast] = useState(false);
 
     const [toastMessage, setToastMessage] = useState("");
+
+    const [companyInfo, setCompanyInfo] = useState(() =>
+
+        getCompanyInfo()
+
+    );
 
     const openToast = (message) => {
 
@@ -246,6 +257,236 @@ function Setting() {
                                 }
                             >
                                 전체 초기화
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="setting-section">
+
+                    <h2>회사 정보</h2>
+
+                    <div className="setting-company">
+
+                        <div className="setting-company-grid">
+
+                            <div className="setting-input-group">
+
+                                <label>사업장명</label>
+
+                                <input
+                                    className="setting-input"
+                                    value={companyInfo.companyName}
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            companyName: e.target.value
+
+                                        })
+
+                                    }
+                                />
+
+                            </div>
+
+                            <div className="setting-input-group">
+
+                                <label>대표자명</label>
+
+                                <input
+                                    className="setting-input"
+                                    value={companyInfo.ownerName}
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            ownerName: e.target.value
+
+                                        })
+
+                                    }
+                                />
+
+                            </div>
+
+                            <div className="setting-input-group">
+
+                                <label>사업자등록번호</label>
+
+                                <input
+                                    className="setting-input"
+                                    value={companyInfo.businessNumber}
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            businessNumber: e.target.value
+
+                                        })
+
+                                    }
+                                />
+
+                            </div>
+
+                            <div className="setting-input-group">
+
+                                <label>대표전화</label>
+
+                                <input
+                                    className="setting-input"
+                                    value={companyInfo.phone}
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            phone: e.target.value
+
+                                        })
+
+                                    }
+                                />
+
+                            </div>
+
+                        </div>
+
+                        <div className="setting-input-group">
+
+                            <label>사업장 주소</label>
+
+                            <textarea
+
+                                value={companyInfo.address}
+
+                                onChange={(e) =>
+
+                                    setCompanyInfo({
+
+                                        ...companyInfo,
+
+                                        address: e.target.value
+
+                                    })
+
+                                }
+
+                            />
+
+                        </div>
+
+                        <div className="setting-company-grid">
+
+                            <div className="setting-input-group">
+
+                                <label>문서 접두어</label>
+
+                                <input
+
+                                    className="setting-input"
+
+                                    value={companyInfo.documentPrefix}
+
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            documentPrefix: e.target.value,
+
+                                        })
+
+                                    }
+
+                                />
+
+                            </div>
+
+                            <div className="setting-input-group">
+
+                                <label>담당자</label>
+
+                                <input
+
+                                    className="setting-input"
+
+                                    value={companyInfo.manager}
+
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            manager: e.target.value,
+
+                                        })
+
+                                    }
+
+                                />
+
+                            </div>
+
+                            <div className="setting-input-group">
+
+                                <label>담당자 직책</label>
+
+                                <input
+
+                                    className="setting-input"
+
+                                    value={companyInfo.managerPosition}
+
+                                    onChange={(e) =>
+
+                                        setCompanyInfo({
+
+                                            ...companyInfo,
+
+                                            managerPosition: e.target.value,
+
+                                        })
+
+                                    }
+
+                                />
+
+                            </div>
+
+                        </div>
+
+                        <div className="setting-password-footer">
+
+                            <button
+
+                                className="setting-btn"
+
+                                onClick={() => {
+
+                                    saveCompanyInfo(companyInfo);
+
+                                    openToast("회사 정보가 저장되었습니다.");
+
+                                }}
+
+                            >
+
+                                저장
+
                             </button>
 
                         </div>

@@ -10,7 +10,11 @@
 
     justify-content: center;
 
-    align-items: center;
+    align-items: flex-start;
+
+    overflow-y: auto;
+
+    padding: 40px 0;
 
     z-index: 9999;
 
@@ -18,7 +22,9 @@
 
 .payroll-modal {
 
-    width: 620px;
+    width: 720px;
+
+    max-width: 95vw;
 
     background: #fff;
 
@@ -28,15 +34,23 @@
 
     box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
 
+    margin: auto;
+
 }
 
 .payroll-header {
 
-    text-align: left;
+    display: flex;
 
-    margin-bottom: 24px;
+    flex-direction: column;
 
-    padding-bottom: 24px;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    margin-bottom: -10px;
+
+    padding-bottom: -10px;
 
 }
 
@@ -44,13 +58,17 @@
 
     font-size: 30px;
 
-    margin-bottom: 8px;
+    margin-bottom: -15px;
 
 }
 
 .payroll-header p {
 
-    color: #777;
+    color: #888;
+
+    font-size: 18px;
+
+    font-weight: 400;
 
 }
 
@@ -74,7 +92,9 @@
 
     justify-content: space-between;
 
-    padding: 10px 0;
+    align-items: center;
+
+    padding: 5px 0;
 
     font-size: 15px;
 
@@ -89,6 +109,32 @@
 .payroll-row strong {
 
     font-weight: 600;
+
+}
+
+.payroll-company-card .payroll-row {
+
+    display: grid;
+
+    grid-template-columns: 105px minmax(0, 1fr);
+
+    align-items: center;
+
+    column-gap: 12px;
+
+}
+
+.payroll-company-card .payroll-row span {
+
+    text-align: left;
+
+}
+
+.payroll-company-card .payroll-row strong {
+
+    text-align: left;
+
+    white-space: nowrap;
 
 }
 
@@ -203,5 +249,137 @@
     font-size: 15px;
 
     font-weight: 600;
+
+}
+
+.payroll-issued {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1px;
+
+    margin-top: 20px;
+
+}
+
+.payroll-issued span {
+
+    display: block;
+
+    color: #888;
+
+    font-size: 13px;
+
+}
+
+.payroll-issued strong {
+
+    font-size: 14px;
+
+}
+
+.payroll-company-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    margin: 24px 0;
+
+}
+
+.payroll-company-card {
+
+    border: 1px solid #ececec;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+}
+
+.payroll-company-card h3 {
+
+    font-size: 17px;
+
+    margin-bottom: 16px;
+
+}
+
+.payroll-footer {
+
+    margin-top: 30px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #ececec;
+
+    color: #888;
+
+    text-align: center;
+
+    font-size: 14px;
+
+}
+
+.payroll-footer strong {
+
+    color: #222;
+
+}
+
+.payroll-issued-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.payroll-issued-row span {
+
+    color: #888;
+
+    font-size: 13px;
+
+    min-width: 52px;
+
+}
+
+.payroll-issued-row strong {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+.payroll-attendance-impact {
+
+    border-top: 1px solid #ececec;
+
+}
+
+.payroll-attendance-impact h3 {
+
+    margin-bottom: 8px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #222;
+
+}
+
+.payroll-deduction {
+
+    color: #d93025;
 
 }

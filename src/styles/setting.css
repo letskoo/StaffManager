@@ -1,199 +1,259 @@
-.setting-page{
+.setting-page {
 
-    display:flex;
+    display: flex;
 
-    flex-direction:column;
+    flex-direction: column;
 
-    gap:24px;
-
-}
-
-.setting-section{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:16px;
+    gap: 24px;
 
 }
 
-.setting-section h2{
+.setting-section {
 
-    font-size:22px;
+    display: flex;
 
-    font-weight:700;
+    flex-direction: column;
 
-    color:#222;
-
-}
-
-.setting-card{
-
-    background:#fff;
-
-    border:1px solid #ececec;
-
-    border-radius:14px;
-
-    padding:24px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:30px;
+    gap: 16px;
 
 }
 
-.setting-card-left{
+.setting-section h2 {
 
-    display:flex;
+    font-size: 22px;
 
-    flex-direction:column;
+    font-weight: 700;
 
-    gap:8px;
-
-}
-
-.setting-card-left h3{
-
-    font-size:18px;
-
-    font-weight:600;
-
-    color:#222;
+    color: #222;
 
 }
 
-.setting-card-left p{
+.setting-card {
 
-    font-size:14px;
+    background: #fff;
 
-    color:#777;
+    border: 1px solid #ececec;
 
-    line-height:1.5;
+    border-radius: 14px;
 
-}
+    padding: 24px;
 
-.setting-card-right{
+    display: flex;
 
-    flex-shrink:0;
+    justify-content: space-between;
 
-}
+    align-items: center;
 
-.setting-btn{
-
-    min-width:120px;
-
-    height:42px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:#1f73b9;
-
-    color:#fff;
-
-    font-size:15px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.15s;
+    gap: 30px;
 
 }
 
-.setting-btn:hover{
+.setting-card-left {
 
-    background:#185d96;
+    display: flex;
 
-}
+    flex-direction: column;
 
-.setting-btn-danger{
-
-    background:#d93025;
+    gap: 8px;
 
 }
 
-.setting-btn-danger:hover{
+.setting-card-left h3 {
 
-    background:#b3261e;
+    font-size: 18px;
 
-}
+    font-weight: 600;
 
-.setting-password{
-
-    background:#fff;
-
-    border:1px solid #ececec;
-
-    border-radius:14px;
-
-    padding:24px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
+    color: #222;
 
 }
 
-.setting-input-group{
+.setting-card-left p {
 
-    display:flex;
+    font-size: 14px;
 
-    flex-direction:column;
+    color: #777;
 
-    gap:8px;
-
-}
-
-.setting-input-group label{
-
-    font-size:15px;
-
-    font-weight:500;
-
-    color:#555;
+    line-height: 1.5;
 
 }
 
-.setting-input{
+.setting-card-right {
 
-    width:30%;
-
-    height:46px;
-
-    padding:0 14px;
-
-    border:1px solid #ddd;
-
-    border-radius:10px;
-
-    font-size:15px;
-
-    outline:none;
-
-    transition:.15s;
+    flex-shrink: 0;
 
 }
 
-.setting-input:focus{
+.setting-btn {
 
-    border-color:#1f73b9;
+    min-width: 120px;
+
+    height: 42px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #1f73b9;
+
+    color: #fff;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .15s;
 
 }
 
-.setting-password-footer{
+.setting-btn:hover {
 
-    display:flex;
+    background: #185d96;
 
-    justify-content:flex-end;
+}
+
+.setting-btn-danger {
+
+    background: #d93025;
+
+}
+
+.setting-btn-danger:hover {
+
+    background: #b3261e;
+
+}
+
+.setting-password {
+
+    background: #fff;
+
+    border: 1px solid #ececec;
+
+    border-radius: 14px;
+
+    padding: 24px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+}
+
+.setting-input-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+.setting-input-group label {
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    color: #555;
+
+}
+
+.setting-input {
+
+    width: 30%;
+
+    height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: .15s;
+
+}
+
+.setting-input:focus {
+
+    border-color: #1f73b9;
+
+}
+
+.setting-password-footer {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+}
+
+.setting-company {
+
+    background: #fff;
+
+    border: 1px solid #ececec;
+
+    border-radius: 14px;
+
+    padding: 24px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+}
+
+.setting-company-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px;
+
+}
+
+.setting-company .setting-input {
+
+    width: 100%;
+
+}
+
+.setting-company textarea {
+
+    width: 100%;
+
+    min-height: 90px;
+
+    padding: 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    resize: none;
+
+    font-size: 15px;
+
+    outline: none;
+
+}
+
+.setting-company textarea:focus {
+
+    border-color: #1f73b9;
 
 }
