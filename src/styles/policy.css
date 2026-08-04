@@ -461,24 +461,84 @@
 
 }
 
-.policy-approval-toolbar{
+.policy-approval-toolbar {
 
-    display:flex;
+    display: flex;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    align-items:center;
+    align-items: center;
 
-    margin-bottom:26px;
+    margin-bottom: 26px;
 
 }
 
-.policy-tabs{
+.policy-tabs {
 
-    display:flex;
+    display: flex;
 
-    gap:５px;
+    gap: ５px;
 
-    margin:0;
+    margin: 0;
+
+}
+
+.policy-title-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+.policy-title-row h2 {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.policy-guide-button {
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 20px;
+
+    color: #888;
+
+    transition: .15s;
+
+}
+
+.policy-guide-button:hover {
+
+    color: #1f73b9;
+
+}
+
+.approval-guide-note {
+
+    margin-top: 18px;
+
+    margin-bottom: 28px;
+
+    padding: 0 24px;
+
+    text-align: right;
+
+    font-size: 13px;
+
+    color: #777;
+
+    line-height: 1.6;
 
 }

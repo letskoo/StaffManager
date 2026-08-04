@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import EmployeeModal from "../components/EmployeeModal";
 
+import ApprovalGuideModal
+    from "../components/ApprovalGuideModal";
+
 import useEmployees from "../hooks/useEmployees";
 
 import "../styles/policy.css";
@@ -69,6 +72,9 @@ function Policy() {
     });
 
     const [historyOpen, setHistoryOpen] = useState(false);
+
+    const [guideOpen, setGuideOpen] =
+        useState(false);
 
     const historyWrapRef = useRef(null);
 
@@ -494,7 +500,22 @@ function Policy() {
 
                 <div className="policy-card" style={{ marginTop: 24 }}>
 
-                    <h2>승인 관리</h2>
+                    <div className="policy-title-row">
+
+                        <h2>
+
+                            승인 관리
+
+                            <button
+                                className="policy-guide-button"
+                                onClick={() => setGuideOpen(true)}
+                            >
+                                ⓘ
+                            </button>
+
+                        </h2>
+
+                    </div>
 
                     <div className="policy-approval-toolbar">
 
@@ -860,6 +881,16 @@ function Policy() {
                 }}
 
                 onUpdate={() => { }}
+
+            />
+
+            <ApprovalGuideModal
+
+                open={guideOpen}
+
+                onClose={() =>
+                    setGuideOpen(false)
+                }
 
             />
 
