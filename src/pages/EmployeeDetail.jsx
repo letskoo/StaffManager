@@ -14,6 +14,9 @@ import Toast from "../components/Toast";
 import PayrollStatementModal from "../components/PayrollStatementModal";
 import EmploymentContractModal
     from "../components/EmploymentContractModal";
+
+import EmploymentCertificateModal
+    from "../components/EmploymentCertificateModal";
 import DashboardWeekCalendar
     from "../components/DashboardWeekCalendar";
 
@@ -73,6 +76,10 @@ function EmployeeDetail() {
     const [statementOpen, setStatementOpen] = useState(false);
 
     const [employmentContractOpen, setEmploymentContractOpen] =
+        useState(false);
+
+    const [employmentCertificateOpen,
+        setEmploymentCertificateOpen] =
         useState(false);
 
     const [historyOpen, setHistoryOpen] = useState(false);
@@ -379,15 +386,19 @@ function EmployeeDetail() {
 
                                 </button>
 
-                                <button>
+                                <button
+
+                                    onClick={() => {
+
+                                        setEmploymentCertificateOpen(true);
+
+                                        setHistoryOpen(false);
+
+                                    }}
+
+                                >
 
                                     재직증명서
-
-                                </button>
-
-                                <button>
-
-                                    경력증명서
 
                                 </button>
 
@@ -854,6 +865,14 @@ function EmployeeDetail() {
                 open={employmentContractOpen}
                 onClose={() =>
                     setEmploymentContractOpen(false)
+                }
+                employee={employee}
+            />
+
+            <EmploymentCertificateModal
+                open={employmentCertificateOpen}
+                onClose={() =>
+                    setEmploymentCertificateOpen(false)
                 }
                 employee={employee}
             />

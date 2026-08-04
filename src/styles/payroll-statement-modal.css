@@ -503,3 +503,17 @@
     padding-bottom: 0;
 
 }
+
+.certificate-message {
+
+    text-align: center;
+
+    font-size: 18px;
+
+    line-height: 1.9;
+
+    color: #333;
+
+    margin: 24px 0;
+
+}
