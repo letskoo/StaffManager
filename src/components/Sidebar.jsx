@@ -93,7 +93,7 @@ function Sidebar() {
                 </div>
 
                 <div className="sidebar-footer-version">
-                    Version 1.0.0
+                    Developer Project
                 </div>
 
             </div>
