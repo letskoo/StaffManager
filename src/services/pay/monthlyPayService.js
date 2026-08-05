@@ -396,6 +396,18 @@ function getMonthlyBonus(employee, month) {
 
 }
 
+function isRejectedAbsent(record) {
+
+    return (
+
+        record.status === "결근" &&
+
+        record.approval?.absent?.status === "rejected"
+
+    );
+
+}
+
 export function getMonthlyAbsentCount(employee, month = new Date().toISOString().slice(0, 7)) {
 
     const history = JSON.parse(
@@ -509,7 +521,10 @@ export function getMonthlySalary(employee) {
                 (record) =>
                     record.employeeNo === employee.no &&
                     record.date.startsWith(currentMonth) &&
-                    record.checkOut
+                    (
+                        record.checkOut ||
+                        isRejectedAbsent(record)
+                    )
             )
 
             .reduce(
@@ -546,8 +561,12 @@ export function getMonthlySalary(employee) {
             record =>
                 record.employeeNo === employee.no &&
                 record.date.startsWith(currentMonth) &&
-                record.checkOut
+                (
+                    record.checkOut ||
+                    isRejectedAbsent(record)
+                )
         )
+
         .reduce(
             (sum, record) => {
 
@@ -647,7 +666,10 @@ export function getMonthlySalaryByMonth(employee, month) {
                 (record) =>
                     record.employeeNo === employee.no &&
                     record.date.startsWith(month) &&
-                    record.checkOut
+                    (
+                        record.checkOut ||
+                        isRejectedAbsent(record)
+                    )
             )
 
             .reduce(
@@ -684,7 +706,10 @@ export function getMonthlySalaryByMonth(employee, month) {
             (record) =>
                 record.employeeNo === employee.no &&
                 record.date.startsWith(month) &&
-                record.checkOut
+                (
+                    record.checkOut ||
+                    isRejectedAbsent(record)
+                )
         )
         .reduce(
             (sum, record) => {
@@ -796,10 +821,18 @@ export function getMonthlyPayrollStatement(employee) {
         .slice(0, 7);
 
     const records = history.filter(
+
         record =>
+
             record.employeeNo === employee.no &&
+
             record.date.startsWith(month) &&
-            record.checkOut
+
+            (
+                record.checkOut ||
+                isRejectedAbsent(record)
+            )
+
     );
 
     let basePay = 0;

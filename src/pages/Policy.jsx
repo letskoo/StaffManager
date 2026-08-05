@@ -707,6 +707,22 @@ function Policy() {
                                                 });
                                             break;
 
+                                        case "holiday":
+                                            reason = "휴일근무";
+
+                                            time =
+                                                `${new Date(item.checkIn).toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false,
+                                                })} ~ ${new Date(item.checkOut).toLocaleTimeString("ko-KR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false,
+                                                })}`;
+
+                                            break;
+
                                         case "break": {
 
                                             const totalMinutes = Math.floor(
@@ -733,7 +749,29 @@ function Policy() {
 
                                         case "absent":
                                             reason = "결근";
-                                            time = "-";
+
+                                            if (
+                                                item.scheduledCheckIn &&
+                                                item.scheduledCheckOut
+                                            ) {
+
+                                                time =
+                                                    `${new Date(item.scheduledCheckIn).toLocaleTimeString("ko-KR", {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: false,
+                                                    })} ~ ${new Date(item.scheduledCheckOut).toLocaleTimeString("ko-KR", {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: false,
+                                                    })}`;
+
+                                            } else {
+
+                                                time = "-";
+
+                                            }
+
                                             break;
 
                                     }

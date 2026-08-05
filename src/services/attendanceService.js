@@ -1,17 +1,17 @@
 import { isHoliday } from "./HolidayService";
 
 import {
-    isEnabled,
-    getScheduledDateTime,
-    getNightMinutes,
-    splitWorkMinutesByHoliday,
-    getHourlyPay,
-} from "./pay/payCommon";
+    createAttendanceApproval,
+} from "./approval/approvalService";
 
 import {
     calculateBreak,
     getScheduledWorkMinutes,
 } from "./break/breakService";
+
+import {
+    createAbsentApproval,
+} from "./approval/absentApprovalService";
 
 const STORAGE_KEY = "attendanceRecords";
 
@@ -165,47 +165,18 @@ export function saveCheckIn(employee) {
 
         overtime: false,
 
-        approval: {
-            earlyCheckIn: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-            late: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-            earlyLeave: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-            overtime: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-            night: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-
-            break: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-
-            absent: {
-                required: false,
-                resolved: false,
-                status: null,
-            },
-        },
-
     };
+
+    record.approval =
+        createAttendanceApproval({
+
+            record,
+
+            employee,
+
+            absent: false,
+
+        });
 
     records.unshift(record);
 
@@ -467,143 +438,34 @@ export function processAttendance(employee) {
 
 export function analyzeAttendance(record, employee) {
 
-    const workPolicy = employee.workPolicy;
+    const approval =
+        createAttendanceApproval({
 
-    const systemPolicy = JSON.parse(
+            record,
 
-        localStorage.getItem("policy")
+            employee,
 
-    ) || {};
+            absent: false,
 
-    const {
-
-        startTime,
-
-        endTime,
-
-    } = getScheduledDateTime(
-
-        record,
-
-        employee
-
-    );
-
-    const checkIn = new Date(record.checkIn);
-
-    const checkOut = new Date(record.checkOut);
-
-    const lateLimit =
-        systemPolicy.lateLimit ?? 5;
-
-    const earlyLeaveLimit =
-        systemPolicy.earlyLeaveLimit ?? 10;
-
-    const overtimeLimit =
-        systemPolicy.overtimeLimit ?? 15;
-
-    const earlyPayExcludeMinutes =
-        systemPolicy.earlyPayExcludeMinutes ?? 30;
-
-    const late =
-        checkIn >
-        new Date(
-            startTime.getTime()
-            + lateLimit * 60000
-        );
-
-    const earlyLeave =
-        checkOut <
-        new Date(
-            endTime.getTime()
-            - earlyLeaveLimit * 60000
-        );
-
-    const overtime =
-        checkOut >
-        new Date(
-            endTime.getTime()
-            + overtimeLimit * 60000
-        );
-
-    const night =
-
-        checkOut >
-
-        new Date(
-            `${record.date}T22:00:00`
-        );
-
-    const earlyCheckInApprovalRequired =
-        checkIn <
-        new Date(
-            startTime.getTime()
-            - earlyPayExcludeMinutes * 60000
-        );
-
-    const totalMinutes =
-        getScheduledWorkMinutes(employee);
-
-    const breakInfo = calculateBreak(
-
-        totalMinutes,
-
-        record.breaks || []
-
-    );
+        });
 
     return {
 
         ...record,
 
-        late,
+        late:
+            approval.late.required,
 
-        earlyLeave,
+        earlyLeave:
+            approval.earlyLeave.required,
 
-        overtime,
+        overtime:
+            approval.overtime.required,
 
-        earlyCheckInApprovalRequired,
+        earlyCheckInApprovalRequired:
+            approval.earlyCheckIn.required,
 
-        approval: {
-            earlyCheckIn: {
-                required: earlyCheckInApprovalRequired,
-                resolved: record.approval?.earlyCheckIn?.resolved || false,
-                status: record.approval?.earlyCheckIn?.status || null,
-            },
-            late: {
-                required: late,
-                resolved: record.approval?.late?.resolved || false,
-                status: record.approval?.late?.status || null,
-            },
-            earlyLeave: {
-                required: earlyLeave,
-                resolved: record.approval?.earlyLeave?.resolved || false,
-                status: record.approval?.earlyLeave?.status || null,
-            },
-            overtime: {
-                required: overtime,
-                resolved: record.approval?.overtime?.resolved || false,
-                status: record.approval?.overtime?.status || null,
-            },
-
-            night: {
-                required: night,
-                resolved: record.approval?.night?.resolved || false,
-                status: record.approval?.night?.status || null,
-            },
-
-            break: {
-                required: breakInfo.approvalRequired,
-                resolved: record.approval?.break?.resolved || false,
-                status: record.approval?.break?.status || null,
-            },
-
-            absent: {
-                required: record.approval?.absent?.required || false,
-                resolved: record.approval?.absent?.resolved || false,
-                status: record.approval?.absent?.status || null,
-            },
-        },
+        approval,
 
     };
 
@@ -716,60 +578,6 @@ export function calculateWorkMinutes(record, employee) {
         0
 
     );
-
-}
-
-function getHolidayMinutes(record) {
-
-    if (!record.checkOut) {
-
-        return {
-
-            holidayMinutes: 0,
-
-            normalMinutes: 0,
-
-        };
-
-    }
-
-    let holidayMinutes = 0;
-
-    let normalMinutes = 0;
-
-    const start = new Date(record.checkIn);
-
-    const end = new Date(record.checkOut);
-
-    const current = new Date(start);
-
-    while (current < end) {
-
-        const next = new Date(current);
-
-        next.setMinutes(next.getMinutes() + 1);
-
-        if (isHoliday(current)) {
-
-            holidayMinutes++;
-
-        } else {
-
-            normalMinutes++;
-
-        }
-
-        current.setMinutes(current.getMinutes() + 1);
-
-    }
-
-    return {
-
-        holidayMinutes,
-
-        normalMinutes,
-
-    };
 
 }
 
@@ -1058,75 +866,17 @@ export function generateAbsentApprovals() {
 
             }
 
-            const absentRecord = {
-
-                id: Date.now() + Math.random(),
-
-                employeeNo: employee.no,
-
-                employeeName: employee.name,
-
-                date: dateText,
-
-                checkIn: null,
-
-                checkOut: null,
-
-                workMinutes: 0,
-
-                status: "결근",
-
-                late: false,
-
-                earlyLeave: false,
-
-                overtime: false,
-
-                approval: {
-
-                    earlyCheckIn: {
-                        required: false,
-                        resolved: false,
-                        status: null,
-                    },
-
-                    late: {
-                        required: false,
-                        resolved: false,
-                        status: null,
-                    },
-
-                    earlyLeave: {
-                        required: false,
-                        resolved: false,
-                        status: null,
-                    },
-
-                    overtime: {
-                        required: false,
-                        resolved: false,
-                        status: null,
-                    },
-
-                    night: {
-                        required: false,
-                        resolved: false,
-                        status: null,
-                    },
-
-                    absent: {
-                        required: true,
-                        resolved: false,
-                        status: null,
-                    },
-
-                },
-
-            };
+            const absentRecord =
+                createAbsentApproval(
+                    employee,
+                    dateText
+                );
 
             records.unshift(absentRecord);
 
-            saveAttendanceHistory(absentRecord);
+            saveAttendanceHistory(
+                absentRecord
+            );
 
         }
 
@@ -1674,6 +1424,7 @@ export function getEmployeeMonthlyAttendanceStatus(
                         "earlyLeave",
                         "overtime",
                         "night",
+                        "holiday",
                     ]
                 );
 

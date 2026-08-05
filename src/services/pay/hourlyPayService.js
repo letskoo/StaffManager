@@ -36,19 +36,48 @@ export function calculatePayDetail(record, employee) {
 
     }
 
+    if (!record) {
+
+        return emptyPayDetail;
+
+    }
+
+    const isRejectedAbsent =
+
+        record.status === "결근" &&
+
+        record.approval?.absent?.status === "rejected";
+
+    const checkInText =
+
+        isRejectedAbsent
+
+            ? record.scheduledCheckIn
+
+            : record.checkIn;
+
+    const checkOutText =
+
+        isRejectedAbsent
+
+            ? record.scheduledCheckOut
+
+            : record.checkOut;
+
     if (
-        !record ||
-        !record.checkIn ||
-        !record.checkOut
+        !checkInText ||
+        !checkOutText
     ) {
 
         return emptyPayDetail;
 
     }
 
-    const checkInDate = new Date(record.checkIn);
+    const checkInDate =
+        new Date(checkInText);
 
-    const checkOutDate = new Date(record.checkOut);
+    const checkOutDate =
+        new Date(checkOutText);
 
     if (
         Number.isNaN(checkInDate.getTime()) ||
@@ -85,10 +114,21 @@ export function calculatePayDetail(record, employee) {
         approval.overtime?.status === "approved";
 
     const nightApproved =
+
+        !approval.night?.required ||
+
         approval.night?.status === "approved";
 
     const holidayInfo =
-        splitWorkMinutesByHoliday(record);
+        splitWorkMinutesByHoliday({
+
+            ...record,
+
+            checkIn: checkInText,
+
+            checkOut: checkOutText,
+
+        });
 
     const {
 
@@ -104,9 +144,11 @@ export function calculatePayDetail(record, employee) {
 
     );
 
-    const checkIn = new Date(record.checkIn);
+    const checkIn =
+        new Date(checkInText);
 
-    const checkOut = new Date(record.checkOut);
+    const checkOut =
+        new Date(checkOutText);
 
     let payStart = startTime;
 
@@ -281,11 +323,18 @@ export function calculatePayDetail(record, employee) {
             ? actualOvertimeMinutes
             : 0;
 
-    const nightMinutes = getNightMinutes({
-        ...record,
-        checkIn: payStart.toISOString(),
-        checkOut: payEnd.toISOString(),
-    });
+    const nightMinutes =
+        getNightMinutes({
+
+            ...record,
+
+            checkIn:
+                payStart.toISOString(),
+
+            checkOut:
+                payEnd.toISOString(),
+
+        });
 
     const isHolidayWork =
 
@@ -293,13 +342,20 @@ export function calculatePayDetail(record, employee) {
 
         record.holidayWork === true;
 
-    const allowHoliday = isEnabled(
+    const holidayApproved =
 
-        workPolicy.allowHoliday ??
+        !approval.holiday?.required ||
 
-        employee.allowHoliday
+        approval.holiday?.status === "approved";
 
-    );
+    const allowHoliday =
+        isEnabled(
+
+            workPolicy.allowHoliday ??
+
+            employee.allowHoliday
+
+        );
 
     let basePay = 0;
 
@@ -373,6 +429,8 @@ export function calculatePayDetail(record, employee) {
     let holidayPay = 0;
 
     if (
+
+        holidayApproved &&
 
         allowHoliday &&
 
