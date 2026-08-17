@@ -7,12 +7,17 @@ import useEmployees from "../hooks/useEmployees";
 import {
 
     processAttendance,
-    getAttendanceType,
-    getOpenAttendance,
     saveBreakStart,
     saveBreakEnd,
 
 } from "../services/attendanceService";
+
+import {
+
+    getAttendanceType,
+    getOpenAttendance,
+
+} from "../services/attendance/attendanceRecordService";
 
 import AttendanceModal from "../components/AttendanceModal";
 

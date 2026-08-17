@@ -4,7 +4,7 @@ import useEmployees from "../hooks/useEmployees";
 
 import {
     getAttendanceRecords,
-} from "../services/attendanceService";
+} from "../services/attendance/attendanceRecordService";
 
 import {
     getMonthlyAbsentCount,

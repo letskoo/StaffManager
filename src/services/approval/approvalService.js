@@ -334,3 +334,51 @@ export function createAttendanceApproval({
     };
 
 }
+
+/*
+ * 근태 분석
+ *
+ * 출퇴근 기록을 분석하여
+ * 승인대기 정보를 포함한
+ * 근태 레코드를 생성한다.
+ */
+export function analyzeAttendance(
+
+    record,
+
+    employee
+
+) {
+
+    const approval =
+        createAttendanceApproval({
+
+            record,
+
+            employee,
+
+            absent: false,
+
+        });
+
+    return {
+
+        ...record,
+
+        late:
+            approval.late.required,
+
+        earlyLeave:
+            approval.earlyLeave.required,
+
+        overtime:
+            approval.overtime.required,
+
+        earlyCheckInApprovalRequired:
+            approval.earlyCheckIn.required,
+
+        approval,
+
+    };
+
+}

@@ -2,8 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 import {
     getApprovalList,
-    getAttendanceRecords,
 } from "../services/attendanceService";
+
+import {
+    getAttendanceRecords,
+} from "../services/attendance/attendanceRecordService";
 
 import "../styles/dashboard.css";
 

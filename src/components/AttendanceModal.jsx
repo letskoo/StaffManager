@@ -18,10 +18,15 @@ import {
 } from "../services/salaryService";
 
 import {
-    getOpenAttendance,
     calculateBreak,
     getScheduledWorkMinutes,
 } from "../services/attendanceService";
+
+import {
+
+    getOpenAttendance,
+
+} from "../services/attendance/attendanceRecordService";
 
 function AttendanceModal({
 

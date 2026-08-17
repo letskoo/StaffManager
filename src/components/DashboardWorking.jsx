@@ -6,7 +6,7 @@ import {
 
     getAttendanceRecords,
 
-} from "../services/attendanceService";
+} from "../services/attendance/attendanceRecordService";
 
 function DashboardWorking() {
 
