@@ -1,5 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 
+import packageInfo from "../../package.json";
+
 import "../styles/sidebar.css";
 
 function Sidebar() {
@@ -88,12 +90,20 @@ function Sidebar() {
 
             <div className="sidebar-footer">
 
-                <div className="sidebar-footer-title">
-                    Staff Manager
+                <div className="sidebar-app-version">
+                    v{packageInfo.version}
                 </div>
 
-                <div className="sidebar-footer-version">
-                    Developer Projects
+                <div className="sidebar-footer-content">
+
+                    <div className="sidebar-footer-title">
+                        Staff Manager
+                    </div>
+
+                    <div className="sidebar-footer-version">
+                        Developer Projects
+                    </div>
+
                 </div>
 
             </div>
