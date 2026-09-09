@@ -15,7 +15,7 @@ export default defineConfig({
 
     VitePWA({
 
-      registerType: "autoUpdate",
+      registerType: "prompt",
 
       injectRegister: false,
 
@@ -87,6 +87,10 @@ export default defineConfig({
         navigateFallback: "/index.html",
 
         cleanupOutdatedCaches: true,
+
+        skipWaiting: false,
+
+        clientsClaim: false,
 
       },
 
