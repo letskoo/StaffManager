@@ -190,47 +190,47 @@
 
 }
 
-.radio-inline{
+.radio-inline {
 
-    display:flex;
+    display: flex;
 
-    align-items:center;
+    align-items: center;
 
-    gap:8px;
-
-}
-
-.radio-inline input{
-
-    width:18px !important;
-
-    height:18px !important;
+    gap: 8px;
 
 }
 
-.week-time-row{
+.radio-inline input {
 
-    display:flex;
+    width: 18px !important;
 
-    align-items:center;
-
-    gap:10px;
+    height: 18px !important;
 
 }
 
-.week-time-row input{
+.week-time-row {
 
-    flex:1;
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
 
 }
 
-.week-time-row span{
+.week-time-row input {
 
-    font-size:16px;
+    flex: 1;
 
-    font-weight:600;
+}
 
-    color:#666;
+.week-time-row span {
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color: #666;
 
 }
 
@@ -284,11 +284,11 @@
 
 .time-wheel-column select {
 
-    width: 70px !important;
+    width: 82px !important;
 
     height: 42px !important;
 
-    padding: 0 24px 0 12px !important;
+    padding: 0 28px 0 14px !important;
 
     border: none !important;
 
@@ -313,8 +313,7 @@
 .time-wheel-column select:focus {
 
     box-shadow:
-        0 0 0 3px
-        rgba(31, 115, 185, 0.14);
+        0 0 0 3px rgba(31, 115, 185, 0.14);
 
 }
 
