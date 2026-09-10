@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 import packageInfo from "../../package.json";
 
@@ -72,14 +71,30 @@ function Download() {
 
     useEffect(() => {
 
+        const isStandalone =
+            window.matchMedia(
+                "(display-mode: standalone)"
+            ).matches ||
+            window.navigator.standalone === true;
+
+        if (isStandalone) {
+            setInstalled(true);
+        }
+
         const handleBeforeInstall = (event) => {
+
             event.preventDefault();
+
             setDeferredPrompt(event);
+            setInstalled(false);
+
         };
 
         const handleInstalled = () => {
+
             setInstalled(true);
             setDeferredPrompt(null);
+
         };
 
         window.addEventListener(
@@ -91,12 +106,6 @@ function Download() {
             "appinstalled",
             handleInstalled
         );
-
-        if (
-            window.matchMedia("(display-mode: standalone)").matches
-        ) {
-            setInstalled(true);
-        }
 
         return () => {
 
@@ -116,34 +125,60 @@ function Download() {
 
     const handleInstall = async () => {
 
+        if (installed) {
+            window.location.href = "/";
+            return;
+        }
+
         if (!deferredPrompt) {
 
             alert(
-                "설치 버튼이 표시되지 않는 경우 Chrome 또는 Edge의 메뉴에서 '앱 설치'를 선택해 주세요."
+                "Staff Manager 설치 준비가 아직 완료되지 않았습니다.\n\n" +
+                "Chrome 또는 Edge에서 잠시 후 다시 눌러주세요.\n\n" +
+                "설치창이 계속 나타나지 않으면 브라우저 주소창의 앱 설치 아이콘 또는 메뉴의 '앱 설치'를 선택해 주세요."
             );
 
             return;
-
         }
 
-        deferredPrompt.prompt();
+        try {
 
-        const choice = await deferredPrompt.userChoice;
+            await deferredPrompt.prompt();
 
-        if (choice.outcome === "accepted") {
-            setDeferredPrompt(null);
+            const choice =
+                await deferredPrompt.userChoice;
+
+            if (choice.outcome === "accepted") {
+
+                setDeferredPrompt(null);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Staff Manager 설치창 실행 실패",
+                error
+            );
+
+            alert(
+                "설치창을 실행하지 못했습니다.\n\n" +
+                "Chrome 또는 Edge의 주소창에 있는 앱 설치 아이콘을 이용해 주세요."
+            );
+
         }
 
     };
 
     const installButton = installed ? (
 
-        <Link
-            to="/"
+        <button
+            type="button"
             className="download-btn"
+            disabled
         >
-            앱 실행하기
-        </Link>
+            설치 완료
+        </button>
 
     ) : (
 
@@ -152,7 +187,7 @@ function Download() {
             className="download-btn"
             onClick={handleInstall}
         >
-            무료 다운로드
+            Staff Manager 설치
         </button>
 
     );
