@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import packageInfo from "../../package.json";
 
 import "../styles/download.css";
@@ -42,7 +40,7 @@ const steps = [
         number: "1",
         title: "프로그램 설치",
         description:
-            "무료 다운로드 버튼을 눌러 Staff Manager를 PC에 설치합니다.",
+            "무료 다운로드 버튼을 누른 뒤 다운로드한 설치파일을 실행합니다.",
     },
     {
         number: "2",
@@ -66,130 +64,16 @@ const steps = [
 
 function Download() {
 
-    const [deferredPrompt, setDeferredPrompt] = useState(null);
-    const [installed, setInstalled] = useState(false);
+    const downloadUrl =
+        "https://github.com/letskoo/StaffManager/releases/download/v0.7.9/Staff.Manager_0.7.9_x64-setup.exe";
 
-    useEffect(() => {
-
-        const isStandalone =
-            window.matchMedia(
-                "(display-mode: standalone)"
-            ).matches ||
-            window.navigator.standalone === true;
-
-        if (isStandalone) {
-            setInstalled(true);
-        }
-
-        const handleBeforeInstall = (event) => {
-
-            event.preventDefault();
-
-            setDeferredPrompt(event);
-            setInstalled(false);
-
-        };
-
-        const handleInstalled = () => {
-
-            setInstalled(true);
-            setDeferredPrompt(null);
-
-        };
-
-        window.addEventListener(
-            "beforeinstallprompt",
-            handleBeforeInstall
-        );
-
-        window.addEventListener(
-            "appinstalled",
-            handleInstalled
-        );
-
-        return () => {
-
-            window.removeEventListener(
-                "beforeinstallprompt",
-                handleBeforeInstall
-            );
-
-            window.removeEventListener(
-                "appinstalled",
-                handleInstalled
-            );
-
-        };
-
-    }, []);
-
-    const handleInstall = async () => {
-
-        if (installed) {
-            window.location.href = "/";
-            return;
-        }
-
-        if (!deferredPrompt) {
-
-            alert(
-                "Staff Manager 설치 준비가 아직 완료되지 않았습니다.\n\n" +
-                "Chrome 또는 Edge에서 잠시 후 다시 눌러주세요.\n\n" +
-                "설치창이 계속 나타나지 않으면 브라우저 주소창의 앱 설치 아이콘 또는 메뉴의 '앱 설치'를 선택해 주세요."
-            );
-
-            return;
-        }
-
-        try {
-
-            await deferredPrompt.prompt();
-
-            const choice =
-                await deferredPrompt.userChoice;
-
-            if (choice.outcome === "accepted") {
-
-                setDeferredPrompt(null);
-
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Staff Manager 설치창 실행 실패",
-                error
-            );
-
-            alert(
-                "설치창을 실행하지 못했습니다.\n\n" +
-                "Chrome 또는 Edge의 주소창에 있는 앱 설치 아이콘을 이용해 주세요."
-            );
-
-        }
-
-    };
-
-    const installButton = installed ? (
-
-        <button
-            type="button"
+    const installButton = (
+        <a
+            href={downloadUrl}
             className="download-btn"
-            disabled
         >
-            설치 완료
-        </button>
-
-    ) : (
-
-        <button
-            type="button"
-            className="download-btn"
-            onClick={handleInstall}
-        >
-            Staff Manager 설치
-        </button>
-
+            무료 다운로드
+        </a>
     );
 
     return (
@@ -276,7 +160,7 @@ function Download() {
 
                                 <span>무료 사용</span>
                                 <span>로컬 데이터 저장</span>
-                                <span>설치형 웹앱</span>
+                                <span>Windows 프로그램</span>
 
                             </div>
 
@@ -610,7 +494,7 @@ function Download() {
                                 <strong>데이터 보관</strong>
 
                                 <span>
-                                    브라우저의 로컬 저장공간을 사용합니다.
+                                    설치된 PC의 로컬 저장공간을 사용합니다.
                                 </span>
 
                             </div>
@@ -662,13 +546,11 @@ function Download() {
                         <div className="download-install-help">
 
                             <p>
-                                Chrome 또는 Edge에서 접속한 뒤
-                                설치 버튼을 눌러주세요.
+                                무료 다운로드 버튼을 누르면 Windows 설치파일이 다운로드됩니다.
                             </p>
 
                             <p>
-                                설치 버튼이 나타나지 않는 경우 브라우저
-                                메뉴의 앱 설치 기능을 이용할 수 있습니다.
+                                다운로드한 설치파일을 실행해 Staff Manager를 설치해 주세요.
                             </p>
 
                         </div>
