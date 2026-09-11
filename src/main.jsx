@@ -5,6 +5,7 @@ import { registerSW } from "virtual:pwa-register";
 
 import "./styles/global.css";
 import App from "./App";
+import { checkTauriUpdate } from "./services/update/tauriUpdateService";
 
 const UPDATE_INTERVAL = 5 * 60 * 1000;
 const UPDATE_TIMEOUT = 10000;
@@ -216,52 +217,64 @@ navigator.serviceWorker?.addEventListener(
     }
 );
 
-updateSW = registerSW({
-    immediate: true,
+if (window.__TAURI_INTERNALS__) {
 
-    onNeedRefresh() {
-        if (isStarting) {
-            activateWaitingWorker();
-        }
-    },
+    checkTauriUpdate()
+        .finally(() => {
+            isStarting = false;
+            renderApp();
+        });
 
-    onRegisteredSW(
-        serviceWorkerUrl,
-        registered
-    ) {
-        registration = registered;
+} else {
 
-        startApp();
+    updateSW = registerSW({
+        immediate: true,
 
-        if (!registration) {
-            return;
-        }
-
-        window.setInterval(
-            checkForUpdate,
-            UPDATE_INTERVAL
-        );
-
-        document.addEventListener(
-            "visibilitychange",
-            () => {
-                if (
-                    document.visibilityState ===
-                    "visible"
-                ) {
-                    checkForUpdate();
-                }
+        onNeedRefresh() {
+            if (isStarting) {
+                activateWaitingWorker();
             }
-        );
-    },
+        },
 
-    onRegisterError(error) {
-        console.error(
-            "서비스 워커 등록 실패",
-            error
-        );
+        onRegisteredSW(
+            serviceWorkerUrl,
+            registered
+        ) {
+            registration = registered;
 
-        isStarting = false;
-        renderApp();
-    },
-});
+            startApp();
+
+            if (!registration) {
+                return;
+            }
+
+            window.setInterval(
+                checkForUpdate,
+                UPDATE_INTERVAL
+            );
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
+                    if (
+                        document.visibilityState ===
+                        "visible"
+                    ) {
+                        checkForUpdate();
+                    }
+                }
+            );
+        },
+
+        onRegisterError(error) {
+            console.error(
+                "서비스 워커 등록 실패",
+                error
+            );
+
+            isStarting = false;
+            renderApp();
+        },
+    });
+
+}

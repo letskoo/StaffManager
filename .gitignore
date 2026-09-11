@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Tauri updater signing private keys
+src-tauri/staff-manager-updater.key
+src-tauri/staff-manager-updater-old.key
