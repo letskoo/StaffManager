@@ -65,7 +65,7 @@ const steps = [
 function Download() {
 
     const downloadUrl =
-        "https://github.com/letskoo/StaffManager/releases/download/v0.7.9/Staff.Manager_0.7.9_x64-setup.exe";
+        "https://github.com/letskoo/StaffManager/releases/download/v0.7.10/Staff.Manager_0.7.10_x64-setup.exe";
 
     const installButton = (
         <a
