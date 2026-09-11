@@ -96,13 +96,23 @@ export function createAttendanceApproval({
     const checkIn =
         new Date(record.checkIn);
 
+    const hasCheckOut =
+        Boolean(record.checkOut);
+
     const checkOut =
-        new Date(record.checkOut);
+        hasCheckOut
+            ? new Date(record.checkOut)
+            : null;
 
     if (
         Number.isNaN(checkIn.getTime()) ||
-        Number.isNaN(checkOut.getTime()) ||
-        checkOut <= checkIn
+        (
+            hasCheckOut &&
+            (
+                Number.isNaN(checkOut.getTime()) ||
+                checkOut <= checkIn
+            )
+        )
     ) {
 
         throw new Error(
@@ -155,31 +165,33 @@ export function createAttendanceApproval({
 
         );
 
-    const earlyLeaveRequired = absent
+    const earlyLeaveRequired =
+        absent || !hasCheckOut
 
-        ? false
+            ? false
 
-        : checkOut <
-        new Date(
+            : checkOut <
+            new Date(
 
-            endTime.getTime() -
+                endTime.getTime() -
 
-            earlyLeaveLimit * 60000
+                earlyLeaveLimit * 60000
 
-        );
+            );
 
-    const overtimeRequired = absent
+    const overtimeRequired =
+        absent || !hasCheckOut
 
-        ? false
+            ? false
 
-        : checkOut >
-        new Date(
+            : checkOut >
+            new Date(
 
-            endTime.getTime() +
+                endTime.getTime() +
 
-            overtimeLimit * 60000
+                overtimeLimit * 60000
 
-        );
+            );
 
     /*
      * 야간근무 검사
