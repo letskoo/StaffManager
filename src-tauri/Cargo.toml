@@ -1,6 +1,6 @@
 [package]
 name = "staff-manager"
-version = "0.7.11"
+version = "0.7.12"
 description = "Staff Manager"
 authors = ["Developer Projects"]
 license = ""
