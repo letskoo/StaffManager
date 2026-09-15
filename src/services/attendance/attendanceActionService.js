@@ -124,6 +124,9 @@ export function saveCheckIn(employee) {
 
         });
 
+    record.late =
+        record.approval.late.required;
+
     records.unshift(
         record
     );
@@ -329,7 +332,7 @@ export function saveBreakEnd(employee) {
 
     const lastBreak =
         breaks[
-            breaks.length - 1
+        breaks.length - 1
         ];
 
     if (

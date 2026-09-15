@@ -25,6 +25,7 @@ export function calculatePayDetail(record, employee) {
         holidayPay: 0,
         lateDeduction: 0,
         earlyLeaveDeduction: 0,
+        breakDeduction: 0,
         totalPay: 0,
     };
 
@@ -170,14 +171,28 @@ export function calculatePayDetail(record, employee) {
     /*
      * 지각
      *
-     * 승인 → 원래 출근시간 인정
-     * 거절 → 원래 출근시간 인정
+     * 월급제
+     * 승인 → 지각 시간만큼 급여 차감
+     * 거절 → 정상 출근으로 인정
      *
-     * (급여 차감은 lateDeduction에서 처리)
-     */
+     * 시급제
+     * 승인 → 실제 출근시간부터 급여 인정
+     * 거절 → 정상 출근으로 인정
+    */
     else if (record.late === true) {
 
-        payStart = startTime;
+        if (
+            workPolicy.payType === "hourly" &&
+            approval.late?.status === "approved"
+        ) {
+
+            payStart = checkIn;
+
+        } else {
+
+            payStart = startTime;
+
+        }
 
     }
 
@@ -201,14 +216,28 @@ export function calculatePayDetail(record, employee) {
     /*
      * 조기퇴근
      *
-     * 승인 → 원래 퇴근시간 인정
-     * 거절 → 원래 퇴근시간 인정
+     * 월급제
+     * 승인 → 조기퇴근 시간만큼 급여 차감
+     * 거절 → 정상 퇴근으로 인정
      *
-     * (급여 차감은 earlyLeaveDeduction에서 처리)
+     * 시급제
+     * 승인 → 실제 퇴근시간까지만 급여 인정
+     * 거절 → 정상 퇴근으로 인정
      */
     else if (record.earlyLeave === true) {
 
-        payEnd = endTime;
+        if (
+            workPolicy.payType === "hourly" &&
+            approval.earlyLeave?.status === "approved"
+        ) {
+
+            payEnd = checkOut;
+
+        } else {
+
+            payEnd = endTime;
+
+        }
 
     }
 
@@ -363,15 +392,26 @@ export function calculatePayDetail(record, employee) {
 
     let earlyLeaveDeduction = 0;
 
+    let breakDeduction = 0;
+
     if (workPolicy.payType === "monthly") {
 
         lateDeduction =
-            lateMinutes / 60 *
-            hourlyPay;
+            lateMinutes / 60 * hourlyPay;
 
         earlyLeaveDeduction =
-            earlyLeaveMinutes / 60 *
-            hourlyPay;
+            earlyLeaveMinutes / 60 * hourlyPay;
+
+        if (
+            approval.break?.status === "approved"
+        ) {
+
+            breakDeduction =
+                exceededBreakMinutes /
+                60 *
+                hourlyPay;
+
+        }
 
     } else {
 
@@ -556,6 +596,9 @@ export function calculatePayDetail(record, employee) {
 
         earlyLeaveDeduction:
             Math.floor(earlyLeaveDeduction),
+
+        breakDeduction:
+            Math.floor(breakDeduction),
 
         totalPay,
 

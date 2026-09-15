@@ -487,6 +487,49 @@ export function getMonthlyAbsentCount(employee, month = new Date().toISOString()
 
     }
 
+    /*
+     * 오늘 결근
+     *
+     * 현재 달은 기본적으로 어제까지만 결근을 계산한다.
+     * 다만 오늘 생성된 결근을 관리자가 직접 승인한 경우에는
+     * 확정된 결근으로 보고 즉시 급여에 반영한다.
+     */
+    const isCurrentMonth =
+        today.getFullYear() === monthStart.getFullYear() &&
+        today.getMonth() === monthStart.getMonth();
+
+    if (isCurrentMonth) {
+
+        const todayText =
+            getDateText(today);
+
+        const todayDayKey =
+            dayKeys[today.getDay()];
+
+        const isTodayWorkDay =
+            !!weekSchedule[todayDayKey];
+
+        const todayAbsentRecord =
+            history.find(
+                (record) =>
+                    record.employeeNo === employee.no &&
+                    record.date === todayText &&
+                    record.status === "결근"
+            );
+
+        if (
+            isTodayWorkDay &&
+            today >= joinDate &&
+            todayAbsentRecord?.approval?.absent?.required &&
+            todayAbsentRecord?.approval?.absent?.status === "approved"
+        ) {
+
+            absent++;
+
+        }
+
+    }
+
     return absent;
 
 }
@@ -582,6 +625,7 @@ export function getMonthlySalary(employee) {
 
                 sum.late += pay.lateDeduction;
                 sum.early += pay.earlyLeaveDeduction;
+                sum.break += pay.breakDeduction;
 
                 return sum;
 
@@ -592,6 +636,7 @@ export function getMonthlySalary(employee) {
                 holiday: 0,
                 late: 0,
                 early: 0,
+                break: 0,
             }
         );
 
@@ -635,6 +680,8 @@ export function getMonthlySalary(employee) {
         detail.late -
 
         detail.early -
+
+        detail.break -
 
         absentDeduction,
 
@@ -735,6 +782,9 @@ export function getMonthlySalaryByMonth(employee, month) {
                 sum.early +=
                     pay.earlyLeaveDeduction;
 
+                sum.break +=
+                    pay.breakDeduction;
+
                 return sum;
 
             },
@@ -744,6 +794,7 @@ export function getMonthlySalaryByMonth(employee, month) {
                 holiday: 0,
                 late: 0,
                 early: 0,
+                break: 0,
             }
         );
 
@@ -802,6 +853,8 @@ export function getMonthlySalaryByMonth(employee, month) {
 
         detail.early -
 
+        detail.break -
+
         absentDeduction,
 
         0
@@ -841,6 +894,7 @@ export function getMonthlyPayrollStatement(employee) {
     let holidayPay = 0;
     let lateDeduction = 0;
     let earlyLeaveDeduction = 0;
+    let breakDeduction = 0;
     let lateMinutes = 0;
     let earlyLeaveMinutes = 0;
 
@@ -883,6 +937,9 @@ export function getMonthlyPayrollStatement(employee) {
 
         earlyLeaveDeduction +=
             detail.earlyLeaveDeduction;
+
+        breakDeduction +=
+            detail.breakDeduction;
 
         lateMinutes +=
             detail.lateMinutes;
@@ -966,6 +1023,9 @@ export function getMonthlyPayrollStatement(employee) {
         earlyLeaveDeduction:
             Math.floor(earlyLeaveDeduction),
 
+        breakDeduction:
+            Math.floor(breakDeduction),
+
         lateMinutes,
 
         earlyLeaveMinutes,
@@ -989,6 +1049,8 @@ export function getMonthlyPayrollStatement(employee) {
             lateDeduction -
 
             earlyLeaveDeduction -
+
+            breakDeduction -
 
             absentDeduction,
 

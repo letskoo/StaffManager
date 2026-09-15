@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Staff Manager",
-  "version": "0.7.12",
+  "version": "0.7.13",
   "identifier": "com.developerprojects.staffmanager",
   "build": {
     "frontendDist": "../dist",
